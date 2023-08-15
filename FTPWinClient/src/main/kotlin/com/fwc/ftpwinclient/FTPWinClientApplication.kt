@@ -5,9 +5,9 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
 
-class HelloApplication : Application() {
+class FTPWinClientApplication : Application() {
     override fun start(stage: Stage) {
-        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource("hello-view.fxml"))
+        val fxmlLoader = FXMLLoader(FTPWinClientApplication::class.java.getResource("main-window.fxml"))
         val scene = Scene(fxmlLoader.load(), 600.0, 800.0)
         stage.title = "Hello!"
         stage.scene = scene
@@ -18,5 +18,5 @@ class HelloApplication : Application() {
 }
 
 fun main() {
-    Application.launch(HelloApplication::class.java)
+    Application.launch(FTPWinClientApplication::class.java)
 }

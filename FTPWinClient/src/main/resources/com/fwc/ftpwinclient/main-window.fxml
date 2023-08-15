@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.fwc.ftpwinclient.HelloController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fwc.ftpwinclient.MainWindowController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -28,7 +28,7 @@
                </font>
             </Label>
             <Region prefHeight="25.0" prefWidth="10000.0" />
-            <TextField fx:id="login_field" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
+            <TextField fx:id="loginField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
          </children>
       </HBox>
       <HBox prefHeight="0.0" prefWidth="0.0">
@@ -39,12 +39,12 @@
                </font>
             </Label>
             <Region prefHeight="25.0" prefWidth="10000.0" />
-            <PasswordField fx:id="pass_field" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
+            <PasswordField fx:id="passField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
          </children>
       </HBox>
       <HBox prefHeight="40.0" prefWidth="200.0">
          <children>
-            <Button fx:id="connect_butt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Connect" HBox.hgrow="ALWAYS">
+            <Button fx:id="connectButt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onConnectClicked" text="Connect" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
@@ -75,7 +75,7 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <TreeView fx:id="file_systems" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <TreeView fx:id="serverFileSystems" editable="true" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
@@ -85,14 +85,14 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <TreeView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <TreeView fx:id="clientFileSystems" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </children>
       </HBox>
       <HBox prefHeight="40.0" prefWidth="200.0">
          <children>
-            <Button fx:id="disconnect_butt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Disconnect" HBox.hgrow="ALWAYS">
+            <Button fx:id="disconnectButt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDisconnectClicked" text="Disconnect" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
