@@ -27,10 +27,11 @@ class MainWindowController {
     @FXML
     private fun onConnectClicked()
     {
-        serverFileSystems.root = createNode(File("."))
-        clientFileSystems.root = createNode(File(".."))
         serv = ClientLogic()
-        serv.run()
+        serv.connect()
+        serverFileSystems.root = serv.getServerSystem("/")
+        clientFileSystems.root = serv.getClientSystem(File("."))
+        serv.disconnect()
     }
 
     @FXML
@@ -38,19 +39,5 @@ class MainWindowController {
     {
         serverFileSystems.root = null
         clientFileSystems.root = null
-    }
-
-    private fun createNode(directory: File): TreeItem<String>
-    {
-        val root = TreeItem(directory.name)
-        if (directory.isDirectory) {
-            val files = directory.listFiles()
-            if (files != null) {
-                for (childFile in files) {
-                    root.children.add(createNode(childFile))
-                }
-            }
-        }
-        return root
     }
 }
