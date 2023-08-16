@@ -6,13 +6,15 @@ import org.apache.commons.net.ftp.FTPFile
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 class ClientLogic (
-	private val server: String = "127.0.0.1",
-	private val port: Int = 21,
 	private val username: String = "user",
 	private val password: String = "12345"
 ) {
+	private val server: String = "127.0.0.1"
+	private val port: Int = 21
 	private val ftpClient = FTPClient()
 
 	fun connect() {
@@ -34,12 +36,13 @@ class ClientLogic (
 	}
 
 	fun getServerSystem(serverDirectoryName: String): TreeItem<String> {
-		val root = TreeItem(serverDirectoryName.split("/").last())
-		val subFiles = ftpClient.listFiles(serverDirectoryName)
+		val root = TreeItem(serverDirectoryName)
+		root.children.add(TreeItem(".."))
+		val subFiles = ftpClient.listFiles(ftpClient.printWorkingDirectory())
 		if (subFiles != null) {
 			for (subFile in subFiles) {
 				if (subFile.isDirectory) {
-					root.children.add(getServerSystem("$serverDirectoryName/${subFile.name}"))
+					root.children.add(TreeItem("${subFile.name}/"))
 				} else {
 					root.children.add(TreeItem(subFile.name))
 				}
@@ -48,14 +51,29 @@ class ClientLogic (
 		return root
 	}
 
+	fun openServerDirectory(serverDirectoryName: String): TreeItem<String>? {
+		if (ftpClient.changeWorkingDirectory(serverDirectoryName)) {
+			return getServerSystem(serverDirectoryName)
+		}
+		return null
+	}
+
+	fun openParentServerDirectory(): TreeItem<String>? {
+		if (ftpClient.changeToParentDirectory()) {
+			return getServerSystem(ftpClient.printWorkingDirectory().split("/").last())
+		}
+		return null
+	}
+	
 	fun getClientSystem(clientDirectoryName: File): TreeItem<String>
 	{
-		val root = TreeItem(clientDirectoryName.name.split("/").last())
+		val root = TreeItem(clientDirectoryName.name)
+		root.children.add(TreeItem(".."))
 		val subFiles = clientDirectoryName.listFiles()
 		if (subFiles != null) {
 			for (subFile in subFiles) {
 				if (subFile.isDirectory) {
-					root.children.add(getClientSystem(subFile))
+					root.children.add(TreeItem("${subFile.name}/"))
 				} else {
 					root.children.add(TreeItem(subFile.name))
 				}
@@ -64,21 +82,19 @@ class ClientLogic (
 		return root
 	}
 
-//	fun getServerSystem(directory: String = "/"): Array<FTPFile>? {
-//		try {
-////			val root = FTPFile(directory)
-//			val files = ftpClient.listFiles(directory)
-////			for (file in files) {
-////				if (file.isDirectory) {
-////
-////				}
-////			}
-//			return files
-//		} catch (e: Exception) {
-//			e.printStackTrace()
-//		}
-//		return null
-//	}
+	fun openClientDirectory(clientDirectoryName: File): TreeItem<String>? {
+		if (clientDirectoryName.isDirectory) {
+			return getClientSystem(clientDirectoryName)
+		}
+		return null
+	}
+
+	fun openParentClientDirectory(clientDirectoryName: File): TreeItem<String>? {
+		if (clientDirectoryName.isDirectory) {
+			return getClientSystem(clientDirectoryName)
+		}
+		return null
+	}
 
 	fun run() {
 
