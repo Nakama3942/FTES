@@ -2,12 +2,9 @@ package com.fwc.ftpwinclient
 
 import javafx.scene.control.TreeItem
 import org.apache.commons.net.ftp.FTPClient
-import org.apache.commons.net.ftp.FTPFile
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
 
 class ClientLogic (
 	private val username: String = "user",
@@ -64,6 +61,10 @@ class ClientLogic (
 		}
 		return null
 	}
+
+	fun updateServerDirectory(): TreeItem<String> {
+		return getServerSystem(ftpClient.printWorkingDirectory().split("/").last())
+	}
 	
 	fun getClientSystem(clientDirectoryName: File): TreeItem<String>
 	{
@@ -94,6 +95,30 @@ class ClientLogic (
 			return getClientSystem(clientDirectoryName)
 		}
 		return null
+	}
+
+	fun updateClientDirectory(clientDirectoryName: File): TreeItem<String> {
+		return getClientSystem(clientDirectoryName)
+	}
+
+	fun downloadFile(serverFilePath: String, clientFilePath: String) {
+		val localFileOutputStream = FileOutputStream(clientFilePath)
+		ftpClient.retrieveFile(serverFilePath, localFileOutputStream)
+		localFileOutputStream.close()
+	}
+
+	fun uploadFile(serverFilePath: String, clientFilePath: String) {
+		val localFileInputStream = FileInputStream(clientFilePath)
+		ftpClient.storeFile(serverFilePath, localFileInputStream)
+		localFileInputStream.close()
+	}
+
+	fun removeServerFile(serverFilePath: String) {
+		ftpClient.deleteFile(serverFilePath)
+	}
+
+	fun removeClientFile(clientFilePath: String) {
+		File(clientFilePath).delete()
 	}
 
 	fun run() {

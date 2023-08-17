@@ -21,13 +21,20 @@ class MainWindowController {
     private lateinit var connectButt: Button
     @FXML
     private lateinit var disconnectButt: Button
+    @FXML
+    private lateinit var downloadButt: Button
+    @FXML
+    private lateinit var uploadButt: Button
+    @FXML
+    private lateinit var dublicateToggle: ToggleButton
 
     private lateinit var serv: ClientLogic
 
     @FXML
     private fun onConnectClicked()
     {
-        serv = ClientLogic(loginField.text, passField.text)
+//        serv = ClientLogic(loginField.text, passField.text)
+        serv = ClientLogic("user", "12345")
         serv.connect()
         serverDirectory.text = "/"
         serverFileSystems.root = serv.getServerSystem("/")
@@ -85,5 +92,37 @@ class MainWindowController {
         serverFileSystems.root = null
         clientDirectory.text = ""
         clientFileSystems.root = null
+    }
+
+    @FXML
+    private fun onDownloadClicked()
+    {
+        val selectedItems = serverFileSystems.selectionModel.selectedItems
+        for (selectedItem in selectedItems) {
+            val remoteFilePath = serverDirectory.text + selectedItem.value
+            val localFilePath = clientDirectory.text + File(remoteFilePath).name
+            serv.downloadFile(remoteFilePath, localFilePath)
+            if (!dublicateToggle.isSelected) {
+                serv.removeServerFile(remoteFilePath)
+            }
+        }
+        serverFileSystems.root = serv.updateServerDirectory()
+        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+    }
+
+    @FXML
+    private fun onUploadClicked()
+    {
+        val selectedItems = clientFileSystems.selectionModel.selectedItems
+        for (selectedItem in selectedItems) {
+            val localFilePath = clientDirectory.text + selectedItem.value
+            val remoteFilePath = serverDirectory.text + File(localFilePath).name
+            serv.uploadFile(remoteFilePath, localFilePath)
+            if (!dublicateToggle.isSelected) {
+                serv.removeClientFile(localFilePath)
+            }
+        }
+        serverFileSystems.root = serv.updateServerDirectory()
+        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
     }
 }
