@@ -101,48 +101,51 @@ class ClientLogic (
 		return getClientSystem(clientDirectoryName)
 	}
 
-	fun downloadFile(serverFilePath: String, clientFilePath: String) {
+	fun downloadAll(clientPath: String, serverFiles: List<TreeItem<String>>) {
+		for (serverFile in serverFiles) {
+			if (serverFile.value == "..") {
+				continue
+			}
+			download(clientPath, serverFile.value)
+		}
+	}
+
+	private fun download(clientPath: String, serverFile: String) {
+		val sourcePath = ftpClient.printWorkingDirectory() + "/" + serverFile
+		val targetPath = File(clientPath, serverFile)
+
+		if (ftpClient.mlistFile(sourcePath).isFile) {
+			// Элемент - файл
+			downloadFile(sourcePath, targetPath.path)
+		} else {
+			// Элемент - директория
+			createClientDirectory(targetPath.path)
+			ftpClient.changeWorkingDirectory(sourcePath)
+			for (file in ftpClient.listFiles()) {
+				download(targetPath.path, file.name)
+			}
+			openParentServerDirectory()
+		}
+	}
+
+	private fun downloadFile(serverFilePath: String, clientFilePath: String) {
 		val localFileOutputStream = FileOutputStream(clientFilePath)
 		ftpClient.retrieveFile(serverFilePath, localFileOutputStream)
 		localFileOutputStream.close()
 	}
 
-	fun uploadFile(serverFilePath: String, clientFilePath: String) {
+	fun uploadAll(clientPath: String, serverFiles: List<TreeItem<String>>) {
+	}
+
+	private fun upload(clientPath: String, serverFile: String) {
+	}
+
+	private fun uploadFile(serverFilePath: String, clientFilePath: String) {
 		val localFileInputStream = FileInputStream(clientFilePath)
 		ftpClient.storeFile(serverFilePath, localFileInputStream)
 		localFileInputStream.close()
 	}
 
-//	fun getServerSystem(serverDirectoryName: String): TreeItem<String> {
-//		val root = TreeItem(serverDirectoryName)
-//		root.children.add(TreeItem(".."))
-//		val subFiles = ftpClient.listFiles(ftpClient.printWorkingDirectory())
-//		if (subFiles != null) {
-//			for (subFile in subFiles) {
-//				if (subFile.isDirectory) {
-//					root.children.add(TreeItem("${subFile.name}/"))
-//				} else {
-//					root.children.add(TreeItem(subFile.name))
-//				}
-//			}
-//		}
-//		return root
-//	}
-//
-//	fun downloadAll(serverDirectoryName: String): TreeItem<String> {
-//		val root = TreeItem(serverDirectoryName.split("/").last())
-//		val subFiles = ftpClient.listFiles(serverDirectoryName)
-//		if (subFiles != null) {
-//			for (subFile in subFiles) {
-//				if (subFile.isDirectory) {
-//					root.children.add(getServerSystem("$serverDirectoryName/${subFile.name}"))
-//				} else {
-//					root.children.add(TreeItem(subFile.name))
-//				}
-//			}
-//		}
-//		return root
-//	}
 //
 //	fun uploadAll(clientDirectoryName: File): TreeItem<String>
 //	{

@@ -103,14 +103,15 @@ class MainWindowController {
     private fun onDownloadClicked()
     {
         val selectedItems = serverFileSystems.selectionModel.selectedItems
-        for (selectedItem in selectedItems) {
-            val remoteFilePath = serverDirectory.text + selectedItem.value
-            val localFilePath = clientDirectory.text + File(remoteFilePath).name
-            serv.downloadFile(remoteFilePath, localFilePath)
-            if (!dublicateToggle.isSelected) {
-                serv.removeServerFile(remoteFilePath)
-            }
-        }
+        serv.downloadAll(clientDirectory.text, selectedItems)
+//        for (selectedItem in selectedItems) {
+//            val remoteFilePath = serverDirectory.text + selectedItem.value
+//            val localFilePath = clientDirectory.text + File(remoteFilePath).name
+//            serv.downloadFile(remoteFilePath, localFilePath)
+//            if (!dublicateToggle.isSelected) {
+//                serv.removeServerFile(remoteFilePath)
+//            }
+//        }
         serverFileSystems.root = serv.updateServerDirectory()
         clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
     }
@@ -119,14 +120,15 @@ class MainWindowController {
     private fun onUploadClicked()
     {
         val selectedItems = clientFileSystems.selectionModel.selectedItems
-        for (selectedItem in selectedItems) {
-            val localFilePath = clientDirectory.text + selectedItem.value
-            val remoteFilePath = serverDirectory.text + File(localFilePath).name
-            serv.uploadFile(remoteFilePath, localFilePath)
-            if (!dublicateToggle.isSelected) {
-                serv.removeClientFile(localFilePath)
-            }
-        }
+        serv.uploadAll(clientDirectory.text, selectedItems)
+//        for (selectedItem in selectedItems) {
+//            val localFilePath = clientDirectory.text + selectedItem.value
+//            val remoteFilePath = serverDirectory.text + File(localFilePath).name
+//            serv.uploadFile(remoteFilePath, localFilePath)
+//            if (!dublicateToggle.isSelected) {
+//                serv.removeClientFile(localFilePath)
+//            }
+//        }
         serverFileSystems.root = serv.updateServerDirectory()
         clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
     }
