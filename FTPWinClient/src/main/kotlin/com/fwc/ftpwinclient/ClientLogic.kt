@@ -101,12 +101,15 @@ class ClientLogic (
 		return getClientSystem(clientDirectoryName)
 	}
 
-	fun downloadAll(clientPath: String, serverFiles: List<TreeItem<String>>) {
+	fun downloadAll(clientPath: String, serverFiles: List<TreeItem<String>>, clear: Boolean) {
 		for (serverFile in serverFiles) {
 			if (serverFile.value == "..") {
 				continue
 			}
 			download(clientPath, serverFile.value)
+			if (clear) {
+				removeServerPath(ftpClient.printWorkingDirectory() + "/" + serverFile.value)
+			}
 		}
 	}
 
@@ -115,10 +118,12 @@ class ClientLogic (
 		val targetPath = File(clientPath, serverFile)
 
 		if (ftpClient.mlistFile(sourcePath).isFile) {
-			// Элемент - файл
-			downloadFile(sourcePath, targetPath.path)
+			// This element a file
+			val localFileOutputStream = FileOutputStream(targetPath.path)
+			ftpClient.retrieveFile(sourcePath, localFileOutputStream)
+			localFileOutputStream.close()
 		} else {
-			// Элемент - директория
+			// This element a directory
 			createClientDirectory(targetPath.path)
 			ftpClient.changeWorkingDirectory(sourcePath)
 			for (file in ftpClient.listFiles()) {
@@ -128,40 +133,37 @@ class ClientLogic (
 		}
 	}
 
-	private fun downloadFile(serverFilePath: String, clientFilePath: String) {
-		val localFileOutputStream = FileOutputStream(clientFilePath)
-		ftpClient.retrieveFile(serverFilePath, localFileOutputStream)
-		localFileOutputStream.close()
+	fun uploadAll(clientPath: String, clientFiles: List<TreeItem<String>>, clear: Boolean) {
+		for (clientFile in clientFiles) {
+			if (clientFile.value == "..") {
+				continue
+			}
+			upload(clientPath, clientFile.value)
+			if (clear) {
+				removeClientPath(File(clientPath, clientFile.value).path)
+			}
+		}
 	}
 
-	fun uploadAll(clientPath: String, serverFiles: List<TreeItem<String>>) {
-	}
+	private fun upload(clientPath: String, clientFile: String) {
+		val sourcePath = File(clientPath, clientFile)
+		val targetPath = ftpClient.printWorkingDirectory() + "/" + clientFile
 
-	private fun upload(clientPath: String, serverFile: String) {
+		if (sourcePath.isFile) {
+			// This element a file
+			val localFileInputStream = FileInputStream(sourcePath.path)
+			ftpClient.storeFile(targetPath, localFileInputStream)
+			localFileInputStream.close()
+		} else {
+			// This element a directory
+			createServerDirectory(targetPath)
+			ftpClient.changeWorkingDirectory(targetPath)
+			for (file in sourcePath.listFiles()!!) {
+				upload(sourcePath.path, file.name)
+			}
+			openParentServerDirectory()
+		}
 	}
-
-	private fun uploadFile(serverFilePath: String, clientFilePath: String) {
-		val localFileInputStream = FileInputStream(clientFilePath)
-		ftpClient.storeFile(serverFilePath, localFileInputStream)
-		localFileInputStream.close()
-	}
-
-//
-//	fun uploadAll(clientDirectoryName: File): TreeItem<String>
-//	{
-//		val root = TreeItem(clientDirectoryName.name.split("/").last())
-//		val subFiles = clientDirectoryName.listFiles()
-//		if (subFiles != null) {
-//			for (subFile in subFiles) {
-//				if (subFile.isDirectory) {
-//					root.children.add(getClientSystem(subFile))
-//				} else {
-//					root.children.add(TreeItem(subFile.name))
-//				}
-//			}
-//		}
-//		return root
-//	}
 
 	fun createServerDirectory(newServerDirectory: String) {
 		ftpClient.makeDirectory(newServerDirectory)
@@ -171,11 +173,22 @@ class ClientLogic (
 		File(newClientDirectory).mkdirs()
 	}
 
-	fun removeServerFile(serverFilePath: String) {
-		ftpClient.deleteFile(serverFilePath)
+	fun removeServerPath(serverFilePath: String) {
+		if (ftpClient.mlistFile(serverFilePath).isDirectory) {
+			// This element a directory
+			ftpClient.changeWorkingDirectory(serverFilePath)
+			for (file in ftpClient.listFiles()) {
+				removeServerPath(file.name)
+			}
+			openParentServerDirectory()
+			ftpClient.removeDirectory(serverFilePath)
+		} else {
+			// This element a file
+			ftpClient.deleteFile(ftpClient.mlistFile(serverFilePath).name)
+		}
 	}
 
-	fun removeClientFile(clientFilePath: String) {
-		File(clientFilePath).delete()
+	fun removeClientPath(clientFilePath: String) {
+		File(clientFilePath).deleteRecursively()
 	}
 }

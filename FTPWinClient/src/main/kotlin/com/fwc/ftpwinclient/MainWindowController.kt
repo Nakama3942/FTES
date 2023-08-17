@@ -31,6 +31,10 @@ class MainWindowController {
     @FXML
     private lateinit var createClientDirButt: Button
     @FXML
+    private lateinit var removeServerDirButt: Button
+    @FXML
+    private lateinit var removeClientDirButt: Button
+    @FXML
     private lateinit var dublicateToggle: ToggleButton
 
     private lateinit var serv: ClientLogic
@@ -103,34 +107,16 @@ class MainWindowController {
     private fun onDownloadClicked()
     {
         val selectedItems = serverFileSystems.selectionModel.selectedItems
-        serv.downloadAll(clientDirectory.text, selectedItems)
-//        for (selectedItem in selectedItems) {
-//            val remoteFilePath = serverDirectory.text + selectedItem.value
-//            val localFilePath = clientDirectory.text + File(remoteFilePath).name
-//            serv.downloadFile(remoteFilePath, localFilePath)
-//            if (!dublicateToggle.isSelected) {
-//                serv.removeServerFile(remoteFilePath)
-//            }
-//        }
-        serverFileSystems.root = serv.updateServerDirectory()
-        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+        serv.downloadAll(clientDirectory.text, selectedItems, !dublicateToggle.isSelected)
+        updateSystems()
     }
 
     @FXML
     private fun onUploadClicked()
     {
         val selectedItems = clientFileSystems.selectionModel.selectedItems
-        serv.uploadAll(clientDirectory.text, selectedItems)
-//        for (selectedItem in selectedItems) {
-//            val localFilePath = clientDirectory.text + selectedItem.value
-//            val remoteFilePath = serverDirectory.text + File(localFilePath).name
-//            serv.uploadFile(remoteFilePath, localFilePath)
-//            if (!dublicateToggle.isSelected) {
-//                serv.removeClientFile(localFilePath)
-//            }
-//        }
-        serverFileSystems.root = serv.updateServerDirectory()
-        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+        serv.uploadAll(clientDirectory.text, selectedItems, !dublicateToggle.isSelected)
+        updateSystems()
     }
 
     @FXML
@@ -155,8 +141,7 @@ class MainWindowController {
                 onCreateServerDirClicked()
             }
         }
-        serverFileSystems.root = serv.updateServerDirectory()
-        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+        updateSystems()
     }
 
     @FXML
@@ -181,6 +166,30 @@ class MainWindowController {
                 onCreateClientDirClicked()
             }
         }
+        updateSystems()
+    }
+
+    @FXML
+    private fun onRemoveServerDirClicked()
+    {
+        val selectedItems = serverFileSystems.selectionModel.selectedItems
+        for (selectedItem in selectedItems) {
+            serv.removeServerPath(serverDirectory.text + selectedItem.value)
+        }
+        updateSystems()
+    }
+
+    @FXML
+    private fun onRemoveClientDirClicked()
+    {
+        val selectedItems = clientFileSystems.selectionModel.selectedItems
+        for (selectedItem in selectedItems) {
+            serv.removeClientPath(clientDirectory.text + selectedItem.value)
+        }
+        updateSystems()
+    }
+
+    private fun updateSystems() {
         serverFileSystems.root = serv.updateServerDirectory()
         clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
     }
