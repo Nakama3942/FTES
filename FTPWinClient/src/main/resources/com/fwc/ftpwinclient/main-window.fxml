@@ -78,6 +78,7 @@
                   <HBox prefHeight="0.0" prefWidth="0.0">
                      <children>
                         <Button fx:id="downloadButt" mnemonicParsing="false" onAction="#onDownloadClicked" text="Download" />
+                        <Button fx:id="createServerDirButt" mnemonicParsing="false" onAction="#onCreateServerDirClicked" text="New dir" />
                      </children>
                   </HBox>
                   <TextField fx:id="serverDirectory" />
@@ -94,6 +95,7 @@
                   <HBox prefHeight="0.0" prefWidth="0.0">
                      <children>
                         <Button fx:id="uploadButt" mnemonicParsing="false" onAction="#onUploadClicked" text="Upload" />
+                        <Button fx:id="createClientDirButt" mnemonicParsing="false" onAction="#onCreateClientDirClicked" text="New dir" />
                      </children>
                   </HBox>
                   <TextField fx:id="clientDirectory" editable="false" />

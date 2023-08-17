@@ -113,44 +113,66 @@ class ClientLogic (
 		localFileInputStream.close()
 	}
 
+//	fun getServerSystem(serverDirectoryName: String): TreeItem<String> {
+//		val root = TreeItem(serverDirectoryName)
+//		root.children.add(TreeItem(".."))
+//		val subFiles = ftpClient.listFiles(ftpClient.printWorkingDirectory())
+//		if (subFiles != null) {
+//			for (subFile in subFiles) {
+//				if (subFile.isDirectory) {
+//					root.children.add(TreeItem("${subFile.name}/"))
+//				} else {
+//					root.children.add(TreeItem(subFile.name))
+//				}
+//			}
+//		}
+//		return root
+//	}
+//
+//	fun downloadAll(serverDirectoryName: String): TreeItem<String> {
+//		val root = TreeItem(serverDirectoryName.split("/").last())
+//		val subFiles = ftpClient.listFiles(serverDirectoryName)
+//		if (subFiles != null) {
+//			for (subFile in subFiles) {
+//				if (subFile.isDirectory) {
+//					root.children.add(getServerSystem("$serverDirectoryName/${subFile.name}"))
+//				} else {
+//					root.children.add(TreeItem(subFile.name))
+//				}
+//			}
+//		}
+//		return root
+//	}
+//
+//	fun uploadAll(clientDirectoryName: File): TreeItem<String>
+//	{
+//		val root = TreeItem(clientDirectoryName.name.split("/").last())
+//		val subFiles = clientDirectoryName.listFiles()
+//		if (subFiles != null) {
+//			for (subFile in subFiles) {
+//				if (subFile.isDirectory) {
+//					root.children.add(getClientSystem(subFile))
+//				} else {
+//					root.children.add(TreeItem(subFile.name))
+//				}
+//			}
+//		}
+//		return root
+//	}
+
+	fun createServerDirectory(newServerDirectory: String) {
+		ftpClient.makeDirectory(newServerDirectory)
+	}
+
+	fun createClientDirectory(newClientDirectory: String) {
+		File(newClientDirectory).mkdirs()
+	}
+
 	fun removeServerFile(serverFilePath: String) {
 		ftpClient.deleteFile(serverFilePath)
 	}
 
 	fun removeClientFile(clientFilePath: String) {
 		File(clientFilePath).delete()
-	}
-
-	fun run() {
-
-
-		try {
-			ftpClient.connect(server, port)
-			ftpClient.login(username, password)
-
-			// Вы можете изменить директорию, используя ftpClient.changeWorkingDirectory("путь_к_директории")
-
-//			// Пример загрузки файла на сервер
-//			val fileInputStream = FileInputStream("path/to/local/file.txt")
-//			ftpClient.storeFile("remote/file.txt", fileInputStream)
-//			fileInputStream.close()
-//
-//			// Пример скачивания файла с сервера
-//			val localFileOutputStream = FileOutputStream("path/to/local/downloaded_file.txt")
-//			ftpClient.retrieveFile("remote/downloaded_file.txt", localFileOutputStream)
-//			localFileOutputStream.close()
-
-			ftpClient.logout()
-		} catch (e: Exception) {
-			e.printStackTrace()
-		} finally {
-			if (ftpClient.isConnected) {
-				try {
-					ftpClient.disconnect()
-				} catch (e: Exception) {
-					e.printStackTrace()
-				}
-			}
-		}
 	}
 }

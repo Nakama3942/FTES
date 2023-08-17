@@ -2,6 +2,7 @@ package com.fwc.ftpwinclient
 
 import javafx.fxml.FXML
 import javafx.scene.control.*
+import javafx.stage.StageStyle
 import java.io.File
 
 class MainWindowController {
@@ -25,6 +26,10 @@ class MainWindowController {
     private lateinit var downloadButt: Button
     @FXML
     private lateinit var uploadButt: Button
+    @FXML
+    private lateinit var createServerDirButt: Button
+    @FXML
+    private lateinit var createClientDirButt: Button
     @FXML
     private lateinit var dublicateToggle: ToggleButton
 
@@ -120,6 +125,58 @@ class MainWindowController {
             serv.uploadFile(remoteFilePath, localFilePath)
             if (!dublicateToggle.isSelected) {
                 serv.removeClientFile(localFilePath)
+            }
+        }
+        serverFileSystems.root = serv.updateServerDirectory()
+        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+    }
+
+    @FXML
+    private fun onCreateServerDirClicked()
+    {
+        val dialog = TextInputDialog()
+        dialog.title = "Creating a new directory"
+        dialog.headerText = "Enter the name of new directory"
+        dialog.contentText = "Name of directory: "
+
+        val dialogResult = dialog.showAndWait()
+        dialogResult.ifPresent { directoryName ->
+            if (directoryName.isNotBlank()) {
+                serv.createServerDirectory(directoryName)
+            } else {
+                val alert = Alert(Alert.AlertType.ERROR)
+                alert.title = "Error"
+                alert.headerText = "The directory name cannot be empty"
+                alert.contentText = "Enter the name of new directory"
+                alert.buttonTypes.setAll(ButtonType.OK)
+                alert.showAndWait()
+                onCreateServerDirClicked()
+            }
+        }
+        serverFileSystems.root = serv.updateServerDirectory()
+        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+    }
+
+    @FXML
+    private fun onCreateClientDirClicked()
+    {
+        val dialog = TextInputDialog()
+        dialog.title = "Creating a new directory"
+        dialog.headerText = "Enter the name of new directory"
+        dialog.contentText = "Name of directory: "
+
+        val dialogResult = dialog.showAndWait()
+        dialogResult.ifPresent { directoryName ->
+            if (directoryName.isNotBlank()) {
+                serv.createClientDirectory(clientDirectory.text + directoryName)
+            } else {
+                val alert = Alert(Alert.AlertType.ERROR)
+                alert.title = "Error"
+                alert.headerText = "The directory name cannot be empty"
+                alert.contentText = "Enter the name of new directory"
+                alert.buttonTypes.setAll(ButtonType.OK)
+                alert.showAndWait()
+                onCreateClientDirClicked()
             }
         }
         serverFileSystems.root = serv.updateServerDirectory()
