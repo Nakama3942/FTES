@@ -2,7 +2,6 @@ package com.fwc.ftpwinclient
 
 import javafx.fxml.FXML
 import javafx.scene.control.*
-import javafx.stage.StageStyle
 import java.io.File
 
 class MainWindowController {
@@ -42,37 +41,40 @@ class MainWindowController {
     @FXML
     private fun onConnectClicked()
     {
-//        serv = ClientLogic(loginField.text, passField.text)
-        serv = ClientLogic("user", "12345")
+        serv = ClientLogic(loginField.text, passField.text)
         serv.connect()
+
         serverDirectory.text = "/"
-        serverFileSystems.root = serv.getServerSystem("/")
-        val selectionModel1 = serverFileSystems.selectionModel
-        selectionModel1.selectionMode = SelectionMode.MULTIPLE
+        serverFileSystems.root = createTreeItems(serverDirectory.text, serv.openServerDirectory(serverDirectory.text)!!)
+        val serverSelectionModel = serverFileSystems.selectionModel
+        serverSelectionModel.selectionMode = SelectionMode.MULTIPLE
+
         clientDirectory.text = "N://"
-        clientFileSystems.root = serv.getClientSystem(File("N://"))
-        val selectionModel2 = clientFileSystems.selectionModel
-        selectionModel2.selectionMode = SelectionMode.MULTIPLE
+        clientFileSystems.root = createTreeItems(clientDirectory.text, serv.openClientDirectory(clientDirectory.text)!!)
+        val clientSelectionModel = clientFileSystems.selectionModel
+        clientSelectionModel.selectionMode = SelectionMode.MULTIPLE
 
         serverFileSystems.setOnMouseClicked { event ->
-            if (event.clickCount == 2) { // Двойной клик
+            if (event.clickCount == 2) {
                 val selectedItem = serverFileSystems.selectionModel.selectedItem
                 if (selectedItem != null) {
                     if (selectedItem.value == "..") {
                         serverDirectory.text = serverDirectory.text.split("/").subList(0, serverDirectory.text.split("/").size - 2).joinToString("/") + "/"
-                        serverFileSystems.root = serv.openParentServerDirectory()
+                        serverFileSystems.root = createTreeItems(serverDirectory.text, serv.openParentServerDirectory()!!)
                     } else {
-                        val newRoot = serv.openServerDirectory(selectedItem.value)
-                        if (newRoot != null) {
-                            serverFileSystems.root = newRoot
+                        try {
+                            serverFileSystems.root = createTreeItems(serverDirectory.text, serv.openServerDirectory(selectedItem.value)!!)
                             serverDirectory.text += selectedItem.value
+                        } catch (e: Exception) {
+                            // If a file was selected, not a directory, an empty list will be returned, and an error
+                            // will occur during conversion. Analogue of the client "if (dir.isDirectory)"
                         }
                     }
                 }
             }
         }
         clientFileSystems.setOnMouseClicked { event ->
-            if (event.clickCount == 2) { // Двойной клик
+            if (event.clickCount == 2) {
                 val selectedItem = clientFileSystems.selectionModel.selectedItem
                 if (selectedItem != null) {
                     if (selectedItem.value == "..") {
@@ -80,12 +82,12 @@ class MainWindowController {
                         if (clientDirectory.text.last().toString() != "/") {
                             clientDirectory.text += "/"
                         }
-                        clientFileSystems.root = serv.openParentClientDirectory(File(clientDirectory.text))
+                        clientFileSystems.root = createTreeItems(clientDirectory.text, serv.openParentClientDirectory(clientDirectory.text)!!)
                     } else {
                         val dir = File(clientDirectory.text + selectedItem.value)
                         if (dir.isDirectory) {
+                            clientFileSystems.root = createTreeItems(clientDirectory.text, serv.openClientDirectory(dir.path)!!)
                             clientDirectory.text += selectedItem.value
-                            clientFileSystems.root = serv.openClientDirectory(dir)
                         }
                     }
                 }
@@ -107,7 +109,7 @@ class MainWindowController {
     private fun onDownloadClicked()
     {
         val selectedItems = serverFileSystems.selectionModel.selectedItems
-        serv.downloadAll(clientDirectory.text, selectedItems, !dublicateToggle.isSelected)
+        serv.downloadAll(clientDirectory.text, createList(selectedItems), !dublicateToggle.isSelected)
         updateSystems()
     }
 
@@ -115,7 +117,7 @@ class MainWindowController {
     private fun onUploadClicked()
     {
         val selectedItems = clientFileSystems.selectionModel.selectedItems
-        serv.uploadAll(clientDirectory.text, selectedItems, !dublicateToggle.isSelected)
+        serv.uploadAll(clientDirectory.text, createList(selectedItems), !dublicateToggle.isSelected)
         updateSystems()
     }
 
@@ -190,7 +192,19 @@ class MainWindowController {
     }
 
     private fun updateSystems() {
-        serverFileSystems.root = serv.updateServerDirectory()
-        clientFileSystems.root = serv.updateClientDirectory(File(clientDirectory.text))
+        serverFileSystems.root = createTreeItems(serverDirectory.text, serv.updateServerDirectory())
+        clientFileSystems.root = createTreeItems(clientDirectory.text, serv.updateClientDirectory(clientDirectory.text))
+    }
+
+    private fun createTreeItems(rootName: String, list: List<String>): TreeItem<String> {
+        val root = TreeItem(rootName)
+        for (content in list) {
+            root.children.add(TreeItem(content))
+        }
+        return root
+    }
+
+    private fun createList(list: List<TreeItem<String>>): List<String> {
+        return list.map { it.value }
     }
 }

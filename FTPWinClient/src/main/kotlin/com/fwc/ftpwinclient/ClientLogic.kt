@@ -1,6 +1,5 @@
 package com.fwc.ftpwinclient
 
-import javafx.scene.control.TreeItem
 import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.FileInputStream
@@ -32,83 +31,82 @@ class ClientLogic (
 		}
 	}
 
-	fun getServerSystem(serverDirectoryName: String): TreeItem<String> {
-		val root = TreeItem(serverDirectoryName)
-		root.children.add(TreeItem(".."))
+	private fun getServerSystem(): List<String> {
+		val directoryContent = mutableListOf("..")
 		val subFiles = ftpClient.listFiles(ftpClient.printWorkingDirectory())
 		if (subFiles != null) {
 			for (subFile in subFiles) {
 				if (subFile.isDirectory) {
-					root.children.add(TreeItem("${subFile.name}/"))
+					directoryContent.add("${subFile.name}/")
 				} else {
-					root.children.add(TreeItem(subFile.name))
+					directoryContent.add(subFile.name)
 				}
 			}
 		}
-		return root
+		return directoryContent
 	}
 
-	fun openServerDirectory(serverDirectoryName: String): TreeItem<String>? {
+	fun openServerDirectory(serverDirectoryName: String): List<String>? {
 		if (ftpClient.changeWorkingDirectory(serverDirectoryName)) {
-			return getServerSystem(serverDirectoryName)
+			return getServerSystem()
 		}
 		return null
 	}
 
-	fun openParentServerDirectory(): TreeItem<String>? {
+	fun openParentServerDirectory(): List<String>? {
 		if (ftpClient.changeToParentDirectory()) {
-			return getServerSystem(ftpClient.printWorkingDirectory().split("/").last())
+			return getServerSystem()
 		}
 		return null
 	}
 
-	fun updateServerDirectory(): TreeItem<String> {
-		return getServerSystem(ftpClient.printWorkingDirectory().split("/").last())
+	fun updateServerDirectory(): List<String> {
+		return getServerSystem()
 	}
-	
-	fun getClientSystem(clientDirectoryName: File): TreeItem<String>
+
+	private fun getClientSystem(clientDirectoryName: String): List<String>
 	{
-		val root = TreeItem(clientDirectoryName.name)
-		root.children.add(TreeItem(".."))
-		val subFiles = clientDirectoryName.listFiles()
+		val directory = File(clientDirectoryName)
+		val directoryContent = mutableListOf("..")
+		val subFiles = directory.listFiles()
 		if (subFiles != null) {
 			for (subFile in subFiles) {
 				if (subFile.isDirectory) {
-					root.children.add(TreeItem("${subFile.name}/"))
+					directoryContent.add("${subFile.name}/")
 				} else {
-					root.children.add(TreeItem(subFile.name))
+					directoryContent.add(subFile.name)
 				}
 			}
 		}
-		return root
+		return directoryContent
 	}
 
-	fun openClientDirectory(clientDirectoryName: File): TreeItem<String>? {
-		if (clientDirectoryName.isDirectory) {
+	fun openClientDirectory(clientDirectoryName: String): List<String>? {
+		if (File(clientDirectoryName).isDirectory) {
 			return getClientSystem(clientDirectoryName)
 		}
 		return null
 	}
 
-	fun openParentClientDirectory(clientDirectoryName: File): TreeItem<String>? {
-		if (clientDirectoryName.isDirectory) {
+	fun openParentClientDirectory(clientDirectoryName: String): List<String>? {
+		if (File(clientDirectoryName).isDirectory) {
 			return getClientSystem(clientDirectoryName)
 		}
 		return null
 	}
 
-	fun updateClientDirectory(clientDirectoryName: File): TreeItem<String> {
+	fun updateClientDirectory(clientDirectoryName: String): List<String> {
 		return getClientSystem(clientDirectoryName)
 	}
 
-	fun downloadAll(clientPath: String, serverFiles: List<TreeItem<String>>, clear: Boolean) {
+	fun downloadAll(clientPath: String, serverFiles: List<String>, clear: Boolean) {
 		for (serverFile in serverFiles) {
-			if (serverFile.value == "..") {
+			if (serverFile == "..") {
 				continue
 			}
-			download(clientPath, serverFile.value)
+			download(clientPath, serverFile)
 			if (clear) {
-				removeServerPath(ftpClient.printWorkingDirectory() + "/" + serverFile.value)
+				removeServerPath(ftpClient.printWorkingDirectory() + "/" + serverFile)
 			}
 		}
 	}
@@ -133,14 +131,14 @@ class ClientLogic (
 		}
 	}
 
-	fun uploadAll(clientPath: String, clientFiles: List<TreeItem<String>>, clear: Boolean) {
+	fun uploadAll(clientPath: String, clientFiles: List<String>, clear: Boolean) {
 		for (clientFile in clientFiles) {
-			if (clientFile.value == "..") {
+			if (clientFile == "..") {
 				continue
 			}
-			upload(clientPath, clientFile.value)
+			upload(clientPath, clientFile)
 			if (clear) {
-				removeClientPath(File(clientPath, clientFile.value).path)
+				removeClientPath(File(clientPath, clientFile).path)
 			}
 		}
 	}

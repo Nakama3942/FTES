@@ -127,7 +127,7 @@
                         </Button>
                      </children>
                   </HBox>
-                  <TextField fx:id="serverDirectory" />
+                  <TextField fx:id="serverDirectory" editable="false" />
                   <TreeView fx:id="serverFileSystems" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
