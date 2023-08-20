@@ -1,5 +1,5 @@
 import os
-# import logging
+import logging
 import keyboard
 import threading
 import argparse
@@ -8,14 +8,13 @@ from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import ThreadedFTPServer
 
-__server = None
-
 class Server:
-	def __init__(self, username, password, homedir, perm):
+	def __init__(self, username, password, homedir, perm, log_levels):
 		self.__username = username
 		self.__password = password
 		self.__homedir = homedir
 		self.__perm = perm
+		self.__log_levels = log_levels
 
 		self.__authorizer = DummyAuthorizer()
 		self.__handler = FTPHandler
@@ -28,22 +27,19 @@ class Server:
 
 	def __start(self):
 		self.__build()
-		self.run()
-		self.stop()
+		self.__log()
+		self.__run()
+		self.__expectant()
 
 	def __build(self):
-		self.__authorizer.add_user(
+		self.add_user(
 			self.__username,
 			self.__password,
 			self.__homedir,
-			perm=self.__perm
+			self.__perm
 		)
-		self.__authorizer.add_anonymous(os.getcwd())
 
 		self.__handler.authorizer = self.__authorizer
-
-		# logging.basicConfig(filename='pyftpd.log', level=logging.DEBUG)
-		# self.__handler.log_prefix = 'XXX [%(username)s]@%(remote_ip)s'
 
 		self.__handler.banner = "pyftpdlib основанный на ftpd."
 
@@ -52,57 +48,69 @@ class Server:
 		self.__server.max_cons = 256
 		self.__server.max_cons_per_ip = 5
 
-	def run(self):
+	def __log(self):
+		# Настройка логгирования
+		logger = logging.getLogger()
+		match self.__log_levels:
+			case "info":
+				logger.setLevel(logging.INFO)
+			case "debug":
+				logger.setLevel(logging.DEBUG)
+			case "warning":
+				logger.setLevel(logging.WARNING)
+			case "error":
+				logger.setLevel(logging.ERROR)
+			case "critical":
+				logger.setLevel(logging.CRITICAL)
+			case "fatal":
+				logger.setLevel(logging.FATAL)
+			case "notset":
+				logger.setLevel(logging.NOTSET)
+
+		formatter = logging.Formatter('[%(levelname)s %(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+		# Создание обработчика для вывода в консоль
+		console_handler = logging.StreamHandler()
+		console_handler.setFormatter(formatter)
+		logger.addHandler(console_handler)
+
+		# Создание обработчика для записи в файл
+		file_handler = logging.FileHandler('pyftpd.log')
+		file_handler.setFormatter(formatter)
+		logger.addHandler(file_handler)
+
+	def __run(self):
 		self.__starter = threading.Thread(target=self.__server.serve_forever)
 		self.__starter.start()
 
-	def stop(self):
-		keyboard.wait("esc")
-		self.__server.close_all()
+	def __expectant(self):
+		while True:
+			event = keyboard.read_event()
+			if event.event_type == keyboard.KEY_DOWN:
+				match event.name:
+					case "esc":
+						logging.shutdown()
+						self.__server.close_all()
+						break
+					case "a":
+						self.add_user(
+							input("Enter the user name: "),
+							input("Enter the user password: "),
+							input("Enter the user home directory: "),
+							input("Enter the user permissions: "),
+						)
+
+	def add_user(self, username, password, homedir, perm):
+		self.__authorizer.add_user(username, password, homedir, perm)
+
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='FTP Server')
-	parser.add_argument('-u', '--username', default='user', required=True, help='Username')
+	parser.add_argument('-u', '--username', default='user', required=False, help='Username')
 	parser.add_argument('-p', '--password', default='12345', required=False, help='Password')
 	parser.add_argument('-d', '--homedir', default='.', required=False, help='Home directory')
+	parser.add_argument('-l', '--log', default='info', required=False, help='Logger levels')
 
 	args = parser.parse_args()
 
-	serv = Server(args.username, args.password, args.homedir, 'elradfmwMT')
-
-# if __name__ == '__main__':
-# # экземпляр фиктивного средства авторизации
-# # для управления "виртуальными" пользователями
-# authorizer = DummyAuthorizer()
-
-# # добавляем нового пользователя, имеющего полные права доступа `r/w`
-# # и анонимного пользователя, для которого FS доступна только для чтения
-# authorizer.add_user('user', '12345', '.', perm='elradfmwMT')
-# authorizer.add_anonymous(os.getcwd())
-
-# # экземпляр класса обработчика FTP
-# handler = FTPHandler
-# handler.authorizer = authorizer
-
-# # запись логов в файл '/var/log/pyftpd.log'
-# logging.basicConfig(filename='pyftpd.log', level=logging.DEBUG)
-# handler.log_prefix = 'XXX [%(username)s]@%(remote_ip)s'
-
-# # настраиваемый баннер (строка, возвращаемая при подключении клиента)
-# handler.banner = "pyftpdlib основанный на ftpd."
-
-# masquerade-адрес и диапазон портов, которые будут использоваться
-# для пассивных подключений. Строки ниже нужно раскомментировать
-# если вы находитесь за NAT (masquerade_address укажите свой).
-# handler.masquerade_address = '151.25.42.11'
-# handler.passive_ports = range(60000, 65535)
-
-# # экземпляр класса FTP-сервера, который слушает `0.0.0.0:2121`
-# address = ('127.0.0.1', 21)
-# server = FTPServer(address, handler)
-
-# # лимиты на соединения
-# server.max_cons = 256
-# server.max_cons_per_ip = 5
-
-# server.serve_forever()
+	serv = Server(args.username, args.password, args.homedir, 'elradfmwMT', args.log)
