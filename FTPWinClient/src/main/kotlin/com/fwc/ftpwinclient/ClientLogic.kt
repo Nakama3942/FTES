@@ -5,6 +5,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
+class LoginException(message: String) : Exception(message)
+
 class ClientLogic (
 	private val username: String = "user",
 	private val password: String = "12345"
@@ -14,21 +16,16 @@ class ClientLogic (
 	private val ftpClient = FTPClient()
 
 	fun connect() {
-		try {
-			ftpClient.connect(server, port)
-			ftpClient.login(username, password)
-		} catch (e: Exception) {
-			e.printStackTrace()
+		ftpClient.connect(server, port)
+		if (!ftpClient.login(username, password)) {
+			disconnect()
+			throw LoginException("USER '$username' failed login.")
 		}
 	}
 
 	fun disconnect() {
-		try {
-			ftpClient.logout()
-			ftpClient.disconnect()
-		} catch (e: Exception) {
-			e.printStackTrace()
-		}
+		ftpClient.logout()
+		ftpClient.disconnect()
 	}
 
 	private fun getServerSystem(): List<String> {

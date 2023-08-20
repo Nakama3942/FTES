@@ -2,9 +2,14 @@ package com.fwc.ftpwinclient
 
 import javafx.fxml.FXML
 import javafx.scene.control.*
+import javafx.scene.layout.VBox
 import java.io.File
 
 class MainWindowController {
+    @FXML
+    private lateinit var connectGroup: VBox
+    @FXML
+    private lateinit var serverGroup: VBox
     @FXML
     private lateinit var loginField: TextField
     @FXML
@@ -41,8 +46,21 @@ class MainWindowController {
     @FXML
     private fun onConnectClicked()
     {
-        serv = ClientLogic(loginField.text, passField.text)
-        serv.connect()
+        try {
+            serv = ClientLogic(loginField.text, passField.text)
+            serv.connect()
+            connectGroup.isDisable = true
+            serverGroup.isDisable = false
+        } catch (e: Exception) {
+            val error = e.toString().split(": ")
+            val alert = Alert(Alert.AlertType.ERROR)
+            alert.title = "Error"
+            alert.headerText = error.subList(1, error.size).joinToString(": ")
+            alert.contentText = error[0]
+            alert.buttonTypes.setAll(ButtonType.OK)
+            alert.showAndWait()
+            return
+        }
 
         serverDirectory.text = "/"
         serverFileSystems.root = createTreeItems(serverDirectory.text, serv.openServerDirectory(serverDirectory.text)!!)
@@ -99,6 +117,9 @@ class MainWindowController {
     private fun onDisconnectClicked()
     {
         serv.disconnect()
+        connectGroup.isDisable = false
+        serverGroup.isDisable = true
+
         serverDirectory.text = ""
         serverFileSystems.root = null
         clientDirectory.text = ""

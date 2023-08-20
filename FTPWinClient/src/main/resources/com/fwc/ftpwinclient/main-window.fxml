@@ -23,174 +23,187 @@
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
    <children>
-      <HBox prefHeight="0.0" prefWidth="0.0">
+      <VBox fx:id="connectGroup" prefHeight="0.0" prefWidth="0.0" spacing="10.0">
          <children>
-            <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="35.0" text="Login">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Label>
-            <Region prefHeight="25.0" prefWidth="10000.0" />
-            <TextField fx:id="loginField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
+            <HBox prefHeight="0.0" prefWidth="0.0">
+               <children>
+                  <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="35.0" text="Login">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Region prefHeight="25.0" prefWidth="10000.0" />
+                  <TextField fx:id="loginField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="0.0" prefWidth="0.0">
+               <children>
+                  <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="60.0" text="Password">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Region prefHeight="25.0" prefWidth="10000.0" />
+                  <PasswordField fx:id="passField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="connectButt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#onConnectClicked" text="Connect" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
          </children>
-      </HBox>
-      <HBox prefHeight="0.0" prefWidth="0.0">
-         <children>
-            <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="60.0" text="Password">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Label>
-            <Region prefHeight="25.0" prefWidth="10000.0" />
-            <PasswordField fx:id="passField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
-         </children>
-      </HBox>
-      <HBox prefHeight="40.0" prefWidth="200.0">
-         <children>
-            <Button fx:id="connectButt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onConnectClicked" text="Connect" HBox.hgrow="ALWAYS">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Button>
-         </children>
-      </HBox>
+      </VBox>
       <Separator prefWidth="200.0" />
-      <HBox prefHeight="0.0" prefWidth="0.0">
+      <VBox fx:id="serverGroup" disable="true" prefHeight="0.0" prefWidth="0.0" spacing="10.0" VBox.vgrow="ALWAYS">
          <children>
-            <ToggleButton fx:id="dublicateToggle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
-               <tooltip>
-                  <Tooltip text="Duplicate" />
-               </tooltip>
-               <graphic>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@duplicate.png" />
-                     </image>
-                  </ImageView>
-               </graphic></ToggleButton>
-            <ToggleButton maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="-" />
-            <ToggleButton maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="-" />
-            <Region prefHeight="30.0" prefWidth="10000.0" HBox.hgrow="ALWAYS" />
-            <MenuButton maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" text="Request">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-                <MenuItem mnemonicParsing="false" text="Action 2" />
-              </items>
-            </MenuButton>
-         </children>
-      </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
-         <children>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="2.0" HBox.hgrow="ALWAYS">
+            <HBox prefHeight="0.0" prefWidth="0.0">
                <children>
-                  <Label text="Server">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <HBox prefHeight="0.0" prefWidth="0.0" spacing="5.0">
-                     <children>
-                        <Button fx:id="downloadButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDownloadClicked" prefHeight="30.0" prefWidth="30.0">
-                           <tooltip>
-                              <Tooltip text="Download" />
-                           </tooltip>
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@download.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic></Button>
-                        <Region prefHeight="30.0" prefWidth="10000.0" />
-                        <Button fx:id="createServerDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCreateServerDirClicked" prefHeight="30.0" prefWidth="30.0">
-                           <tooltip>
-                              <Tooltip text="New dir" />
-                           </tooltip>
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@newDir.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic></Button>
-                        <Button fx:id="removeServerDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveServerDirClicked" prefHeight="30.0" prefWidth="30.0">
-                           <tooltip>
-                              <Tooltip text="Remove" />
-                           </tooltip>
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@remove.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                     </children>
-                  </HBox>
-                  <TextField fx:id="serverDirectory" editable="false" />
-                  <TreeView fx:id="serverFileSystems" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
+                  <ToggleButton fx:id="dublicateToggle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
+                     <tooltip>
+                        <Tooltip text="Duplicate" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@duplicate.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </ToggleButton>
+                  <ToggleButton maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="-" />
+                  <ToggleButton maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="-" />
+                  <Region prefHeight="30.0" prefWidth="10000.0" HBox.hgrow="ALWAYS" />
+                  <MenuButton maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" text="Request">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                      <MenuItem mnemonicParsing="false" text="Action 2" />
+                    </items>
+                  </MenuButton>
                </children>
-            </VBox>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="2.0" HBox.hgrow="ALWAYS">
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Label text="Client">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <HBox prefHeight="0.0" prefWidth="0.0" spacing="5.0">
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="2.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="uploadButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onUploadClicked" prefHeight="30.0" prefWidth="30.0">
-                           <tooltip>
-                              <Tooltip text="Upload" />
-                           </tooltip>
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@upload.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic></Button>
-                        <Region prefHeight="30.0" prefWidth="10000.0" />
-                        <Button fx:id="createClientDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCreateClientDirClicked" prefHeight="30.0" prefWidth="30.0">
-                           <tooltip>
-                              <Tooltip text="New dir" />
-                           </tooltip>
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@newDir.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic></Button>
-                        <Button fx:id="removeClientDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveClientDirClicked" prefHeight="30.0" prefWidth="30.0">
-                           <tooltip>
-                              <Tooltip text="Remove" />
-                           </tooltip>
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@remove.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
+                        <Label text="Server">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="0.0" prefWidth="0.0" spacing="5.0">
+                           <children>
+                              <Button fx:id="downloadButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDownloadClicked" prefHeight="30.0" prefWidth="30.0">
+                                 <tooltip>
+                                    <Tooltip text="Download" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@download.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Region prefHeight="30.0" prefWidth="10000.0" />
+                              <Button fx:id="createServerDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCreateServerDirClicked" prefHeight="30.0" prefWidth="30.0">
+                                 <tooltip>
+                                    <Tooltip text="New dir" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@newDir.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="removeServerDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveServerDirClicked" prefHeight="30.0" prefWidth="30.0">
+                                 <tooltip>
+                                    <Tooltip text="Remove" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@remove.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <TextField fx:id="serverDirectory" />
+                        <TreeView fx:id="serverFileSystems" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
                      </children>
-                  </HBox>
-                  <TextField fx:id="clientDirectory" editable="false" />
-                  <TreeView fx:id="clientFileSystems" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="2.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Client">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="0.0" prefWidth="0.0" spacing="5.0">
+                           <children>
+                              <Button fx:id="uploadButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onUploadClicked" prefHeight="30.0" prefWidth="30.0">
+                                 <tooltip>
+                                    <Tooltip text="Upload" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@upload.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Region prefHeight="30.0" prefWidth="10000.0" />
+                              <Button fx:id="createClientDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCreateClientDirClicked" prefHeight="30.0" prefWidth="30.0">
+                                 <tooltip>
+                                    <Tooltip text="New dir" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@newDir.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="removeClientDirButt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveClientDirClicked" prefHeight="30.0" prefWidth="30.0">
+                                 <tooltip>
+                                    <Tooltip text="Remove" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@remove.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <TextField fx:id="clientDirectory" editable="false" />
+                        <TreeView fx:id="clientFileSystems" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="disconnectButt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#onDisconnectClicked" text="Disconnect" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
          </children>
-      </HBox>
-      <HBox prefHeight="40.0" prefWidth="200.0">
-         <children>
-            <Button fx:id="disconnectButt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDisconnectClicked" text="Disconnect" HBox.hgrow="ALWAYS">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Button>
-         </children>
-      </HBox>
+      </VBox>
    </children>
 </VBox>
