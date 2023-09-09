@@ -1,6 +1,19 @@
 <resources>
     <string name="app_name">File Transfer EcoSystem Android Client (FTES AC)</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+
+    <string name="upload_description">Upload Files</string>
+    <string name="download_description">Download Files</string>
+    <string name="new_dir_description">Create new directory</string>
+    <string name="remove_description">Remove files</string>
+    <string name="path_description">Path</string>
+
+    <string name="title_login">Login</string>
+    <string name="login">Enter the login</string>
+    <string name="password">Enter the password</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+
+    <string name="title_client">Client</string>
+
+    <string name="title_server">Server</string>
 </resources>
