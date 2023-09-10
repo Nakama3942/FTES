@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import com.fac.ftpandclient.ClientLogic
+import com.fac.ftpandclient.R
 import com.fac.ftpandclient.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {
@@ -16,6 +19,8 @@ class LoginFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var serv: ClientLogic
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,10 +32,39 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-//        val textView: TextView = binding.textDashboard
-//        dashboardViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
+        val connecting = root.findViewById<Button>(R.id.connectButt)
+        val login = root.findViewById<EditText>(R.id.loginField)
+        val password = root.findViewById<EditText>(R.id.passwordField)
+
+        connecting.setOnClickListener {
+            Thread {
+                if (connecting.text == getString(R.string.connect)) {
+                    try {
+                        serv = ClientLogic(login.text.toString(), password.text.toString())
+                        serv.connect()
+                        activity?.runOnUiThread {
+                            connecting.text = getString(R.string.disconnect)
+                        }
+                    } catch (e: Exception) {
+                        activity?.runOnUiThread {
+                            val myToast = Toast.makeText(
+                                activity,
+                                e.message.toString(),
+                                Toast.LENGTH_LONG
+                            )
+                            myToast.show()
+                        }
+                    }
+                }
+                else {
+                    serv.disconnect()
+                    activity?.runOnUiThread {
+                        connecting.text = getString(R.string.connect)
+                    }
+                }
+            }.start()
+        }
+
         return root
     }
 
