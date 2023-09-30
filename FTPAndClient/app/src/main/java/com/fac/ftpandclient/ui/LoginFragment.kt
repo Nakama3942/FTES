@@ -8,9 +8,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.fac.ftpandclient.ClientLogic
+import com.fac.ftpandclient.ConnectionModel
 import com.fac.ftpandclient.R
 import com.fac.ftpandclient.databinding.FragmentLoginBinding
+import com.fac.ftpandclient.ServerLink
 
 class LoginFragment : Fragment() {
 
@@ -22,6 +25,10 @@ class LoginFragment : Fragment() {
 
     private lateinit var serv: ClientLogic
 
+    private lateinit var connectionModel: ConnectionModel
+
+    private var stateConnecting = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,18 +39,31 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Получите доступ к ConnectionViewModel
+        connectionModel = ViewModelProvider(requireActivity()).get(ConnectionModel::class.java)
+
         val connecting = root.findViewById<Button>(R.id.connectButt)
         val login = root.findViewById<EditText>(R.id.loginField)
         val password = root.findViewById<EditText>(R.id.passwordField)
 
+        if (!stateConnecting) {
+            connecting.text = getString(R.string.connect)
+        }
+        else {
+            connecting.text = getString(R.string.disconnect)
+        }
+
         connecting.setOnClickListener {
             Thread {
-                if (connecting.text == getString(R.string.connect)) {
+                if (!stateConnecting) {
                     try {
-                        serv = ClientLogic(login.text.toString(), password.text.toString())
+                        ServerLink.server = ClientLogic(login.text.toString(), password.text.toString())
+                        serv = ServerLink.server!!
                         serv.connect()
                         activity?.runOnUiThread {
+                            stateConnecting = true
                             connecting.text = getString(R.string.disconnect)
+                            connectionModel.setConnected(true)
                         }
                     } catch (e: Exception) {
                         activity?.runOnUiThread {
@@ -59,7 +79,9 @@ class LoginFragment : Fragment() {
                 else {
                     serv.disconnect()
                     activity?.runOnUiThread {
+                        stateConnecting = false
                         connecting.text = getString(R.string.connect)
+                        connectionModel.setConnected(false)
                     }
                 }
             }.start()
