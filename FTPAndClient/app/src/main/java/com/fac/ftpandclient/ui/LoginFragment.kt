@@ -4,16 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fac.ftpandclient.ClientLogic
 import com.fac.ftpandclient.ConnectionModel
 import com.fac.ftpandclient.R
 import com.fac.ftpandclient.databinding.FragmentLoginBinding
-import com.fac.ftpandclient.ServerLink
+import com.fac.ftpandclient.ImportantData
 
 class LoginFragment : Fragment() {
 
@@ -42,9 +47,49 @@ class LoginFragment : Fragment() {
         // Получите доступ к ConnectionViewModel
         connectionModel = ViewModelProvider(requireActivity()).get(ConnectionModel::class.java)
 
-        val connecting = root.findViewById<Button>(R.id.connectButt)
+        val rootDir = root.findViewById<Spinner>(R.id.rootDirBox)
+        val serverIp = root.findViewById<EditText>(R.id.serverIpField)
         val login = root.findViewById<EditText>(R.id.loginField)
         val password = root.findViewById<EditText>(R.id.passwordField)
+        val connecting = root.findViewById<Button>(R.id.connectButt)
+
+        // Создание списка вариантов выбора
+        val storageDirectories = ContextCompat.getExternalFilesDirs(requireContext(), null)
+        val rootDirs = mutableListOf<String>()
+        for (dir in storageDirectories) {
+            rootDirs.add(dir.absolutePath.substring(0, dir.absolutePath.indexOf("/Android/data")))
+        }
+
+        // Создание адаптера для Spinner
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, rootDirs)
+
+        // Устанавливаем адаптер для Spinner
+        rootDir.adapter = adapter
+
+        // Устанавливаем обработчик выбора элемента
+        rootDir.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedItem = rootDirs[position]
+                val myToast = Toast.makeText(
+                    activity,
+                    selectedItem,
+                    Toast.LENGTH_LONG
+                )
+                myToast.show()
+                ImportantData.clientRoot = selectedItem
+                ImportantData.serverRoot = "/"
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Вызывается, если ничего не выбрано
+                val myToast = Toast.makeText(
+                    activity,
+                    "Nothing selected",
+                    Toast.LENGTH_LONG
+                )
+                myToast.show()
+            }
+        }
 
         if (!stateConnecting) {
             connecting.text = getString(R.string.connect)
@@ -57,13 +102,15 @@ class LoginFragment : Fragment() {
             Thread {
                 if (!stateConnecting) {
                     try {
-                        ServerLink.server = ClientLogic(login.text.toString(), password.text.toString())
-                        serv = ServerLink.server!!
+//                        ImportantData.server = ClientLogic(login.text.toString(), password.text.toString(), serverIp.text.toString())
+                        ImportantData.server = ClientLogic()
+                        serv = ImportantData.server!!
                         serv.connect()
                         activity?.runOnUiThread {
                             stateConnecting = true
                             connecting.text = getString(R.string.disconnect)
                             connectionModel.setConnected(true)
+                            rootDir.isVisible = false
                         }
                     } catch (e: Exception) {
                         activity?.runOnUiThread {
@@ -82,6 +129,7 @@ class LoginFragment : Fragment() {
                         stateConnecting = false
                         connecting.text = getString(R.string.connect)
                         connectionModel.setConnected(false)
+                        rootDir.isVisible = true
                     }
                 }
             }.start()

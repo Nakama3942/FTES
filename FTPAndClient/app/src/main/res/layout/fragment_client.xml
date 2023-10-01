@@ -49,7 +49,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/pathField"
+        android:id="@+id/clientPathField"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
@@ -75,5 +75,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pathField" />
+        app:layout_constraintTop_toBottomOf="@+id/clientPathField" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,55 @@
     android:layout_height="match_parent"
     tools:context=".ui.LoginFragment">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="33dp"
+        android:text="Choise root directory"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/rootDirBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/mainDivider"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rootDirBox" />
+
+    <EditText
+        android:id="@+id/serverIpField"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:ems="10"
+        android:hint="Enter the server IP"
+        android:inputType="number|numberDecimal"
+        android:digits="0123456789."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainDivider" />
+
     <EditText
         android:id="@+id/loginField"
         android:layout_width="0dp"
@@ -14,13 +63,14 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_weight="1"
+        android:autofillHints=""
         android:ems="10"
         android:hint="@string/login"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@id/serverIpField" />
 
     <EditText
         android:id="@+id/passwordField"
@@ -30,13 +80,14 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_weight="1"
+        android:autofillHints=""
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginField"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@+id/loginField" />
 
     <Button
         android:id="@+id/connectButt"

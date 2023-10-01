@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.fac.ftpandclient.ClientLogic
 import com.fac.ftpandclient.FileItem
 import com.fac.ftpandclient.FileListAdapter
-import com.fac.ftpandclient.ServerLink
+import com.fac.ftpandclient.ImportantData
 import com.fac.ftpandclient.databinding.FragmentServerBinding
 
 class ServerFragment : Fragment() {
@@ -22,6 +22,7 @@ class ServerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var serv: ClientLogic
+    private lateinit var home: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,20 +38,23 @@ class ServerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Получите экземпляр ClientLogic, который вы создали ранее
-        serv = ServerLink.server!!
+        serv = ImportantData.server!!
+        home = ImportantData.serverRoot!!
 
         // Получите ссылку на RecyclerView из вашего layout'а
         val fileListRecyclerView = binding.serverFileList
+        val filePath = binding.servetPathField
+        filePath.setText(home)
 
         // Загрузите файловую систему сервера из ClientLogic и установите ее в адаптер
         Thread {
-            val serverFiles = serv.openServerDirectory("/") // Этот метод нужно реализовать в вашем ClientLogic
-            val fileItems = serverFiles!!.map { FileItem("", it, "", false) }
+            var serverFiles = serv.openServerDirectory(home) // Этот метод нужно реализовать в вашем ClientLogic
+            var fileItems = serverFiles!!.map { FileItem("", it, "", false) }
 
             val layoutManager = LinearLayoutManager(context)
 
             // Создайте адаптер для RecyclerView, который будет отображать файлы
-            val adapter = FileListAdapter(fileItems)
+            var adapter = FileListAdapter(fileItems)
 
             // Установите адаптер для RecyclerView
             activity?.runOnUiThread {
@@ -68,10 +72,21 @@ class ServerFragment : Fragment() {
                         )
                         myToast.show()
                         // Ваш код обработки клика
+                        val newPath: String = filePath.text.toString() + fileItems[position].name
+                        filePath.setText(newPath)
+                        Thread {
+                            serverFiles = serv.openServerDirectory(filePath.text.toString())
+                            fileItems = serverFiles!!.map { FileItem("", it, "", false) }
+                            adapter = FileListAdapter(fileItems)
+                            activity?.runOnUiThread {
+                                // Уведомите адаптер о изменениях
+                                fileListRecyclerView.adapter = adapter
+                            }
+                        }.start()
                     }
                 })
             }
-        }.start()
+        }.start() // TODO достать весь код из потока
     }
 
     override fun onDestroyView() {

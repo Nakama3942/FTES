@@ -9,10 +9,11 @@ class LoginException(message: String) : Exception(message)
 
 class ClientLogic(
 	private val username: String = "user",
-	private val password: String = "12345"
+	private val password: String = "12345",
+	private val server: String = "192.168.0.102"
 ) {
 //	private val server: String = "127.0.0.1"
-	private val server: String = "192.168.0.102"
+//	private val server: String = "192.168.0.102"
 	private val port: Int = 21
 	private val ftpClient = FTPClient()
 
