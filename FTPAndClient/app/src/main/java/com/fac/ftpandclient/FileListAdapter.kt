@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class FileListAdapter(private val fileList: List<FileItem>) : RecyclerView.Adapter<FileListAdapter.FileViewHolder>() {
+class FileListAdapter(private var fileList: List<FileItem>) : RecyclerView.Adapter<FileListAdapter.FileViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
@@ -22,6 +22,10 @@ class FileListAdapter(private val fileList: List<FileItem>) : RecyclerView.Adapt
         val fileName: TextView = itemView.findViewById(R.id.fileName)
         val fileInfo: TextView = itemView.findViewById(R.id.fileInfo)
 //        val fileDir: TextView = itemView.findViewById(R.id.fileName)
+    }
+
+    fun updateFileList(newFileList: List<FileItem>) {
+        fileList = newFileList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {

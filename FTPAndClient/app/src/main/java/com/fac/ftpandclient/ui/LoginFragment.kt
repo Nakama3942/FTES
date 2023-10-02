@@ -32,8 +32,6 @@ class LoginFragment : Fragment() {
 
     private lateinit var connectionModel: ConnectionModel
 
-    private var stateConnecting = false
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,19 +63,13 @@ class LoginFragment : Fragment() {
 
         // Устанавливаем адаптер для Spinner
         rootDir.adapter = adapter
+        rootDir.isVisible = ImportantData.rootOfHomeDirectoryIsVisible
 
         // Устанавливаем обработчик выбора элемента
         rootDir.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedItem = rootDirs[position]
-                val myToast = Toast.makeText(
-                    activity,
-                    selectedItem,
-                    Toast.LENGTH_LONG
-                )
-                myToast.show()
                 ImportantData.clientRoot = selectedItem
-                ImportantData.serverRoot = "/"
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -91,7 +83,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        if (!stateConnecting) {
+        if (!connectionModel.isConnected().value!!) {
             connecting.text = getString(R.string.connect)
         }
         else {
@@ -100,16 +92,19 @@ class LoginFragment : Fragment() {
 
         connecting.setOnClickListener {
             Thread {
-                if (!stateConnecting) {
+                if (!connectionModel.isConnected().value!!) {
                     try {
 //                        ImportantData.server = ClientLogic(login.text.toString(), password.text.toString(), serverIp.text.toString())
                         ImportantData.server = ClientLogic()
                         serv = ImportantData.server!!
                         serv.connect()
                         activity?.runOnUiThread {
-                            stateConnecting = true
                             connecting.text = getString(R.string.disconnect)
                             connectionModel.setConnected(true)
+                            ImportantData.clientPath = "/"
+                            ImportantData.serverRoot = "/"
+                            ImportantData.serverPath = ""
+                            ImportantData.rootOfHomeDirectoryIsVisible = false
                             rootDir.isVisible = false
                         }
                     } catch (e: Exception) {
@@ -126,10 +121,15 @@ class LoginFragment : Fragment() {
                 else {
                     serv.disconnect()
                     activity?.runOnUiThread {
-                        stateConnecting = false
                         connecting.text = getString(R.string.connect)
                         connectionModel.setConnected(false)
+                        connectionModel.setClientUpdateIsNeeded(true)
+                        connectionModel.setServerUpdateIsNeeded(true)
+                        ImportantData.clientPath = ""
+                        ImportantData.serverPath = ""
+                        ImportantData.rootOfHomeDirectoryIsVisible = true
                         rootDir.isVisible = true
+
                     }
                 }
             }.start()
