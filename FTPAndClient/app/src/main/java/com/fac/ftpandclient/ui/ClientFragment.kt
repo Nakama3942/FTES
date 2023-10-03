@@ -1,5 +1,6 @@
 package com.fac.ftpandclient.ui
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import com.fac.ftpandclient.ConnectionModel
 import com.fac.ftpandclient.FileItem
 import com.fac.ftpandclient.FileListAdapter
 import com.fac.ftpandclient.ImportantData
+import com.fac.ftpandclient.R
 
 class ClientFragment : Fragment() {
 
@@ -66,7 +68,28 @@ class ClientFragment : Fragment() {
         mainServingThread.start()
         mainServingThread.join()
 
-        var fileItems = clientFiles!!.map { FileItem("", it, "", false) }
+        var fileItems = clientFiles!!.map { fileName ->
+            val imageUri: Uri
+            val info: String
+            val isDir: Boolean
+            if (fileName == "..") {
+                imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.undo)
+                info = "Return"
+                isDir = true
+            }
+            else {
+                isDir = fileName.contains("/")
+                if (isDir) {
+                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
+                }
+                else {
+                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
+                }
+                info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
+            }
+
+            FileItem(imageUri,  fileName, info, isDir)
+        }
 
         val layoutManager = LinearLayoutManager(context)
 
@@ -80,7 +103,20 @@ class ClientFragment : Fragment() {
         adapter.setOnItemClickListener(object : FileListAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 // Ваш код обработки клика
+                if (!fileItems[position].isDirectory) {
+                    return
+                }
+
                 if (fileItems[position].name == "..") {
+                    if (filePath.text.toString() == "/") {
+                        val myToast = Toast.makeText(
+                            activity,
+                            "Already open the root",
+                            Toast.LENGTH_LONG
+                        )
+                        myToast.show()
+                        return
+                    }
                     val splitedPath = filePath.text.toString().split("/").toMutableList()
                     splitedPath.removeAt(splitedPath.size - 2)
                     ImportantData.clientPath = splitedPath.joinToString("/")
@@ -101,7 +137,28 @@ class ClientFragment : Fragment() {
                     additionalServingThread.join()
                 }
 
-                fileItems = clientFiles!!.map { FileItem("", it, "", false) }
+                fileItems = clientFiles!!.map { fileName ->
+                    val imageUri: Uri
+                    val info: String
+                    val isDir: Boolean
+                    if (fileName == "..") {
+                        imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.undo)
+                        info = "Return"
+                        isDir = true
+                    }
+                    else {
+                        isDir = fileName.contains("/")
+                        if (isDir) {
+                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
+                        }
+                        else {
+                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
+                        }
+                        info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
+                    }
+
+                    FileItem(imageUri,  fileName, info, isDir)
+                }
                 adapter.updateFileList(fileItems)
                 adapter.notifyDataSetChanged()
             }

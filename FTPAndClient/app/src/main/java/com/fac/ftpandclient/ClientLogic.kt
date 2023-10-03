@@ -98,6 +98,16 @@ class ClientLogic(
 		return getClientSystem(clientDirectoryName)
 	}
 
+	fun getServerFileSize(filePath: String): Long {
+//		val fileInfo = ftpClient.mlistFile(filePath)
+//		return fileInfo.size
+		return ftpClient.mlistFile(filePath).size
+	}
+
+	fun getClientFileSize(filePath: String): Long {
+		return File(filePath).length()
+	}
+
 	fun downloadAll(clientPath: String, serverFiles: List<String>, clear: Boolean) {
 		for (serverFile in serverFiles) {
 			if (serverFile == "..") {

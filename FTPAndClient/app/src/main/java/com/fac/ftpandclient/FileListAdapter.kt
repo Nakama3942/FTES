@@ -21,7 +21,6 @@ class FileListAdapter(private var fileList: List<FileItem>) : RecyclerView.Adapt
         val fileImage: ImageView = itemView.findViewById(R.id.fileImage)
         val fileName: TextView = itemView.findViewById(R.id.fileName)
         val fileInfo: TextView = itemView.findViewById(R.id.fileInfo)
-//        val fileDir: TextView = itemView.findViewById(R.id.fileName)
     }
 
     fun updateFileList(newFileList: List<FileItem>) {
@@ -36,9 +35,9 @@ class FileListAdapter(private var fileList: List<FileItem>) : RecyclerView.Adapt
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         val fileItem = fileList[position]
 
-//        holder.fileImage.text = ""
+        holder.fileImage.setImageURI(fileItem.image)
         holder.fileName.text = fileItem.name
-        holder.fileInfo.text = position.toString()
+        holder.fileInfo.text = fileItem.info
 
         holder.itemView.setOnClickListener {
             listener?.onItemClick(position)
