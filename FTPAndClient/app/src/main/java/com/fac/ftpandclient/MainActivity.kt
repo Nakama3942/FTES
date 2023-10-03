@@ -1,8 +1,16 @@
 package com.fac.ftpandclient
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -15,6 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
+
     private lateinit var connectionModel: ConnectionModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +32,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        registerPermissionListener()
+        checkPermissions()
 
         val navView: BottomNavigationView = binding.navView
 
@@ -48,5 +60,30 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+
+    private fun checkPermissions() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+                Toast.makeText(this, "Permission READ_EXTERNAL_STORAGE granted", Toast.LENGTH_LONG).show()
+            }
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+                Toast.makeText(this, "Permission WRITE_EXTERNAL_STORAGE granted", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                pLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            }
+        }
+    }
+
+    private fun registerPermissionListener() {
+        pLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            if (it[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                Toast.makeText(this, "Permission allow", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }

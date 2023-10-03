@@ -9,7 +9,10 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.Switch
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -45,11 +48,22 @@ class LoginFragment : Fragment() {
         // Получите доступ к ConnectionViewModel
         connectionModel = ViewModelProvider(requireActivity()).get(ConnectionModel::class.java)
 
+        val themeSwitch = root.findViewById<SwitchCompat>(R.id.themeSwitch)
         val rootDir = root.findViewById<Spinner>(R.id.rootDirBox)
         val serverIp = root.findViewById<EditText>(R.id.serverIpField)
         val login = root.findViewById<EditText>(R.id.loginField)
         val password = root.findViewById<EditText>(R.id.passwordField)
         val connecting = root.findViewById<Button>(R.id.connectButt)
+
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Выбрана тёмная тема
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                // Выбрана светлая тема
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
 
         // Создание списка вариантов выбора
         val storageDirectories = ContextCompat.getExternalFilesDirs(requireContext(), null)

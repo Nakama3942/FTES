@@ -6,16 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".ui.LoginFragment">
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/themeSwitch"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:checked="true"
+        android:text="Night theme"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="26dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="32dp"
         android:text="Choise root directory"
-        android:textSize="16sp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/themeSwitch" />
 
     <Spinner
         android:id="@+id/rootDirBox"
@@ -26,16 +40,16 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/themeSwitch" />
 
     <View
         android:id="@+id/mainDivider"
         android:layout_width="0dp"
         android:layout_height="2dp"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="1dp"
-        android:background="@color/white"
+        android:background="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -47,10 +61,11 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        android:digits="0123456789."
         android:ems="10"
         android:hint="Enter the server IP"
         android:inputType="number|numberDecimal"
-        android:digits="0123456789."
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainDivider" />
@@ -67,6 +82,7 @@
         android:ems="10"
         android:hint="@string/login"
         android:inputType="text"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +100,7 @@
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
