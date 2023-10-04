@@ -1,5 +1,6 @@
 package com.fac.ftpandclient.ui
 
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -91,8 +92,7 @@ class ServerFragment : Fragment() {
                 additionalServingThread.start()
                 additionalServingThread.join()
             }
-
-            FileItem(imageUri,  fileName, info, isDir)
+            FileItem(imageUri,  fileName, info, ImportantData.serverRoot + ImportantData.serverPath + fileName, isDir, false)
         }
 
         val layoutManager = LinearLayoutManager(context)
@@ -164,11 +164,9 @@ class ServerFragment : Fragment() {
                         additionalServingThread.start()
                         additionalServingThread.join()
                     }
-
-                    FileItem(imageUri,  fileName, info, isDir)
+                    FileItem(imageUri,  fileName, info, ImportantData.serverRoot + ImportantData.serverPath + fileName, isDir, false)
                 }
                 adapter.updateFileList(fileItems)
-                adapter.notifyDataSetChanged()
             }
         })
     }

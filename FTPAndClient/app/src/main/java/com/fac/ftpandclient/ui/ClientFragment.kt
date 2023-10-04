@@ -1,5 +1,7 @@
 package com.fac.ftpandclient.ui
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -87,8 +89,7 @@ class ClientFragment : Fragment() {
                 }
                 info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
             }
-
-            FileItem(imageUri,  fileName, info, isDir)
+            FileItem(imageUri,  fileName, info, ImportantData.clientRoot + filePath.text.toString() + fileName, isDir, false)
         }
 
         val layoutManager = LinearLayoutManager(context)
@@ -156,11 +157,9 @@ class ClientFragment : Fragment() {
                         }
                         info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
                     }
-
-                    FileItem(imageUri,  fileName, info, isDir)
+                    FileItem(imageUri,  fileName, info, ImportantData.clientRoot + filePath.text.toString() + fileName, isDir, false)
                 }
                 adapter.updateFileList(fileItems)
-                adapter.notifyDataSetChanged()
             }
         })
     }

@@ -1,15 +1,16 @@
 package com.fac.ftpandclient
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class FileListAdapter(private var fileList: List<FileItem>) : RecyclerView.Adapter<FileListAdapter.FileViewHolder>() {
+class FileListAdapter(
+    private var fileList: List<FileItem>
+) : RecyclerView.Adapter<FileListAdapter.FileViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
@@ -25,6 +26,7 @@ class FileListAdapter(private var fileList: List<FileItem>) : RecyclerView.Adapt
 
     fun updateFileList(newFileList: List<FileItem>) {
         fileList = newFileList
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
@@ -40,15 +42,41 @@ class FileListAdapter(private var fileList: List<FileItem>) : RecyclerView.Adapt
         holder.fileInfo.text = fileItem.info
 
         holder.itemView.setOnClickListener {
-            listener?.onItemClick(position)
+            if (!fileItem.isDirectory) {
+                toggleSelection(position)
+            }
+            else {
+                listener?.onItemClick(position)
+            }
         }
 
-        // Установите другие свойства элементов интерфейса в зависимости от данных fileItem
+        holder.itemView.setOnLongClickListener {
+            // Обработка долгого нажатия на элементе списка
+            if (fileItem.isDirectory) {
+                toggleSelection(position)
+                return@setOnLongClickListener true // Верните true, чтобы указать, что событие обработано
+            }
+            false
+        }
+
+        // Определение цвета фона элемента в зависимости от выбора
+        val backgroundResId = if (fileItem.isSelected) {
+            R.color.green_500_trans // Ресурс для выделенного элемента
+        } else {
+            Color.TRANSPARENT // Ресурс для не выделенного элемента
+        }
+        holder.itemView.setBackgroundResource(backgroundResId)
     }
 
     override fun getItemCount(): Int = fileList.size
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
+    }
+
+    private fun toggleSelection(position: Int) {
+        val fileItem = fileList[position]
+        fileItem.isSelected = !fileItem.isSelected
+        notifyItemChanged(position)
     }
 }
