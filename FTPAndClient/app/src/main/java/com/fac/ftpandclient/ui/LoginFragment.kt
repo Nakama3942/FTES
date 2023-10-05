@@ -1,22 +1,16 @@
 package com.fac.ftpandclient.ui
 
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fac.ftpandclient.ClientLogic
@@ -52,7 +46,9 @@ class LoginFragment : Fragment() {
 
         val themeSwitch = root.findViewById<SwitchCompat>(R.id.themeSwitch)
 //        val rootDir = root.findViewById<Spinner>(R.id.rootDirBox)
-        val rootDir = root.findViewById<TextView>(R.id.rootDirTextView)
+//        val rootDir = root.findViewById<TextView>(R.id.rootDirTextView)
+//        val rootDir = root.findViewById<ToggleButton>(R.id.rootDirToggleButton)
+        val rootDirStr = root.findViewById<TextView>(R.id.rootDirTextView)
         val serverIp = root.findViewById<EditText>(R.id.serverIpField)
         val login = root.findViewById<EditText>(R.id.loginField)
         val password = root.findViewById<EditText>(R.id.passwordField)
@@ -68,10 +64,9 @@ class LoginFragment : Fragment() {
             }
         }
 
-        // Создание списка вариантов выбора
         var sdCard = ContextCompat.getExternalFilesDirs(requireContext(), null)[1].absolutePath
         sdCard = sdCard.substring(0, sdCard.indexOf("/Android/data"))
-        rootDir.text = "CD card root directory is: " + sdCard
+        rootDirStr.text = "CD card root directory is: " + sdCard
         ImportantData.clientRoot = sdCard
 //        val storageDirectories = ContextCompat.getExternalFilesDirs(requireContext(), null)
 //        val rootDirs = mutableListOf<String>()

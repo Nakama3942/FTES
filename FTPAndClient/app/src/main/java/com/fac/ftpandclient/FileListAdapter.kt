@@ -79,4 +79,9 @@ class FileListAdapter(
         fileItem.isSelected = !fileItem.isSelected
         notifyItemChanged(position)
     }
+
+    // Метод для получения списка выделенных элементов
+    fun getSelectedFiles(): List<FileItem> {
+        return fileList.filter { it.isSelected }
+    }
 }

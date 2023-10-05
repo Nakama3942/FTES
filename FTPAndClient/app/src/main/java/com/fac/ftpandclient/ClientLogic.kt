@@ -1,5 +1,6 @@
 package com.fac.ftpandclient
 
+import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.FileInputStream
@@ -23,6 +24,7 @@ class ClientLogic(
 			disconnect()
 			throw LoginException("USER '$username' failed login.")
 		}
+		ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
 	}
 
 	fun disconnect() {

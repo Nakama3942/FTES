@@ -1,6 +1,5 @@
 package com.fac.ftpandclient.ui
 
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fac.ftpandclient.ClientLogic
@@ -57,6 +55,7 @@ class ServerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Получите ссылку на RecyclerView из вашего layout'а
+        val uploadButt = binding.uploadButt
         val fileListRecyclerView = binding.serverFileList
         val filePath = binding.servetPathField
         filePath.setText(ImportantData.serverRoot + ImportantData.serverPath)
@@ -92,7 +91,7 @@ class ServerFragment : Fragment() {
                 additionalServingThread.start()
                 additionalServingThread.join()
             }
-            FileItem(imageUri,  fileName, info, ImportantData.serverRoot + ImportantData.serverPath + fileName, isDir, false)
+            FileItem(imageUri,  fileName, info, isDir, false)
         }
 
         val layoutManager = LinearLayoutManager(context)
@@ -164,11 +163,22 @@ class ServerFragment : Fragment() {
                         additionalServingThread.start()
                         additionalServingThread.join()
                     }
-                    FileItem(imageUri,  fileName, info, ImportantData.serverRoot + ImportantData.serverPath + fileName, isDir, false)
+                    FileItem(imageUri,  fileName, info, isDir, false)
                 }
                 adapter.updateFileList(fileItems)
             }
         })
+
+        uploadButt.setOnClickListener {
+            val selectedFiles = adapter.getSelectedFiles()
+            val fileNames: List<String> = selectedFiles.map { it.name }
+
+            val uploadThread = Thread {
+                serv.downloadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, false)
+            }
+            uploadThread.start()
+            uploadThread.join()
+        }
     }
 
     override fun onDestroyView() {
