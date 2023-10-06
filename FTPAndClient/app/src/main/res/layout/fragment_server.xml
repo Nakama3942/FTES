@@ -24,7 +24,7 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:src="@drawable/cloud_download"
-            android:contentDescription="@string/upload_description" />
+            android:contentDescription="@string/download_description" />
 
         <Space
             android:layout_width="wrap_content"
@@ -58,7 +58,6 @@
         android:autofillHints=""
         android:clickable="false"
         android:ems="10"
-        android:hint="@string/path_description"
         android:inputType="none"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"

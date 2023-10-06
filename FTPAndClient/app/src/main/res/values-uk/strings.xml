@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">File Transfer EcoSystem Android Client (FTES AC)</string>
+    <string name="upload_description">Вивантажити файли</string>
+    <string name="download_description">Завантажити файли</string>
+    <string name="remove_description">Видалити файли</string>
+    <string name="title_login">Вхід</string>
+    <string name="login">Введіть логін</string>
+    <string name="password">Введіть пароль</string>
+    <string name="connect">Під\'єднатись</string>
+    <string name="disconnect">Від\'єднатись</string>
+    <string name="title_client">Клієнт</string>
+    <string name="title_server">Сервер</string>
+    <string name="new_dir_description">Створити нову директорію</string>
+    <string name="night_theme">Нічна тема</string>
+    <string name="server_ip">Введіть IP серверу</string>
+    <string name="code_root_directory">Коренева директорія карти пам\'яті:</string>
+</resources>

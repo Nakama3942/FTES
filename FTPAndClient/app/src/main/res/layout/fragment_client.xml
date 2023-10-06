@@ -58,7 +58,6 @@
         android:autofillHints=""
         android:clickable="false"
         android:ems="10"
-        android:hint="@string/path_description"
         android:inputType="none"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -5,9 +5,10 @@
     <string name="download_description">Download Files</string>
     <string name="new_dir_description">Create new directory</string>
     <string name="remove_description">Remove files</string>
-    <string name="path_description">Path</string>
 
     <string name="title_login">Login</string>
+    <string name="night_theme">Night theme</string>
+    <string name="server_ip">Enter the server IP</string>
     <string name="login">Enter the login</string>
     <string name="password">Enter the password</string>
     <string name="connect">Connect</string>
@@ -16,4 +17,6 @@
     <string name="title_client">Client</string>
 
     <string name="title_server">Server</string>
+
+    <string name="code_root_directory">"SD card root directory is: "</string>
 </resources>

@@ -6,5 +6,5 @@ object ImportantData {
     var clientPath: String = ""
     var serverRoot: String = ""
     var serverPath: String = ""
-    var rootOfHomeDirectoryIsVisible: Boolean = true
+    var appLocale: String = ""
 }
