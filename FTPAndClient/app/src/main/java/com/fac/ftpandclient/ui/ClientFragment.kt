@@ -54,123 +54,123 @@ class ClientFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Получите ссылку на RecyclerView из вашего layout'а
-        val uploadButt = binding.uploadButt
-        val fileListRecyclerView = binding.clientFileList
-        val filePath = binding.clientPathField
-        filePath.setText(ImportantData.clientPath)
-
-        // Загрузите файловую систему сервера из ClientLogic и установите ее в адаптер
-        var clientFiles: List<String>? = null
-        val mainServingThread = Thread {
-            clientFiles = serv.openClientDirectory(ImportantData.clientRoot + filePath.text.toString()) // Этот метод нужно реализовать в вашем ClientLogic
-        }
-        mainServingThread.start()
-        mainServingThread.join()
-
-        var fileItems = clientFiles!!.map { fileName ->
-            val imageUri: Uri
-            val info: String
-            val isDir: Boolean
-            if (fileName == "..") {
-                imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.undo)
-                info = "Return"
-                isDir = true
-            }
-            else {
-                isDir = fileName.contains("/")
-                if (isDir) {
-                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
-                }
-                else {
-                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
-                }
-                info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
-            }
-            FileItem(imageUri,  fileName, info, isDir, false)
-        }
-
-        val layoutManager = LinearLayoutManager(context)
-
-        // Создайте адаптер для RecyclerView, который будет отображать файлы
-        val adapter = FileListAdapter(fileItems)
-
-        // Установите адаптер для RecyclerView
-        fileListRecyclerView.adapter = adapter
-        fileListRecyclerView.layoutManager = layoutManager
-
-        adapter.setOnItemClickListener(object : FileListAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                // Ваш код обработки клика
-                if (!fileItems[position].isDirectory) {
-                    return
-                }
-
-                if (fileItems[position].name == "..") {
-                    if (filePath.text.toString() == "/") {
-                        val myToast = Toast.makeText(
-                            activity,
-                            "Already open the root",
-                            Toast.LENGTH_LONG
-                        )
-                        myToast.show()
-                        return
-                    }
-                    val splitedPath = filePath.text.toString().split("/").toMutableList()
-                    splitedPath.removeAt(splitedPath.size - 2)
-                    ImportantData.clientPath = splitedPath.joinToString("/")
-                    filePath.setText(ImportantData.clientPath)
-                    val additionalServingThread = Thread {
-                        clientFiles = serv.openParentClientDirectory(ImportantData.clientRoot + filePath.text.toString())
-                    }
-                    additionalServingThread.start()
-                    additionalServingThread.join()
-                }
-                else {
-                    ImportantData.clientPath = filePath.text.toString() + fileItems[position].name
-                    filePath.setText(ImportantData.clientPath)
-                    val additionalServingThread = Thread {
-                        clientFiles = serv.openClientDirectory(ImportantData.clientRoot + filePath.text.toString())
-                    }
-                    additionalServingThread.start()
-                    additionalServingThread.join()
-                }
-
-                fileItems = clientFiles!!.map { fileName ->
-                    val imageUri: Uri
-                    val info: String
-                    val isDir: Boolean
-                    if (fileName == "..") {
-                        imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.undo)
-                        info = "Return"
-                        isDir = true
-                    }
-                    else {
-                        isDir = fileName.contains("/")
-                        if (isDir) {
-                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
-                        }
-                        else {
-                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
-                        }
-                        info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
-                    }
-                    FileItem(imageUri,  fileName, info, isDir, false)
-                }
-                adapter.updateFileList(fileItems)
-            }
-        })
-
-        uploadButt.setOnClickListener {
-            val selectedFiles = adapter.getSelectedFiles()
-            val fileNames: List<String> = selectedFiles.map { it.name }
-
-            val uploadThread = Thread {
-                serv.uploadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, false)
-            }
-            uploadThread.start()
-            uploadThread.join()
-        }
+//        // Получите ссылку на RecyclerView из вашего layout'а
+//        val uploadButt = binding.uploadButt
+//        val fileListRecyclerView = binding.clientFileList
+//        val filePath = binding.clientPathField
+//        filePath.setText(ImportantData.clientPath)
+//
+//        // Загрузите файловую систему сервера из ClientLogic и установите ее в адаптер
+//        var clientFiles: List<String>? = null
+//        val mainServingThread = Thread {
+//            clientFiles = serv.openClientDirectory(ImportantData.clientRoot + filePath.text.toString()) // Этот метод нужно реализовать в вашем ClientLogic
+//        }
+//        mainServingThread.start()
+//        mainServingThread.join()
+//
+//        var fileItems = clientFiles!!.map { fileName ->
+//            val imageUri: Uri
+//            val info: String
+//            val isDir: Boolean
+//            if (fileName == "..") {
+//                imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.undo)
+//                info = "Return"
+//                isDir = true
+//            }
+//            else {
+//                isDir = fileName.contains("/")
+//                if (isDir) {
+//                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
+//                }
+//                else {
+//                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
+//                }
+//                info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
+//            }
+//            FileItem(imageUri,  fileName, info, isDir, false)
+//        }
+//
+//        val layoutManager = LinearLayoutManager(context)
+//
+//        // Создайте адаптер для RecyclerView, который будет отображать файлы
+//        val adapter = FileListAdapter(fileItems)
+//
+//        // Установите адаптер для RecyclerView
+//        fileListRecyclerView.adapter = adapter
+//        fileListRecyclerView.layoutManager = layoutManager
+//
+//        adapter.setOnItemClickListener(object : FileListAdapter.OnItemClickListener {
+//            override fun onItemClick(position: Int) {
+//                // Ваш код обработки клика
+//                if (!fileItems[position].isDirectory) {
+//                    return
+//                }
+//
+//                if (fileItems[position].name == "..") {
+//                    if (filePath.text.toString() == "/") {
+//                        val myToast = Toast.makeText(
+//                            activity,
+//                            "Already open the root",
+//                            Toast.LENGTH_LONG
+//                        )
+//                        myToast.show()
+//                        return
+//                    }
+//                    val splitedPath = filePath.text.toString().split("/").toMutableList()
+//                    splitedPath.removeAt(splitedPath.size - 2)
+//                    ImportantData.clientPath = splitedPath.joinToString("/")
+//                    filePath.setText(ImportantData.clientPath)
+//                    val additionalServingThread = Thread {
+//                        clientFiles = serv.openParentClientDirectory(ImportantData.clientRoot + filePath.text.toString())
+//                    }
+//                    additionalServingThread.start()
+//                    additionalServingThread.join()
+//                }
+//                else {
+//                    ImportantData.clientPath = filePath.text.toString() + fileItems[position].name
+//                    filePath.setText(ImportantData.clientPath)
+//                    val additionalServingThread = Thread {
+//                        clientFiles = serv.openClientDirectory(ImportantData.clientRoot + filePath.text.toString())
+//                    }
+//                    additionalServingThread.start()
+//                    additionalServingThread.join()
+//                }
+//
+//                fileItems = clientFiles!!.map { fileName ->
+//                    val imageUri: Uri
+//                    val info: String
+//                    val isDir: Boolean
+//                    if (fileName == "..") {
+//                        imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.undo)
+//                        info = "Return"
+//                        isDir = true
+//                    }
+//                    else {
+//                        isDir = fileName.contains("/")
+//                        if (isDir) {
+//                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
+//                        }
+//                        else {
+//                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
+//                        }
+//                        info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
+//                    }
+//                    FileItem(imageUri,  fileName, info, isDir, false)
+//                }
+//                adapter.updateFileList(fileItems)
+//            }
+//        })
+//
+//        uploadButt.setOnClickListener {
+//            val selectedFiles = adapter.getSelectedFiles()
+//            val fileNames: List<String> = selectedFiles.map { it.name }
+//
+//            val uploadThread = Thread {
+//                serv.uploadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, false)
+//            }
+//            uploadThread.start()
+//            uploadThread.join()
+//        }
     }
 
     override fun onDestroyView() {

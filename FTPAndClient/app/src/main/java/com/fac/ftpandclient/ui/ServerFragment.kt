@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +27,9 @@ class ServerFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var selectedDirectoryUri: Uri
+    private lateinit var selectedServerFileNames: List<String>
 
     private lateinit var serv: ClientLogic
     private lateinit var connectionModel: ConnectionModel
@@ -54,8 +60,14 @@ class ServerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Получите ссылку на RecyclerView из вашего layout'а
+        // Элементы интерфейса
+        val copyChip = binding.copyChip
+        val newDirButt = binding.newDirButt
+        val removeButt = binding.removeButt
         val uploadButt = binding.uploadButt
+        val downloadButt = binding.downloadButt
+
+        //Работа с файловой системой
         val fileListRecyclerView = binding.serverFileList
         val filePath = binding.servetPathField
         filePath.setText(ImportantData.serverRoot + ImportantData.serverPath)
@@ -169,15 +181,99 @@ class ServerFragment : Fragment() {
             }
         })
 
-        uploadButt.setOnClickListener {
-            val selectedFiles = adapter.getSelectedFiles()
-            val fileNames: List<String> = selectedFiles.map { it.name }
+        copyChip.setOnClickListener {  }
 
-            val uploadThread = Thread {
-                serv.downloadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, false)
+        newDirButt.setOnClickListener {  }
+
+        removeButt.setOnClickListener {  }
+
+        uploadButt.setOnClickListener {
+            uploadContent.launch("*/*")
+        }
+
+        downloadButt.setOnClickListener {
+            val selectedFiles = adapter.getSelectedFiles()
+            selectedServerFileNames = selectedFiles.map { it.name }
+
+            downloadContent.launch(null)
+        }
+    }
+
+    private fun download(serverFile: String) {
+        println(selectedDirectoryUri.toString())
+        val userDirectory = DocumentFile.fromTreeUri(requireContext(), selectedDirectoryUri)
+
+        var isServerFile = true
+        val downloadThread1 = Thread {
+            isServerFile = serv.isServerFile(serverFile)
+        }
+        downloadThread1.start()
+        downloadThread1.join()
+
+        if (isServerFile) {
+            // Сохранение содержимого на телефоне
+            val file = userDirectory?.createFile("", serverFile)
+            file?.uri?.let { fileUri ->
+                context?.contentResolver?.openOutputStream(fileUri)?.use { outputStream ->
+                    val downloadThread2 = Thread {
+                        serv.downloadAndroid(serverFile, outputStream)
+                    }
+                    downloadThread2.start()
+                    downloadThread2.join()
+                    outputStream.close()
+                }
             }
-            uploadThread.start()
-            uploadThread.join()
+        }
+        else {
+            userDirectory?.createDirectory(serverFile)
+            var nestedFiles: List<String>? = null
+            val downloadThread3 = Thread {
+                nestedFiles = serv.openServerDirectory(serv.currentDir() + serverFile)
+            }
+            downloadThread3.start()
+            downloadThread3.join()
+            for (nestedFile in nestedFiles!!) {
+                download(serverFile)
+            }
+            val downloadThread4 = Thread {
+                serv.openParentServerDirectory()
+            }
+            downloadThread4.start()
+            downloadThread4.join()
+        }
+    }
+
+    private val uploadContent = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        if (uris != null) {
+            // Обработайте полученные URI файлов здесь
+            for (uri in uris) {
+                val fileName = uri.pathSegments.last().split(":").last().split("/").last() // Здесь вы должны получить имя файла из URI
+                val contentStream = context?.contentResolver?.openInputStream(uri) // Получите поток содержимого файла из URI
+                if (fileName != null && contentStream != null) {
+                    val additionalServingThread = Thread {
+                        serv.uploadAndroid(fileName, contentStream)
+                    }
+                    additionalServingThread.start()
+                    additionalServingThread.join()
+                }
+            }
+        }
+    }
+
+    private val downloadContent = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) {
+            selectedDirectoryUri = uri
+            for (serverFile in selectedServerFileNames) {
+                if (serverFile == "..") {
+                    continue
+                }
+
+                download(serverFile)
+
+//                if (clear) {
+//                    removeServerPath(ftpClient.printWorkingDirectory() + "/" + serverFile)
+//                }
+            }
         }
     }
 
