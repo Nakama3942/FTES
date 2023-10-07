@@ -6,10 +6,10 @@
         android:icon="@drawable/login"
         android:title="@string/title_login" />
 
-<!--    <item-->
-<!--        android:id="@+id/navigation_client"-->
-<!--        android:icon="@drawable/client"-->
-<!--        android:title="@string/title_client" />-->
+    <item
+        android:id="@+id/navigation_client"
+        android:icon="@drawable/client"
+        android:title="@string/title_client" />
 
     <item
         android:id="@+id/navigation_server"

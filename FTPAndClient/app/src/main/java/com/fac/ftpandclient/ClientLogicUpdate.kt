@@ -204,7 +204,6 @@ package com.fac.ftpandclient
 
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 

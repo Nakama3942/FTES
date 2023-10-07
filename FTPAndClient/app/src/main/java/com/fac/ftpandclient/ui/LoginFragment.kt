@@ -130,7 +130,7 @@ class LoginFragment : Fragment() {
                         activity?.runOnUiThread {
                             connecting.text = getString(R.string.disconnect)
                             connectionModel.setConnected(true)
-//                            ImportantData.clientPath = "/"
+                            ImportantData.clientPath = "/"
                             ImportantData.serverRoot = "/"
                             ImportantData.serverPath = ""
 //                            ImportantData.rootOfHomeDirectoryIsVisible = false
@@ -154,7 +154,7 @@ class LoginFragment : Fragment() {
                         connectionModel.setConnected(false)
                         connectionModel.setClientUpdateIsNeeded(true)
                         connectionModel.setServerUpdateIsNeeded(true)
-//                        ImportantData.clientPath = ""
+                        ImportantData.clientPath = ""
                         ImportantData.serverPath = ""
 //                        ImportantData.rootOfHomeDirectoryIsVisible = true
 //                        rootDir.isVisible = true

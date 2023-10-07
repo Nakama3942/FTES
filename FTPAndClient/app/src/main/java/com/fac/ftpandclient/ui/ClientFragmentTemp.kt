@@ -1,23 +1,17 @@
 package com.fac.ftpandclient.ui
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.fac.ftpandclient.databinding.FragmentClientBinding
 import com.fac.ftpandclient.ClientLogic
 import com.fac.ftpandclient.ConnectionModel
-import com.fac.ftpandclient.FileItem
-import com.fac.ftpandclient.FileListAdapter
 import com.fac.ftpandclient.ImportantData
-import com.fac.ftpandclient.R
 
-class ClientFragment : Fragment() {
+class ClientFragmentTemp : Fragment() {
 
     private var _binding: FragmentClientBinding? = null
 

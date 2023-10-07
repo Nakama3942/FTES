@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-//    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 
     private lateinit var connectionModel: ConnectionModel
 
@@ -43,16 +43,15 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-//                R.id.navigation_login, R.id.navigation_client, R.id.navigation_server
-                R.id.navigation_login, R.id.navigation_server
+                R.id.navigation_login, R.id.navigation_client, R.id.navigation_server
             )
         )
 
         // Подпишитесь на изменения состояния подключения
         connectionModel.isConnected().observe(this, Observer { isConnected ->
             // Здесь можно настроить кликабельность вкладок в зависимости от isConnected
-//            navView.menu.findItem(R.id.navigation_client).isEnabled = isConnected
-//            navView.menu.findItem(R.id.navigation_client).isVisible = isConnected
+            navView.menu.findItem(R.id.navigation_client).isEnabled = isConnected
+            navView.menu.findItem(R.id.navigation_client).isVisible = isConnected
             navView.menu.findItem(R.id.navigation_server).isEnabled = isConnected
             navView.menu.findItem(R.id.navigation_server).isVisible = isConnected
         })

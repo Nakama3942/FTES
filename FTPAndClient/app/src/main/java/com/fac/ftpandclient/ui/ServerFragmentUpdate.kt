@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -18,11 +17,11 @@ import com.fac.ftpandclient.FileItem
 import com.fac.ftpandclient.FileListAdapter
 import com.fac.ftpandclient.ImportantData
 import com.fac.ftpandclient.R
-import com.fac.ftpandclient.databinding.FragmentServerBinding
+import com.fac.ftpandclient.databinding.FragmentServerUpdateBinding
 
-class ServerFragment : Fragment() {
+class ServerFragmentUpdate : Fragment() {
 
-    private var _binding: FragmentServerBinding? = null
+    private var _binding: FragmentServerUpdateBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -39,7 +38,7 @@ class ServerFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentServerBinding.inflate(inflater, container, false)
+        _binding = FragmentServerUpdateBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         // Получите экземпляр ClientLogic, который вы создали ранее
