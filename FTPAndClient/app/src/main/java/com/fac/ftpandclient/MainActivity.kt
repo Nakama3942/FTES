@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        registerPermissionListener()
-        checkPermissions()
+//        registerPermissionListener()
+//        checkPermissions()
 
         val navView: BottomNavigationView = binding.navView
 
@@ -60,33 +60,33 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
-    private fun checkPermissions() {
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-                Toast.makeText(this, "Permission READ_EXTERNAL_STORAGE granted", Toast.LENGTH_LONG).show()
-            }
-            else -> {
-                pLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
-            }
-        }
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-                Toast.makeText(this, "Permission WRITE_EXTERNAL_STORAGE granted", Toast.LENGTH_LONG).show()
-            }
-            else -> {
-                pLauncher.launch(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))
-            }
-        }
-    }
-
-    private fun registerPermissionListener() {
-        pLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            if (it[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
-                Toast.makeText(this, "Permission allow", Toast.LENGTH_LONG).show()
-            }
-            else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+//    private fun checkPermissions() {
+//        when {
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+//                Toast.makeText(this, "Permission READ_EXTERNAL_STORAGE granted", Toast.LENGTH_LONG).show()
+//            }
+//            else -> {
+//                pLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+//            }
+//        }
+//        when {
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+//                Toast.makeText(this, "Permission WRITE_EXTERNAL_STORAGE granted", Toast.LENGTH_LONG).show()
+//            }
+//            else -> {
+//                pLauncher.launch(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+//            }
+//        }
+//    }
+//
+//    private fun registerPermissionListener() {
+//        pLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+//            if (it[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+//                Toast.makeText(this, "Permission allow", Toast.LENGTH_LONG).show()
+//            }
+//            else {
+//                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show()
+//            }
+//        }
+//    }
 }

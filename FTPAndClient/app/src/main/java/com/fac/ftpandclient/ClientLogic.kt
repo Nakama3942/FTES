@@ -19,6 +19,7 @@ class ClientLogic(
 	private val ftpClient = FTPClient()
 
 	fun connect() {
+		ftpClient.controlEncoding = "UTF-8"
 		ftpClient.connect(server, port)
 		if (!ftpClient.login(username, password)) {
 			disconnect()
@@ -123,7 +124,12 @@ class ClientLogic(
 	}
 
 	private fun download(clientPath: String, serverFile: String) {
-		val sourcePath = ftpClient.printWorkingDirectory() + "/" + serverFile
+		val sourcePath = if (ftpClient.printWorkingDirectory() == "/") {
+			ftpClient.printWorkingDirectory() + serverFile
+		}
+		else {
+			ftpClient.printWorkingDirectory() + "/" + serverFile
+		}
 		val targetPath = File(clientPath, serverFile)
 
 		if (ftpClient.mlistFile(sourcePath).isFile) {
@@ -156,7 +162,12 @@ class ClientLogic(
 
 	private fun upload(clientPath: String, clientFile: String) {
 		val sourcePath = File(clientPath, clientFile)
-		val targetPath = ftpClient.printWorkingDirectory() + "/" + clientFile
+		val targetPath = if (ftpClient.printWorkingDirectory() == "/") {
+			ftpClient.printWorkingDirectory() + clientFile
+		}
+		else {
+			ftpClient.printWorkingDirectory() + "/" + clientFile
+		}
 
 		if (sourcePath.isFile) {
 			// This element a file
