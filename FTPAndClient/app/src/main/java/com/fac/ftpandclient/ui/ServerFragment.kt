@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fac.ftpandclient.ClientLogic
 import com.fac.ftpandclient.ConnectionModel
+import com.fac.ftpandclient.DirectoryNameDialogFragment
 import com.fac.ftpandclient.FileItem
 import com.fac.ftpandclient.FileListAdapter
 import com.fac.ftpandclient.ImportantData
@@ -54,8 +55,13 @@ class ServerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Элементы интерфейса
+        val syncButt = binding.serverSyncButt
+        val newDirButt = binding.newDirButt
+        val removeButt = binding.removeButt
+        val downloadButt = binding.downloadButt
+
         // Получите ссылку на RecyclerView из вашего layout'а
-        val uploadButt = binding.uploadButt
         val fileListRecyclerView = binding.serverFileList
         val filePath = binding.servetPathField
         filePath.setText(ImportantData.serverRoot + ImportantData.serverPath)
@@ -169,12 +175,50 @@ class ServerFragment : Fragment() {
             }
         })
 
-        uploadButt.setOnClickListener {
+        syncButt.setOnClickListener {
+            onViewCreated(view, savedInstanceState)
+        }
+
+        newDirButt.setOnClickListener {
+            val fragmentManager = requireActivity().supportFragmentManager
+            val directoryInputFragment = DirectoryNameDialogFragment()
+
+            // Установите слушателя для обработки результата после ввода
+            directoryInputFragment.setOnDirectoryNameEnteredListener(object : DirectoryNameDialogFragment.OnDirectoryNameEnteredListener {
+                override fun onDirectoryNameEntered(directoryName: String) {
+                    // В этом месте вы получите введенное имя директории и можете выполнить с ним действия
+                    val creatingThread = Thread {
+                        serv.createServerDirectory(directoryName)
+                    }
+                    creatingThread.start()
+                    creatingThread.join()
+                }
+            })
+
+            directoryInputFragment.show(fragmentManager, "DirectoryNameDialog")
+        }
+
+        removeButt.setOnClickListener {
+            val selectedFiles = adapter.getSelectedFiles()
+            val fileNames: List<String> = selectedFiles.map { it.name }
+            val filePaths = mutableListOf<String>()
+
+            val creatingThread = Thread {
+                for (fileName in fileNames) {
+                    filePaths.add(ImportantData.serverRoot + ImportantData.serverPath + fileName)
+                }
+                serv.removeServerPath(filePaths)
+            }
+            creatingThread.start()
+            creatingThread.join()
+        }
+
+        downloadButt.setOnClickListener {
             val selectedFiles = adapter.getSelectedFiles()
             val fileNames: List<String> = selectedFiles.map { it.name }
 
             val uploadThread = Thread {
-                serv.downloadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, false)
+                serv.downloadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, !binding.copyChip.isChecked)
             }
             uploadThread.start()
             uploadThread.join()

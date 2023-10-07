@@ -15,4 +15,8 @@
     <string name="night_theme">Нічна тема</string>
     <string name="server_ip">Введіть IP серверу</string>
     <string name="code_root_directory">Коренева директорія карти пам\'яті:</string>
+    <string name="title_server_with_saf">Сервер зі швидким доступом</string>
+    <string name="directory_name_dialog_title">Введіть назву директорії</string>
+    <string name="directory_name_dialog_positive_button">Ок</string>
+    <string name="directory_name_dialog_negative_button">Відміна</string>
 </resources>

@@ -5,6 +5,8 @@ import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 class LoginException(message: String) : Exception(message)
 
@@ -118,7 +120,9 @@ class ClientLogic(
 			}
 			download(clientPath, serverFile)
 			if (clear) {
-				removeServerPath(ftpClient.printWorkingDirectory() + "/" + serverFile)
+				val clearingPath = mutableListOf<String>()
+				clearingPath.add(ftpClient.printWorkingDirectory() + "/" + serverFile)
+				removeServerPath(clearingPath)
 			}
 		}
 	}
@@ -155,7 +159,9 @@ class ClientLogic(
 			}
 			upload(clientPath, clientFile)
 			if (clear) {
-				removeClientPath(File(clientPath, clientFile).path)
+				val clearingPath = mutableListOf<String>()
+				clearingPath.add(File(clientPath, clientFile).path)
+				removeClientPath(clearingPath)
 			}
 		}
 	}
@@ -185,6 +191,26 @@ class ClientLogic(
 		}
 	}
 
+	fun isServerFile(fileName: String): Boolean {
+		if (ftpClient.mlistFile(fileName).isFile) {
+			return true
+		}
+		return false
+	}
+
+	fun currentServerDir(): String {
+		return ftpClient.printWorkingDirectory()
+	}
+
+	fun downloadStream(fileName: String, fileContentStream: OutputStream) {
+		ftpClient.retrieveFile(fileName, fileContentStream)
+	}
+
+	fun uploadStream(fileName: String, fileContentStream: InputStream) {
+		//сделать загрузку содержимого файла на сервер
+		ftpClient.storeFile(fileName, fileContentStream)
+	}
+
 	fun createServerDirectory(newServerDirectory: String) {
 		ftpClient.makeDirectory(newServerDirectory)
 	}
@@ -193,22 +219,28 @@ class ClientLogic(
 		File(newClientDirectory).mkdirs()
 	}
 
-	fun removeServerPath(serverFilePath: String) {
-		if (ftpClient.mlistFile(serverFilePath).isDirectory) {
-			// This element a directory
-			ftpClient.changeWorkingDirectory(serverFilePath)
-			for (file in ftpClient.listFiles()) {
-				removeServerPath(file.name)
+	fun removeServerPath(serverFilePaths: List<String>) {
+		for (serverFilePath in serverFilePaths) {
+			if (ftpClient.mlistFile(serverFilePath).isDirectory) {
+				// This element a directory
+				ftpClient.changeWorkingDirectory(serverFilePath)
+				for (file in ftpClient.listFiles()) {
+					val files = mutableListOf<String>()
+					files.add(file.name)
+					removeServerPath(files)
+				}
+				openParentServerDirectory()
+				ftpClient.removeDirectory(serverFilePath)
+			} else {
+				// This element a file
+				ftpClient.deleteFile(ftpClient.mlistFile(serverFilePath).name)
 			}
-			openParentServerDirectory()
-			ftpClient.removeDirectory(serverFilePath)
-		} else {
-			// This element a file
-			ftpClient.deleteFile(ftpClient.mlistFile(serverFilePath).name)
 		}
 	}
 
-	fun removeClientPath(clientFilePath: String) {
-		File(clientFilePath).deleteRecursively()
+	fun removeClientPath(clientFilePaths: List<String>) {
+		for (clientFilePath in clientFilePaths) {
+			File(clientFilePath).deleteRecursively()
+		}
 	}
 }

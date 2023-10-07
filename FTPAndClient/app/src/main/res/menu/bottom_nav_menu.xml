@@ -16,4 +16,9 @@
         android:icon="@drawable/cloud"
         android:title="@string/title_server" />
 
+    <item
+        android:id="@+id/navigation_server_with_saf"
+        android:icon="@drawable/cloud_with_saf"
+        android:title="@string/title_server_with_saf" />
+
 </menu>

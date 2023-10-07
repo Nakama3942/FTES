@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.fac.ftpandclient.databinding.FragmentClientBinding
 import com.fac.ftpandclient.ClientLogic
 import com.fac.ftpandclient.ConnectionModel
+import com.fac.ftpandclient.DirectoryNameDialogFragment
 import com.fac.ftpandclient.FileItem
 import com.fac.ftpandclient.FileListAdapter
 import com.fac.ftpandclient.ImportantData
@@ -54,8 +55,13 @@ class ClientFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Получите ссылку на RecyclerView из вашего layout'а
+        // Элементы интерфейса
+        val syncButt = binding.clientSyncButt
+        val newDirButt = binding.newDirButt
+        val removeButt = binding.removeButt
         val uploadButt = binding.uploadButt
+
+        // Получите ссылку на RecyclerView из вашего layout'а
         val fileListRecyclerView = binding.clientFileList
         val filePath = binding.clientPathField
         filePath.setText(ImportantData.clientPath)
@@ -63,7 +69,7 @@ class ClientFragment : Fragment() {
         // Загрузите файловую систему сервера из ClientLogic и установите ее в адаптер
         var clientFiles: List<String>? = null
         val mainServingThread = Thread {
-            clientFiles = serv.openClientDirectory(ImportantData.clientRoot + filePath.text.toString()) // Этот метод нужно реализовать в вашем ClientLogic
+            clientFiles = serv.openClientDirectory(ImportantData.clientRoot + ImportantData.clientPath) // Этот метод нужно реализовать в вашем ClientLogic
         }
         mainServingThread.start()
         mainServingThread.join()
@@ -85,7 +91,7 @@ class ClientFragment : Fragment() {
                 else {
                     imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
                 }
-                info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
+                info = serv.getClientFileSize(ImportantData.clientRoot + ImportantData.clientPath + fileName).toString()
             }
             FileItem(imageUri,  fileName, info, isDir, false)
         }
@@ -121,7 +127,7 @@ class ClientFragment : Fragment() {
                     ImportantData.clientPath = splitedPath.joinToString("/")
                     filePath.setText(ImportantData.clientPath)
                     val additionalServingThread = Thread {
-                        clientFiles = serv.openParentClientDirectory(ImportantData.clientRoot + filePath.text.toString())
+                        clientFiles = serv.openParentClientDirectory(ImportantData.clientRoot + ImportantData.clientPath)
                     }
                     additionalServingThread.start()
                     additionalServingThread.join()
@@ -130,7 +136,7 @@ class ClientFragment : Fragment() {
                     ImportantData.clientPath = filePath.text.toString() + fileItems[position].name
                     filePath.setText(ImportantData.clientPath)
                     val additionalServingThread = Thread {
-                        clientFiles = serv.openClientDirectory(ImportantData.clientRoot + filePath.text.toString())
+                        clientFiles = serv.openClientDirectory(ImportantData.clientRoot + ImportantData.clientPath)
                     }
                     additionalServingThread.start()
                     additionalServingThread.join()
@@ -153,7 +159,7 @@ class ClientFragment : Fragment() {
                         else {
                             imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
                         }
-                        info = serv.getClientFileSize(ImportantData.clientRoot + filePath.text.toString() + fileName).toString()
+                        info = serv.getClientFileSize(ImportantData.clientRoot + ImportantData.clientPath + fileName).toString()
                     }
                     FileItem(imageUri,  fileName, info, isDir, false)
                 }
@@ -161,12 +167,43 @@ class ClientFragment : Fragment() {
             }
         })
 
+        syncButt.setOnClickListener {
+            // Обновляю Фрагмент
+            onViewCreated(view, savedInstanceState)
+        }
+
+        newDirButt.setOnClickListener {
+            val fragmentManager = requireActivity().supportFragmentManager
+            val directoryInputFragment = DirectoryNameDialogFragment()
+
+            // Установите слушателя для обработки результата после ввода
+            directoryInputFragment.setOnDirectoryNameEnteredListener(object : DirectoryNameDialogFragment.OnDirectoryNameEnteredListener {
+                override fun onDirectoryNameEntered(directoryName: String) {
+                    // В этом месте вы получите введенное имя директории и можете выполнить с ним действия
+                    serv.createClientDirectory(ImportantData.clientRoot + ImportantData.clientPath + directoryName)
+                }
+            })
+
+            directoryInputFragment.show(fragmentManager, "DirectoryNameDialog")
+        }
+
+        removeButt.setOnClickListener {
+            val selectedFiles = adapter.getSelectedFiles()
+            val fileNames: List<String> = selectedFiles.map { it.name }
+            val filePaths = mutableListOf<String>()
+
+            for (fileName in fileNames) {
+                filePaths.add(ImportantData.clientRoot + ImportantData.clientPath + fileName)
+            }
+            serv.removeClientPath(filePaths)
+        }
+
         uploadButt.setOnClickListener {
             val selectedFiles = adapter.getSelectedFiles()
             val fileNames: List<String> = selectedFiles.map { it.name }
 
             val uploadThread = Thread {
-                serv.uploadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, false)
+                serv.uploadAll(ImportantData.clientRoot + ImportantData.clientPath, fileNames, !binding.copyChip.isChecked)
             }
             uploadThread.start()
             uploadThread.join()

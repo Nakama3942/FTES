@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ServerFragmentUpdate">
+    tools:context=".ui.ServerSafFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -20,14 +20,22 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/copyChip"
-            android:layout_width="1dp"
+            android:layout_width="25dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:checkable="true"
             android:checked="true"
+            android:enabled="false"
             app:closeIcon="@drawable/content_copy"
             app:closeIconEnabled="true"
             app:closeIconSize="24dp" />
+
+        <ImageButton
+            android:id="@+id/serverSafSyncButt"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:src="@drawable/cloud_sync" />
 
         <Space
             android:layout_width="wrap_content"
@@ -50,6 +58,20 @@
             android:contentDescription="@string/remove_description"
             android:src="@drawable/delete" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/uploadButt"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/download_description"
+        android:src="@drawable/cloud_upload"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <TextView
         android:id="@+id/servetPathField"
@@ -75,7 +97,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/downloadButt"
+        app:layout_constraintBottom_toTopOf="@id/downloadButt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/servetPathField" />
@@ -92,19 +114,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/uploadButt"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_weight="1"
-        android:contentDescription="@string/download_description"
-        android:src="@drawable/cloud_upload"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,15 +13,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fac.ftpandclient.ClientLogic
 import com.fac.ftpandclient.ConnectionModel
+import com.fac.ftpandclient.DirectoryNameDialogFragment
 import com.fac.ftpandclient.FileItem
 import com.fac.ftpandclient.FileListAdapter
 import com.fac.ftpandclient.ImportantData
 import com.fac.ftpandclient.R
-import com.fac.ftpandclient.databinding.FragmentServerUpdateBinding
+import com.fac.ftpandclient.databinding.FragmentServerSafBinding
 
-class ServerFragmentUpdate : Fragment() {
+class ServerSafFragment : Fragment() {
 
-    private var _binding: FragmentServerUpdateBinding? = null
+    private var _binding: FragmentServerSafBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -38,7 +39,7 @@ class ServerFragmentUpdate : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentServerUpdateBinding.inflate(inflater, container, false)
+        _binding = FragmentServerSafBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         // Получите экземпляр ClientLogic, который вы создали ранее
@@ -60,7 +61,7 @@ class ServerFragmentUpdate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Элементы интерфейса
-        val copyChip = binding.copyChip
+        val syncButt = binding.serverSafSyncButt
         val newDirButt = binding.newDirButt
         val removeButt = binding.removeButt
         val uploadButt = binding.uploadButt
@@ -180,11 +181,43 @@ class ServerFragmentUpdate : Fragment() {
             }
         })
 
-        copyChip.setOnClickListener {  }
+        syncButt.setOnClickListener {
+            onViewCreated(view, savedInstanceState)
+        }
 
-        newDirButt.setOnClickListener {  }
+        newDirButt.setOnClickListener {
+            val fragmentManager = requireActivity().supportFragmentManager
+            val directoryInputFragment = DirectoryNameDialogFragment()
 
-        removeButt.setOnClickListener {  }
+            // Установите слушателя для обработки результата после ввода
+            directoryInputFragment.setOnDirectoryNameEnteredListener(object : DirectoryNameDialogFragment.OnDirectoryNameEnteredListener {
+                override fun onDirectoryNameEntered(directoryName: String) {
+                    // В этом месте вы получите введенное имя директории и можете выполнить с ним действия
+                    val creatingThread = Thread {
+                        serv.createServerDirectory(directoryName)
+                    }
+                    creatingThread.start()
+                    creatingThread.join()
+                }
+            })
+
+            directoryInputFragment.show(fragmentManager, "DirectoryNameDialog")
+        }
+
+        removeButt.setOnClickListener {
+            val selectedFiles = adapter.getSelectedFiles()
+            val fileNames: List<String> = selectedFiles.map { it.name }
+            val filePaths = mutableListOf<String>()
+
+            val creatingThread = Thread {
+                for (fileName in fileNames) {
+                    filePaths.add(ImportantData.serverRoot + ImportantData.serverPath + fileName)
+                }
+                serv.removeServerPath(filePaths)
+            }
+            creatingThread.start()
+            creatingThread.join()
+        }
 
         uploadButt.setOnClickListener {
             uploadContent.launch("*/*")
@@ -198,50 +231,6 @@ class ServerFragmentUpdate : Fragment() {
         }
     }
 
-    private fun download(serverFile: String) {
-        println(selectedDirectoryUri.toString())
-        val userDirectory = DocumentFile.fromTreeUri(requireContext(), selectedDirectoryUri)
-
-        var isServerFile = true
-        val downloadThread1 = Thread {
-            isServerFile = serv.isServerFile(serverFile)
-        }
-        downloadThread1.start()
-        downloadThread1.join()
-
-        if (isServerFile) {
-            // Сохранение содержимого на телефоне
-            val file = userDirectory?.createFile("", serverFile)
-            file?.uri?.let { fileUri ->
-                context?.contentResolver?.openOutputStream(fileUri)?.use { outputStream ->
-                    val downloadThread2 = Thread {
-                        serv.downloadAndroid(serverFile, outputStream)
-                    }
-                    downloadThread2.start()
-                    downloadThread2.join()
-                    outputStream.close()
-                }
-            }
-        }
-        else {
-            userDirectory?.createDirectory(serverFile)
-            var nestedFiles: List<String>? = null
-            val downloadThread3 = Thread {
-                nestedFiles = serv.openServerDirectory(serv.currentDir() + serverFile)
-            }
-            downloadThread3.start()
-            downloadThread3.join()
-            for (nestedFile in nestedFiles!!) {
-                download(serverFile)
-            }
-            val downloadThread4 = Thread {
-                serv.openParentServerDirectory()
-            }
-            downloadThread4.start()
-            downloadThread4.join()
-        }
-    }
-
     private val uploadContent = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
         if (uris != null) {
             // Обработайте полученные URI файлов здесь
@@ -250,7 +239,7 @@ class ServerFragmentUpdate : Fragment() {
                 val contentStream = context?.contentResolver?.openInputStream(uri) // Получите поток содержимого файла из URI
                 if (fileName != null && contentStream != null) {
                     val additionalServingThread = Thread {
-                        serv.uploadAndroid(fileName, contentStream)
+                        serv.uploadStream(fileName, contentStream)
                     }
                     additionalServingThread.start()
                     additionalServingThread.join()
@@ -267,12 +256,36 @@ class ServerFragmentUpdate : Fragment() {
                     continue
                 }
 
-                download(serverFile)
+                val downloadThread = Thread {
+                    download(serverFile)
+                }
+                downloadThread.start()
+                downloadThread.join()
 
-//                if (clear) {
-//                    removeServerPath(ftpClient.printWorkingDirectory() + "/" + serverFile)
-//                }
+                //Тут файлы удаляться никогда не будут
             }
+        }
+    }
+
+    private fun download(serverFile: String) {
+        val userDirectory = DocumentFile.fromTreeUri(requireContext(), selectedDirectoryUri)
+
+        if (serv.isServerFile(serverFile)) {
+            // Сохранение содержимого на телефоне
+            val file = userDirectory?.createFile("", serverFile)
+            file?.uri?.let { fileUri ->
+                context?.contentResolver?.openOutputStream(fileUri)?.use { outputStream ->
+                    serv.downloadStream(serverFile, outputStream)
+                    outputStream.close()
+                }
+            }
+        }
+        else {
+            userDirectory?.createDirectory(serverFile)
+            for (nestedFile in serv.openServerDirectory(serv.currentServerDir() + serverFile)!!) {
+                download(serverFile)
+            }
+            serv.openParentServerDirectory()
         }
     }
 

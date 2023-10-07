@@ -8,6 +8,7 @@
 
     <string name="title_login">Login</string>
     <string name="night_theme">Night theme</string>
+    <string name="code_root_directory">"SD card root directory is:"</string>
     <string name="server_ip">Enter the server IP</string>
     <string name="login">Enter the login</string>
     <string name="password">Enter the password</string>
@@ -18,5 +19,9 @@
 
     <string name="title_server">Server</string>
 
-    <string name="code_root_directory">"SD card root directory is: "</string>
+    <string name="title_server_with_saf">Server with quick access</string>
+
+    <string name="directory_name_dialog_title">Enter the directory name</string>
+    <string name="directory_name_dialog_positive_button">OK</string>
+    <string name="directory_name_dialog_negative_button">Cancel</string>
 </resources>

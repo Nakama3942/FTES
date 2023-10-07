@@ -22,4 +22,10 @@
         android:name="com.fac.ftpandclient.ui.ServerFragment"
         android:label="@string/title_server"
         tools:layout="@layout/fragment_server" />
+
+    <fragment
+        android:id="@+id/navigation_server_with_saf"
+        android:name="com.fac.ftpandclient.ui.ServerSafFragment"
+        android:label="@string/title_server_with_saf"
+        tools:layout="@layout/fragment_server_saf" />
 </navigation>
