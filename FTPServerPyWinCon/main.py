@@ -43,7 +43,7 @@ class Server:
 
 		self.__handler.banner = "pyftpdlib основанный на ftpd."
 
-		self.__server = ThreadedFTPServer(('127.0.0.1', 21), self.__handler)
+		self.__server = ThreadedFTPServer(('192.168.0.102', 21), self.__handler)
 
 		self.__server.max_cons = 256
 		self.__server.max_cons_per_ip = 5
@@ -72,10 +72,11 @@ class Server:
 		# Создание обработчика для вывода в консоль
 		console_handler = logging.StreamHandler()
 		console_handler.setFormatter(formatter)
+		console_handler.encoding = 'utf-8'
 		logger.addHandler(console_handler)
 
 		# Создание обработчика для записи в файл
-		file_handler = logging.FileHandler('pyftpd.log')
+		file_handler = logging.FileHandler('pyftpd.log', encoding="utf-8")
 		file_handler.setFormatter(formatter)
 		logger.addHandler(file_handler)
 
