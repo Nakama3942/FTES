@@ -203,11 +203,12 @@ class ClientLogic(
 	}
 
 	fun downloadStream(fileName: String, fileContentStream: OutputStream) {
+		// Download the contents of the file from the server
 		ftpClient.retrieveFile(fileName, fileContentStream)
 	}
 
 	fun uploadStream(fileName: String, fileContentStream: InputStream) {
-		//сделать загрузку содержимого файла на сервер
+		// Upload the contents of the file to the server
 		ftpClient.storeFile(fileName, fileContentStream)
 	}
 

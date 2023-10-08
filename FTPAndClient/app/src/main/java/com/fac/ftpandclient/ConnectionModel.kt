@@ -10,7 +10,6 @@ class ConnectionModel : ViewModel() {
     private val serverUpdateIsNeededLiveData = MutableLiveData<Boolean>()
 
     init {
-        // Установите изначальное значение, например, true или false
         isConnectedLiveData.value = false
         clientUpdateIsNeededLiveData.value = false
         serverUpdateIsNeededLiveData.value = false

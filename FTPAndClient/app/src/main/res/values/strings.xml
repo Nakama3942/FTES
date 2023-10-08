@@ -24,4 +24,6 @@
     <string name="directory_name_dialog_title">Enter the directory name</string>
     <string name="directory_name_dialog_positive_button">OK</string>
     <string name="directory_name_dialog_negative_button">Cancel</string>
+
+    <string name="path_field">%s%s</string>
 </resources>

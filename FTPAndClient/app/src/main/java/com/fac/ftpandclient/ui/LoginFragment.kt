@@ -31,7 +31,6 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var serv: ClientLogic
-
     private lateinit var connectionModel: ConnectionModel
 
     override fun onCreateView(
@@ -39,14 +38,13 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val dashboardViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Получите доступ к ConnectionViewModel
-        connectionModel = ViewModelProvider(requireActivity()).get(ConnectionModel::class.java)
+        // Accessing the ConnectionViewModel
+        connectionModel = ViewModelProvider(requireActivity())[ConnectionModel::class.java]
 
+        // Links to interface buttons
         val languageBox = root.findViewById<Spinner>(R.id.languageBox)
         val themeSwitch = root.findViewById<SwitchCompat>(R.id.themeSwitch)
         val rootDir = root.findViewById<Spinner>(R.id.rootDirBox)
@@ -55,11 +53,9 @@ class LoginFragment : Fragment() {
         val password = root.findViewById<EditText>(R.id.passwordField)
         val connecting = root.findViewById<Button>(R.id.connectButt)
 
-        // Создание адаптера для Spinner
+        // Creating and installing an adapter for selecting a language
         val languages = arrayOf("En", "Ua")
         val languageAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, languages)
-
-        // Устанавливаем адаптер для Spinner
         languageBox.adapter = languageAdapter
 
         // Устанавливаем обработчик выбора элемента
@@ -93,43 +89,37 @@ class LoginFragment : Fragment() {
 //        }
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            // Changing the App Theme
             if (isChecked) {
-                // Выбрана тёмная тема
+                // Dark theme selected
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
-                // Выбрана светлая тема
+                // Light theme selected
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
 
-//        var sdCard = ContextCompat.getExternalFilesDirs(requireContext(), null)[0].absolutePath
-//        sdCard = sdCard.substring(0, sdCard.indexOf("/Android/data"))
-//        rootDirStr.text = getString(R.string.code_root_directory) + sdCard
-//        ImportantData.clientRoot = sdCard
-
-        // Создание списка вариантов выбора
+        // Creating a list of available roots
         val storageDirectories = ContextCompat.getExternalFilesDirs(requireContext(), null)
         val rootDirs = mutableListOf<String>()
         for (dir in storageDirectories) {
             rootDirs.add(dir.absolutePath.substring(0, dir.absolutePath.indexOf("/Android/data")))
         }
 
-        // Создание адаптера для Spinner
+        // Creating and installing an adapter for selecting a root
         val storageAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, rootDirs)
-
-        // Устанавливаем адаптер для Spinner
         rootDir.adapter = storageAdapter
-        rootDir.isVisible = ImportantData.rootOfHomeDirectoryIsVisible
+//        rootDir.isVisible = ImportantData.rootOfHomeDirectoryIsVisible
 
-        // Устанавливаем обработчик выбора элемента
+        // Installing a root selection handler
         rootDir.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Save selected item
                 val selectedItem = rootDirs[position]
                 ImportantData.clientRoot = selectedItem
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Вызывается, если ничего не выбрано
+                // Nothing selected
                 val myToast = Toast.makeText(
                     activity,
                     "Nothing selected",
@@ -139,6 +129,7 @@ class LoginFragment : Fragment() {
             }
         }
 
+        // Setting the correct text for the connection button depending on the connection state
         if (!connectionModel.isConnected().value!!) {
             connecting.text = getString(R.string.connect)
         }
@@ -147,11 +138,13 @@ class LoginFragment : Fragment() {
         }
 
         connecting.setOnClickListener {
+            // Connecting/disconnecting a connection
             Thread {
+                // If there is no connection - connecting it, else - disconnecting it
                 if (!connectionModel.isConnected().value!!) {
                     try {
-//                        ImportantData.server = ClientLogic(login.text.toString(), password.text.toString(), serverIp.text.toString())
-                        ImportantData.server = ClientLogic()
+                        ImportantData.server = ClientLogic(login.text.toString(), password.text.toString(), serverIp.text.toString())
+//                        ImportantData.server = ClientLogic()
                         serv = ImportantData.server!!
                         serv.connect()
                         activity?.runOnUiThread {

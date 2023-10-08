@@ -37,14 +37,15 @@ class ClientFragment : Fragment() {
         _binding = FragmentClientBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Получите экземпляр ClientLogic, который вы создали ранее
+        // Getting a ClientLogic instance
         serv = ImportantData.server!!
 
-        connectionModel = ViewModelProvider(requireActivity()).get(ConnectionModel::class.java)
+        // Accessing the ConnectionViewModel
+        connectionModel = ViewModelProvider(requireActivity())[ConnectionModel::class.java]
         connectionModel.clientUpdateIsNeeded().observe(viewLifecycleOwner) { newData ->
-            // Обработка изменений в данных
+            // Resetting the path to the root after disconnecting from the server
             if (newData) {
-                binding.clientPathField.setText("/")
+                binding.clientPathField.text = "/"
                 connectionModel.setClientUpdateIsNeeded(false)
             }
         }
@@ -55,25 +56,26 @@ class ClientFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Элементы интерфейса
+        // Links to interface buttons
         val syncButt = binding.clientSyncButt
         val newDirButt = binding.newDirButt
         val removeButt = binding.removeButt
         val uploadButt = binding.uploadButt
 
-        // Получите ссылку на RecyclerView из вашего layout'а
-        val fileListRecyclerView = binding.clientFileList
+        // Links to file manager elements
+        val clientFileList = binding.clientFileList
         val filePath = binding.clientPathField
-        filePath.setText(ImportantData.clientPath)
+        filePath.text = ImportantData.clientPath
 
-        // Загрузите файловую систему сервера из ClientLogic и установите ее в адаптер
+        // Loading the Client File System
         var clientFiles: List<String>? = null
         val mainServingThread = Thread {
-            clientFiles = serv.openClientDirectory(ImportantData.clientRoot + ImportantData.clientPath) // Этот метод нужно реализовать в вашем ClientLogic
+            clientFiles = serv.openClientDirectory(ImportantData.clientRoot + ImportantData.clientPath)
         }
         mainServingThread.start()
         mainServingThread.join()
 
+        // Converting a list of file names to a list of file objects
         var fileItems = clientFiles!!.map { fileName ->
             val imageUri: Uri
             val info: String
@@ -85,34 +87,34 @@ class ClientFragment : Fragment() {
             }
             else {
                 isDir = fileName.contains("/")
-                if (isDir) {
-                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
-                }
-                else {
-                    imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
+                imageUri = if (isDir) {
+                    Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
+                } else {
+                    Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
                 }
                 info = serv.getClientFileSize(ImportantData.clientRoot + ImportantData.clientPath + fileName).toString()
             }
             FileItem(imageUri,  fileName, info, isDir, false)
         }
 
-        val layoutManager = LinearLayoutManager(context)
-
-        // Создайте адаптер для RecyclerView, который будет отображать файлы
+        // Creating and installing an adapter and manager in the File Manager
         val adapter = FileListAdapter(fileItems)
+        val layoutManager = LinearLayoutManager(context)
+        clientFileList.adapter = adapter
+        clientFileList.layoutManager = layoutManager
 
-        // Установите адаптер для RecyclerView
-        fileListRecyclerView.adapter = adapter
-        fileListRecyclerView.layoutManager = layoutManager
-
+        // Processing a click on a list item in the File Manager
         adapter.setOnItemClickListener(object : FileListAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                // Ваш код обработки клика
+                // If the selected item is NOT a directory - do nothing
                 if (!fileItems[position].isDirectory) {
                     return
                 }
 
+                // If a return element is selected - need to return to the
+                // parent directory, else - open the selected child directory
                 if (fileItems[position].name == "..") {
+                    // But if the current directory is already the root - just display a warning
                     if (filePath.text.toString() == "/") {
                         val myToast = Toast.makeText(
                             activity,
@@ -122,10 +124,11 @@ class ClientFragment : Fragment() {
                         myToast.show()
                         return
                     }
-                    val splitedPath = filePath.text.toString().split("/").toMutableList()
-                    splitedPath.removeAt(splitedPath.size - 2)
-                    ImportantData.clientPath = splitedPath.joinToString("/")
-                    filePath.setText(ImportantData.clientPath)
+                    // Defining and return to the parent directory
+                    val splittedPath = filePath.text.toString().split("/").toMutableList()
+                    splittedPath.removeAt(splittedPath.size - 2)
+                    ImportantData.clientPath = splittedPath.joinToString("/")
+                    filePath.text = ImportantData.clientPath
                     val additionalServingThread = Thread {
                         clientFiles = serv.openParentClientDirectory(ImportantData.clientRoot + ImportantData.clientPath)
                     }
@@ -133,8 +136,9 @@ class ClientFragment : Fragment() {
                     additionalServingThread.join()
                 }
                 else {
-                    ImportantData.clientPath = filePath.text.toString() + fileItems[position].name
-                    filePath.setText(ImportantData.clientPath)
+                    // Defining the contents of a child directory
+                    ImportantData.clientPath = ImportantData.clientPath + fileItems[position].name
+                    filePath.text = ImportantData.clientPath
                     val additionalServingThread = Thread {
                         clientFiles = serv.openClientDirectory(ImportantData.clientRoot + ImportantData.clientPath)
                     }
@@ -142,6 +146,7 @@ class ClientFragment : Fragment() {
                     additionalServingThread.join()
                 }
 
+                // Converting a list of file names to a list of file objects
                 fileItems = clientFiles!!.map { fileName ->
                     val imageUri: Uri
                     val info: String
@@ -153,41 +158,40 @@ class ClientFragment : Fragment() {
                     }
                     else {
                         isDir = fileName.contains("/")
-                        if (isDir) {
-                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
-                        }
-                        else {
-                            imageUri = Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
+                        imageUri = if (isDir) {
+                            Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.folder)
+                        } else {
+                            Uri.parse("android.resource://" + requireContext().packageName + "/" + R.drawable.file)
                         }
                         info = serv.getClientFileSize(ImportantData.clientRoot + ImportantData.clientPath + fileName).toString()
                     }
                     FileItem(imageUri,  fileName, info, isDir, false)
                 }
+
+                // Updating File Manager
                 adapter.updateFileList(fileItems)
             }
         })
 
         syncButt.setOnClickListener {
-            // Обновляю Фрагмент
+            // Updating Fragment
             onViewCreated(view, savedInstanceState)
         }
 
         newDirButt.setOnClickListener {
-            val fragmentManager = requireActivity().supportFragmentManager
+            // Requesting the name of the new directory and create it
             val directoryInputFragment = DirectoryNameDialogFragment()
-
-            // Установите слушателя для обработки результата после ввода
             directoryInputFragment.setOnDirectoryNameEnteredListener(object : DirectoryNameDialogFragment.OnDirectoryNameEnteredListener {
+                // Listener to process the result after input
                 override fun onDirectoryNameEntered(directoryName: String) {
-                    // В этом месте вы получите введенное имя директории и можете выполнить с ним действия
                     serv.createClientDirectory(ImportantData.clientRoot + ImportantData.clientPath + directoryName)
                 }
             })
-
-            directoryInputFragment.show(fragmentManager, "DirectoryNameDialog")
+            directoryInputFragment.show(requireActivity().supportFragmentManager, "DirectoryNameDialog")
         }
 
         removeButt.setOnClickListener {
+            // Removing selected items
             val selectedFiles = adapter.getSelectedFiles()
             val fileNames: List<String> = selectedFiles.map { it.name }
             val filePaths = mutableListOf<String>()
@@ -195,10 +199,12 @@ class ClientFragment : Fragment() {
             for (fileName in fileNames) {
                 filePaths.add(ImportantData.clientRoot + ImportantData.clientPath + fileName)
             }
+
             serv.removeClientPath(filePaths)
         }
 
         uploadButt.setOnClickListener {
+            // Uploading selected elements to the server
             val selectedFiles = adapter.getSelectedFiles()
             val fileNames: List<String> = selectedFiles.map { it.name }
 

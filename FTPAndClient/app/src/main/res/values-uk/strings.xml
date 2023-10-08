@@ -19,4 +19,5 @@
     <string name="directory_name_dialog_title">Введіть назву директорії</string>
     <string name="directory_name_dialog_positive_button">Ок</string>
     <string name="directory_name_dialog_negative_button">Відміна</string>
+    <string name="path_field">%s%s</string>
 </resources>

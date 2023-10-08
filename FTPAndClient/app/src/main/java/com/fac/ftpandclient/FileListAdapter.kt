@@ -12,11 +12,13 @@ class FileListAdapter(
     private var fileList: List<FileItem>
 ) : RecyclerView.Adapter<FileListAdapter.FileViewHolder>() {
 
-    private var listener: OnItemClickListener? = null
-
+    // Listener interface
     interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
+
+    // Listener variable
+    private var listener: OnItemClickListener? = null
 
     class FileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileImage: ImageView = itemView.findViewById(R.id.fileImage)
@@ -41,7 +43,9 @@ class FileListAdapter(
         holder.fileName.text = fileItem.name
         holder.fileInfo.text = fileItem.info
 
+        // Handling a short click on a list item
         holder.itemView.setOnClickListener {
+            // If the selected element is a file - select it, else - react to the click
             if (!fileItem.isDirectory) {
                 toggleSelection(position)
             }
@@ -50,20 +54,21 @@ class FileListAdapter(
             }
         }
 
+        // Handling a long press on a list item
         holder.itemView.setOnLongClickListener {
-            // Обработка долгого нажатия на элементе списка
+            // If the selected element is a directory - select it
             if (fileItem.isDirectory) {
                 toggleSelection(position)
-                return@setOnLongClickListener true // Верните true, чтобы указать, что событие обработано
+                return@setOnLongClickListener true // Return true to indicate the event has been processed
             }
             false
         }
 
-        // Определение цвета фона элемента в зависимости от выбора
+        // Determine the background color of an element depending on whether the element is selected
         val backgroundResId = if (fileItem.isSelected) {
-            R.color.green_500_trans // Ресурс для выделенного элемента
+            R.color.green_500_trans // Resource for the selected element
         } else {
-            Color.TRANSPARENT // Ресурс для не выделенного элемента
+            Color.TRANSPARENT // Resource for an unselected element
         }
         holder.itemView.setBackgroundResource(backgroundResId)
     }
@@ -75,13 +80,14 @@ class FileListAdapter(
     }
 
     private fun toggleSelection(position: Int) {
+        // Selecting an element
         val fileItem = fileList[position]
         fileItem.isSelected = !fileItem.isSelected
         notifyItemChanged(position)
     }
 
-    // Метод для получения списка выделенных элементов
     fun getSelectedFiles(): List<FileItem> {
+        // Method for getting a list of selected elements
         return fileList.filter { it.isSelected }
     }
 }

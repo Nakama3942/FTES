@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -12,7 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.fac.ftpandclient.databinding.ActivityMainBinding
 
-// TODO завершить работу с разрешениями
+// TODO Complete permissions
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,8 +31,8 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = binding.navView
 
-        // Получите доступ к ConnectionViewModel
-        connectionModel = ViewModelProvider(this).get(ConnectionModel::class.java)
+        // Accessing the ConnectionViewModel
+        connectionModel = ViewModelProvider(this)[ConnectionModel::class.java]
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
@@ -47,16 +46,16 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // Подпишитесь на изменения состояния подключения
-        connectionModel.isConnected().observe(this, Observer { isConnected ->
-            // Здесь можно настроить кликабельность вкладок в зависимости от isConnected
+        // Subscribe to connection state changes
+        connectionModel.isConnected().observe(this) { isConnected ->
+            // Setting the click ability of tabs depending on isConnected
             navView.menu.findItem(R.id.navigation_client).isEnabled = isConnected
             navView.menu.findItem(R.id.navigation_client).isVisible = isConnected
             navView.menu.findItem(R.id.navigation_server).isEnabled = isConnected
             navView.menu.findItem(R.id.navigation_server).isVisible = isConnected
             navView.menu.findItem(R.id.navigation_server_with_saf).isEnabled = isConnected
             navView.menu.findItem(R.id.navigation_server_with_saf).isVisible = isConnected
-        })
+        }
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)

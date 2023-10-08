@@ -7,15 +7,16 @@ import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 
 class DirectoryNameDialogFragment : DialogFragment() {
-    // Определите интерфейс OnDirectoryNameEnteredListener
+
+    // Listener interface
     interface OnDirectoryNameEnteredListener {
         fun onDirectoryNameEntered(directoryName: String)
     }
 
-    // Добавьте переменную для слушателя
+    // Listener variable
     private var listener: OnDirectoryNameEnteredListener? = null
 
-    // Создайте метод для установки слушателя
+    // Method for setting a listener
     fun setOnDirectoryNameEnteredListener(listener: OnDirectoryNameEnteredListener) {
         this.listener = listener
     }
@@ -28,7 +29,6 @@ class DirectoryNameDialogFragment : DialogFragment() {
             .setView(inputField)
             .setPositiveButton(getString(R.string.directory_name_dialog_positive_button)) { dialog, _ ->
                 val directoryName = inputField.text.toString()
-                // Вызываем метод слушателя и передаем введенное имя
                 listener?.onDirectoryNameEntered(directoryName)
                 dialog.dismiss()
             }
