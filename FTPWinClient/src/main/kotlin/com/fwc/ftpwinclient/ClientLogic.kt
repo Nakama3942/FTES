@@ -1,5 +1,6 @@
 package com.fwc.ftpwinclient
 
+import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.FileInputStream
@@ -11,18 +12,20 @@ class LoginException(message: String) : Exception(message)
 
 class ClientLogic (
 	private val username: String = "user",
-	private val password: String = "12345"
+	private val password: String = "12345",
+	private val server: String = "192.168.0.102"
 ) {
-	private val server: String = "127.0.0.1"
 	private val port: Int = 21
 	private val ftpClient = FTPClient()
 
 	fun connect() {
+		ftpClient.controlEncoding = "UTF-8"
 		ftpClient.connect(server, port)
 		if (!ftpClient.login(username, password)) {
 			disconnect()
 			throw LoginException("USER '$username' failed login.")
 		}
+		ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
 	}
 
 	fun disconnect() {
