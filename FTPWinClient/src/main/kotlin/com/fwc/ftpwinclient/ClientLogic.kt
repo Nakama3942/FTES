@@ -5,6 +5,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
+// TODO Synchronize code with Android client
+
 class LoginException(message: String) : Exception(message)
 
 class ClientLogic (
