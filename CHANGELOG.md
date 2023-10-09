@@ -25,6 +25,8 @@
 
 ---
 -->
-## v1.0.0 (DATE)
+## v0.1.0 (DATE)
 
 #### Release
+
+Publication of programs for initial testing of the basic functionality of the FTP system.

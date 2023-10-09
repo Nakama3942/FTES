@@ -107,22 +107,14 @@ I was inspired by the [colored-logs](https://pypi.org/project/colored-logs/) lib
 - [Content](#content)
 
 ## Overview
-<!--
-The library implements the formation of a beautifully formatted colored text, similar to a log, which has all the necessary information:
 
-- Device name and registered profile, system name, etc. (this data is displayed only once at the beginning of the logging)
-- Log entry time
-- Log entry category
-- Log entry type
-- Entry message
+FTES - File Transfer EcoSystem - a set of programs, the purpose of which is to transfer files between different computers within the same local network. The system uses the File Transfer Protocol and implements a single client module that is used by various system programs.
 
-Any information to the output can be turned off (according to the default, everything is included). It is also possible to change the output settings during the logging process. It is possible to change the colors of the foreground text and the background, icons and animations.
--->
 - [Content](#content)
 
 ## LICENSE
-<!--
-The full text of the license can be found at the following [link](https://github.com/Nakama3942/mighty_logger/blob/master/LICENSE).
+
+The full text of the license can be found at the following [link](https://github.com/Nakama3942/FTES/blob/main/LICENSE).
 
 > Copyright © 2023 Kalynovsky Valentin. All rights reserved.
 >
@@ -136,10 +128,17 @@ The full text of the license can be found at the following [link](https://github
 > distributed under the License is distributed on an "AS IS" BASIS,
 > WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 > See the License for the specific language governing permissions and
--->
+
 - [Content](#content)
 
 ## Important releases
+
+<details><summary>See the important releases</summary>
+
+- [x] v0.1.0 - Test release (publication of programs for initial testing of the basic functionality of the FTP system)
+
+</details>
+
 <!--
 <details><summary>See the important releases</summary>
 
@@ -169,6 +168,7 @@ The full text of the license can be found at the following [link](https://github
 
 </details>
 -->
+
 - [Content](#content)
 
 ## Features
