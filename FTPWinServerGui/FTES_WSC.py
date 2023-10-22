@@ -43,7 +43,7 @@ class Server:
 		self.__build()
 		self.__log()
 		self.__run()
-		self.__expectant()
+		# self.__expectant()
 
 	def __build(self):
 		self.add_user(
@@ -104,8 +104,7 @@ class Server:
 			if event.event_type == keyboard.KEY_DOWN:
 				match event.name:
 					case "esc":
-						logging.shutdown()
-						self.__server.close_all()
+						self.exit()
 						break
 					case "a":
 						self.add_user(
@@ -117,6 +116,10 @@ class Server:
 
 	def add_user(self, username, password, homedir, perm):
 		self.__authorizer.add_user(username, password, homedir, perm)
+
+	def exit(self):
+		logging.shutdown()
+		self.__server.close_all()
 
 
 if __name__ == '__main__':

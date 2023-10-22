@@ -1,2 +1,2 @@
 #!/bin/bash
-pyinstaller --onefile --name serv --console main.py
+pyinstaller --onefile --name FTES\ WSC --console FTES\ WSC.py
