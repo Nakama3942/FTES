@@ -14,32 +14,40 @@
 import sys
 import pickle
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QSpacerItem, QLineEdit, QToolButton, QPushButton, QFileDialog
-from PyQt6.QtCore import QRegularExpression
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog
+from PyQt6.QtCore import QObject, pyqtSignal, QRegularExpression
 from PyQt6.QtGui import QRegularExpressionValidator
 
 from FTES_WSC import Server
+
+class Interceptor(QObject):
+	writing = pyqtSignal(str)
+
+	def __init__(self):
+	# def __init__(self, io_stream):
+		super().__init__()
+
+		# self.io_stream = io_stream
+
+	def write(self, text):
+		# self.io_stream.write(text)
+		self.writing.emit(text)
+
+	# def flush(self):
+	# 	self.io_stream.flush()
 
 class ServerWindow(QMainWindow):
 	def __init__(self):
 		super(ServerWindow, self).__init__()
 
+		self.STDOUT = Interceptor()
+		self.STDERR = Interceptor()
+		self.STDOUT.writing.connect(self.intercept_writing)
+		self.STDERR.writing.connect(self.intercept_writing)
+
 		# Adding layouts
 		self.main_layout = QVBoxLayout()
-		self.tool_layout = QHBoxLayout()
-
-		# Adding a tool button
-		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-		self.save_preset = QToolButton(self)
-		self.save_preset.clicked.connect(self.save_preset_clicked)
-
-		self.load_preset = QToolButton(self)
-		self.load_preset.clicked.connect(self.load_preset_clicked)
-
-		self.tool_layout.addSpacerItem(self.spacer)
-		self.tool_layout.addWidget(self.save_preset)
-		self.tool_layout.addWidget(self.load_preset)
+		self.data_layout = QHBoxLayout()
 
 		# Adding a Server arguments
 		self.ip_address = QLineEdit(self)
@@ -65,17 +73,30 @@ class ServerWindow(QMainWindow):
 		self.log_levels = QLineEdit(self)
 		self.log_levels.setPlaceholderText("Enter the logging levels")
 
+		self.save_preset = QToolButton(self)
+		self.save_preset.clicked.connect(self.save_preset_clicked)
+
+		self.load_preset = QToolButton(self)
+		self.load_preset.clicked.connect(self.load_preset_clicked)
+
+		self.data_layout.addWidget(self.ip_address)
+		self.data_layout.addWidget(self.username)
+		self.data_layout.addWidget(self.password)
+		self.data_layout.addWidget(self.home_dir)
+		self.data_layout.addWidget(self.log_levels)
+		self.data_layout.addWidget(self.save_preset)
+		self.data_layout.addWidget(self.load_preset)
+
+		# Adding a serving
+		self.console = QPlainTextEdit(self)
+		self.console.setReadOnly(True)
+
 		self.serving = QPushButton("Start server", self)
 		self.serving.setCheckable(True)
 		self.serving.clicked.connect(self.serving_clicked)
 
-		# Create window layout
-		self.main_layout.addLayout(self.tool_layout)
-		self.main_layout.addWidget(self.ip_address)
-		self.main_layout.addWidget(self.username)
-		self.main_layout.addWidget(self.password)
-		self.main_layout.addWidget(self.home_dir)
-		self.main_layout.addWidget(self.log_levels)
+		self.main_layout.addWidget(self.console)
+		self.main_layout.addLayout(self.data_layout)
 		self.main_layout.addWidget(self.serving)
 		self.central_widget = QWidget()
 		self.central_widget.setLayout(self.main_layout)
@@ -83,7 +104,7 @@ class ServerWindow(QMainWindow):
 		# Main window customization
 		self.setCentralWidget(self.central_widget)
 		self.setWindowTitle("FTES WSG - File Transfer EcoSystem Windows Server Graphic")
-		self.setMinimumSize(320, 240)
+		self.setMinimumSize(600, 480)
 
 		#
 		self.serv = None
@@ -115,7 +136,7 @@ class ServerWindow(QMainWindow):
 		if self.serving.isChecked():
 			self.serving.setText("Stop server")
 
-			args = {"perm": "elradfmwMT"}
+			args = {"perm": "elradfmwMT", "stdout": self.STDOUT, "stderr": self.STDERR}
 			if self.ip_address.text() == "":
 				args['ip'] = "192.168.0.102"
 			else:
@@ -143,6 +164,9 @@ class ServerWindow(QMainWindow):
 		else:
 			self.serving.setText("Start server")
 			self.serv.exit()
+
+	def intercept_writing(self, text):
+		self.console.appendPlainText(text.strip())
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)

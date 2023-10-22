@@ -16,19 +16,22 @@ import logging
 import keyboard
 import threading
 import argparse
+import sys
 
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import ThreadedFTPServer
 
 class Server:
-	def __init__(self, ip, username, password, homedir, perm, log_levels):
+	def __init__(self, ip, username, password, homedir, perm, log_levels, stdout, stderr):
 		self.__ip = ip
 		self.__username = username
 		self.__password = password
 		self.__homedir = homedir
 		self.__perm = perm
 		self.__log_levels = log_levels
+		self.__stdout = stdout
+		self.__stderr = stderr
 
 		self.__authorizer = DummyAuthorizer()
 		self.__handler = FTPHandler
@@ -87,6 +90,7 @@ class Server:
 		console_handler = logging.StreamHandler()
 		console_handler.setFormatter(formatter)
 		console_handler.encoding = 'utf-8'
+		console_handler.setStream(self.__stdout)
 		logger.addHandler(console_handler)
 
 		# Создание обработчика для записи в файл
@@ -132,4 +136,4 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	serv = Server(args.address, args.username, args.password, args.homedir, 'elradfmwMT', args.log)
+	serv = Server(args.address, args.username, args.password, args.homedir, 'elradfmwMT', args.log, sys.stdout, sys.stderr)
