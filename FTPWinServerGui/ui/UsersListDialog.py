@@ -11,8 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QListView, QSpacerItem, QToolButton
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QTableView, QAbstractItemView, QSpacerItem, QToolButton, QHeaderView
+from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
+from src.UserDb import UserDb
 from ui.UserFormDialog import UserFormDialog
 
 class UsersListDialog(QDialog):
@@ -25,7 +27,56 @@ class UsersListDialog(QDialog):
 		# Adding layouts
 		self.main_layout = QVBoxLayout()
 
-		self.user_list = QListView(self)
+		# Читаю всю базу данных
+		user_db = UserDb()
+		user_list = user_db.get_all_users()
+		user_db.close()
+
+		# Создаю модель данных
+		self.user_model = QStandardItemModel(len(user_list), 13)
+		self.user_model.setHorizontalHeaderLabels([
+			'Username',
+			'Password',
+			'Home Dir',
+			'Permission CWD',
+			'Permission LIST',
+			'Permission RETR',
+			'Permission APPE',
+			'Permission DELE',
+			'Permission RNFR',
+			'Permission MKD',
+			'Permission STOR',
+			'Permission SITE CHMOD',
+			'Permission SITE MFMT'
+		])
+
+		# Заполняю модель данными из списка пользователей
+		for row, user in enumerate(user_list):
+			for col, data in enumerate([
+				user.username,
+				user.password,
+				user.home_dir,
+				user.permission_CWD,
+				user.permission_LIST,
+				user.permission_RETR,
+				user.permission_APPE,
+				user.permission_DELE,
+				user.permission_RNFR,
+				user.permission_MKD,
+				user.permission_STOR,
+				user.permission_CHMOD,
+				user.permission_MFMT
+			]):
+				item = QStandardItem(str(data))
+				item.setEditable(False)
+				if col != 0:
+					item.setSelectable(False)
+				self.user_model.setItem(row, col, item)
+
+		# Создаю представление для отображения данных
+		self.user_list = QTableView(self)
+		self.user_list.setModel(self.user_model)
+		self.user_list.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 		self.main_layout.addWidget(self.user_list)
 
 		# Adding a tool button
@@ -53,4 +104,13 @@ class UsersListDialog(QDialog):
 		self.user_form_dialog.show()
 
 	def remove_user_clicked(self):
-		pass
+		selected_indexes = self.user_list.selectionModel().selectedRows()
+		for index in selected_indexes:
+			# Получаем индекс выделенной строки и столбца с именем пользователя (первый столбец)
+			username_index = self.user_model.index(index.row(), 0)
+			username = self.user_model.data(username_index)  # Получаем имя пользователя
+			# Теперь у вас есть имя пользователя, и вы можете выполнить удаление или другие операции с ним.
+			# Например, вызов метода remove_user(username) из вашей модели данных.
+			user_db = UserDb()
+			user_db.remove_user(username)
+			user_db.close()
