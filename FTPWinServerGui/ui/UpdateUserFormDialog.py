@@ -15,15 +15,16 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QCheckBox, QGroupBo
 
 from src.UserDb import UserDb
 
-class UserFormDialog(QDialog):
+class UpdateUserFormDialog(QDialog):
 	def __init__(self):
-		super(UserFormDialog, self).__init__()
+		super(UpdateUserFormDialog, self).__init__()
 
 		# Adding layouts
 		self.main_layout = QVBoxLayout()
 
 		self.username = QLineEdit(self)
-		self.username.setPlaceholderText("Enter the username")
+		self.username.setText("")
+		self.username.setReadOnly(True)
 		self.main_layout.addWidget(self.username)
 
 		self.password = QLineEdit(self)
@@ -61,22 +62,22 @@ class UserFormDialog(QDialog):
 		self.permission_group.setLayout(self.permission_layout)
 		self.main_layout.addWidget(self.permission_group)
 
-		self.add_butt = QPushButton("Add new user", self)
-		self.add_butt.clicked.connect(self.add_butt_clicked)
-		self.main_layout.addWidget(self.add_butt)
+		self.update_butt = QPushButton("Update a selected user", self)
+		self.update_butt.clicked.connect(self.update_butt_clicked)
+		self.main_layout.addWidget(self.update_butt)
 
 		# Dialog window customization
 		self.setLayout(self.main_layout)
 		self.setWindowTitle("Add new user")
 		self.setMinimumSize(600, 480)
 
-	def add_butt_clicked(self):
+	def update_butt_clicked(self):
 		user_db = UserDb()
-		user_db.create_user(
+		user_db.update_user(
 			self.username.text(),
-			self.password.text(),
-			self.home_dir.text(),
 			{
+				"password": self.password.text(),
+				"home_dir": self.home_dir.text(),
 				"permission_CWD": self.permission_e.isChecked(),
 				"permission_LIST": self.permission_l.isChecked(),
 				"permission_RETR": self.permission_r.isChecked(),
@@ -90,3 +91,20 @@ class UserFormDialog(QDialog):
 			}
 		)
 		user_db.close()
+
+	def set_username(self, username):
+		self.username.setText(username)
+		user_db = UserDb()
+		user = user_db.get_user(username)
+		self.password.setText(user.password)
+		self.home_dir.setText(user.home_dir)
+		self.permission_e.setChecked(user.permission_CWD)
+		self.permission_l.setChecked(user.permission_LIST)
+		self.permission_r.setChecked(user.permission_RETR)
+		self.permission_a.setChecked(user.permission_APPE)
+		self.permission_d.setChecked(user.permission_DELE)
+		self.permission_f.setChecked(user.permission_RNFR)
+		self.permission_m.setChecked(user.permission_MKD)
+		self.permission_w.setChecked(user.permission_STOR)
+		self.permission_M.setChecked(user.permission_CHMOD)
+		self.permission_T.setChecked(user.permission_MFMT)

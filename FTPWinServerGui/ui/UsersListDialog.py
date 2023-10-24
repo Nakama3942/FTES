@@ -15,14 +15,16 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QTab
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
 from src.UserDb import UserDb
-from ui.UserFormDialog import UserFormDialog
+from ui.CreateUserFormDialog import CreateUserFormDialog
+from ui.UpdateUserFormDialog import UpdateUserFormDialog
 
 class UsersListDialog(QDialog):
 	def __init__(self):
 		super(UsersListDialog, self).__init__()
 
 		# Initialization of dialog windows
-		self.user_form_dialog = UserFormDialog()
+		self.create_user_form_dialog = CreateUserFormDialog()
+		self.update_user_form_dialog = UpdateUserFormDialog()
 
 		# Adding layouts
 		self.main_layout = QVBoxLayout()
@@ -89,6 +91,10 @@ class UsersListDialog(QDialog):
 		self.add_user.clicked.connect(self.add_user_clicked)
 		self.tool_layout.addWidget(self.add_user)
 
+		self.update_user = QToolButton(self)
+		self.update_user.clicked.connect(self.update_user_clicked)
+		self.tool_layout.addWidget(self.update_user)
+
 		self.remove_user = QToolButton(self)
 		self.remove_user.clicked.connect(self.remove_user_clicked)
 		self.tool_layout.addWidget(self.remove_user)
@@ -101,7 +107,16 @@ class UsersListDialog(QDialog):
 		self.setMinimumSize(600, 480)
 
 	def add_user_clicked(self):
-		self.user_form_dialog.show()
+		self.create_user_form_dialog.show()
+
+	def update_user_clicked(self):
+		selected_indexes = self.user_list.selectionModel().selectedRows()
+		if len(selected_indexes) == 0:
+			return
+		username_index = self.user_model.index(selected_indexes[0].row(), 0)
+		username = self.user_model.data(username_index)
+		self.update_user_form_dialog.set_username(username)
+		self.update_user_form_dialog.show()
 
 	def remove_user_clicked(self):
 		selected_indexes = self.user_list.selectionModel().selectedRows()

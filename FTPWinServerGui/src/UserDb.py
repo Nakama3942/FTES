@@ -11,6 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
+# todo Реализовать обновление пользователей
+# todo Реализовать обновление QTableView
+# todo Переработать подключение к серверу
+# todo Сверстать красивый интерфейс
+
 from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -45,6 +50,16 @@ class UserDb:
 		new_user = User(username=username, password=password, home_dir=home_dir, **permissions)
 		self.session.add(new_user)
 		self.session.commit()
+
+	def update_user(self, username, new_data):
+		user = self.get_user(username)
+		if user:
+			# Обновляем поля пользователя
+			for key, value in new_data.items():
+				setattr(user, key, value)
+
+			# Фиксируем изменения в базе данных
+			self.session.commit()
 
 	def get_user(self, username):
 		return self.session.query(User).filter_by(username=username).first()
