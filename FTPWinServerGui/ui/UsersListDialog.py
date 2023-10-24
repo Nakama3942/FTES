@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QTableView, QAbstractItemView, QSpacerItem, QToolButton, QHeaderView
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QTableView, QAbstractItemView, QSpacerItem, QToolButton, QHeaderView, QCheckBox
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
-from src.UserDb import UserDb
+from src.GlobalStates import GlobalStates
 from ui.CreateUserFormDialog import CreateUserFormDialog
 from ui.UpdateUserFormDialog import UpdateUserFormDialog
 
@@ -30,9 +31,7 @@ class UsersListDialog(QDialog):
 		self.main_layout = QVBoxLayout()
 
 		# Читаю всю базу данных
-		user_db = UserDb()
-		user_list = user_db.get_all_users()
-		user_db.close()
+		user_list = GlobalStates.user_db.get_all_users()
 
 		# Создаю модель данных
 		self.user_model = QStandardItemModel(len(user_list), 13)
@@ -40,45 +39,29 @@ class UsersListDialog(QDialog):
 			'Username',
 			'Password',
 			'Home Dir',
-			'Permission CWD',
-			'Permission LIST',
-			'Permission RETR',
-			'Permission APPE',
-			'Permission DELE',
-			'Permission RNFR',
-			'Permission MKD',
-			'Permission STOR',
-			'Permission SITE CHMOD',
-			'Permission SITE MFMT'
+			'permission_CWD',
+			'Permission_LIST',
+			'Permission_RETR',
+			'Permission_APPE',
+			'Permission_DELE',
+			'Permission_RNFR',
+			'Permission_MKD',
+			'Permission_STOR',
+			'Permission_CHMOD',
+			'Permission_MFMT'
 		])
 
 		# Заполняю модель данными из списка пользователей
 		for row, user in enumerate(user_list):
-			for col, data in enumerate([
-				user.username,
-				user.password,
-				user.home_dir,
-				user.permission_CWD,
-				user.permission_LIST,
-				user.permission_RETR,
-				user.permission_APPE,
-				user.permission_DELE,
-				user.permission_RNFR,
-				user.permission_MKD,
-				user.permission_STOR,
-				user.permission_CHMOD,
-				user.permission_MFMT
-			]):
-				item = QStandardItem(str(data))
-				item.setEditable(False)
-				if col != 0:
-					item.setSelectable(False)
-				self.user_model.setItem(row, col, item)
+			self.process_table_row(row, user)
 
 		# Создаю представление для отображения данных
 		self.user_list = QTableView(self)
 		self.user_list.setModel(self.user_model)
 		self.user_list.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+		GlobalStates.user_db.new.connect(self.user_db_new)
+		GlobalStates.user_db.dirty.connect(self.user_db_dirty)
+		GlobalStates.user_db.deleted.connect(self.user_db_deleted)
 		self.main_layout.addWidget(self.user_list)
 
 		# Adding a tool button
@@ -106,6 +89,34 @@ class UsersListDialog(QDialog):
 		self.setWindowTitle("Server users")
 		self.setMinimumSize(600, 480)
 
+	def user_db_new(self, username):
+		new_row = self.user_list.model().rowCount()
+		updated_user = GlobalStates.user_db.get_user(username)
+
+		self.process_table_row(new_row, updated_user)
+
+		self.user_list.update()
+
+	def user_db_dirty(self, username):
+
+		selected_row = self.user_list.selectionModel().selectedIndexes()[0].row()
+		updated_user = GlobalStates.user_db.get_user(username)
+
+		self.process_table_row(selected_row, updated_user)
+
+		self.user_list.update()
+
+	def user_db_deleted(self, username):
+		deleted_rows = self.user_list.selectionModel().selectedRows()
+
+		# Переберите индексы в обратном порядке, чтобы не нарушить порядок при удалении строк
+		for index in sorted(deleted_rows, reverse=True):
+			row = index.row()
+			# Удалите строку из модели
+			self.user_model.removeRow(row)
+
+		self.user_list.update()
+
 	def add_user_clicked(self):
 		self.create_user_form_dialog.show()
 
@@ -120,12 +131,35 @@ class UsersListDialog(QDialog):
 
 	def remove_user_clicked(self):
 		selected_indexes = self.user_list.selectionModel().selectedRows()
+		usernames = []
+
 		for index in selected_indexes:
 			# Получаем индекс выделенной строки и столбца с именем пользователя (первый столбец)
 			username_index = self.user_model.index(index.row(), 0)
 			username = self.user_model.data(username_index)  # Получаем имя пользователя
-			# Теперь у вас есть имя пользователя, и вы можете выполнить удаление или другие операции с ним.
-			# Например, вызов метода remove_user(username) из вашей модели данных.
-			user_db = UserDb()
-			user_db.remove_user(username)
-			user_db.close()
+			usernames.append(username)
+
+		for username in usernames:
+			GlobalStates.user_db.remove_user(username)
+
+	def process_table_row(self, row, user):
+		for col, data in enumerate([
+			user.username,
+			user.password,
+			user.home_dir,
+			user.permission_CWD,
+			user.permission_LIST,
+			user.permission_RETR,
+			user.permission_APPE,
+			user.permission_DELE,
+			user.permission_RNFR,
+			user.permission_MKD,
+			user.permission_STOR,
+			user.permission_CHMOD,
+			user.permission_MFMT
+		]):
+			item = QStandardItem(str(data))
+			item.setEditable(False)
+			if col != 0:
+				item.setSelectable(False)
+			self.user_model.setItem(row, col, item)

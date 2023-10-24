@@ -11,14 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-# todo Реализовать обновление пользователей
-# todo Реализовать обновление QTableView
+# todo Реализовать поиск и сортировку QTableView
 # todo Переработать подключение к серверу
 # todo Сверстать красивый интерфейс
 
 from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+from PyQt6.QtCore import QObject, pyqtSignal
 
 Base = declarative_base()
 
@@ -39,16 +40,29 @@ class User(Base):
 	permission_CHMOD = Column(Boolean)  # change file mode / permission (SITE CHMOD command)
 	permission_MFMT = Column(Boolean)  # change file modification time (SITE MFMT command)
 
-class UserDb:
+class UserDb(QObject):
+	new = pyqtSignal(str)
+	dirty = pyqtSignal(str)
+	deleted = pyqtSignal(str)
+
 	def __init__(self):
+		super(UserDb, self).__init__()
+
 		self.engine = create_engine("sqlite:///users_database.db")
 		Base.metadata.create_all(self.engine)
 		self.Session = sessionmaker(bind=self.engine)
 		self.session = self.Session()
 
+	def get_user(self, username):
+		return self.session.query(User).filter_by(username=username).first()
+
+	def get_all_users(self):
+		return self.session.query(User).all()
+
 	def create_user(self, username, password, home_dir, permissions):
 		new_user = User(username=username, password=password, home_dir=home_dir, **permissions)
 		self.session.add(new_user)
+		self.new.emit(username)
 		self.session.commit()
 
 	def update_user(self, username, new_data):
@@ -59,18 +73,14 @@ class UserDb:
 				setattr(user, key, value)
 
 			# Фиксируем изменения в базе данных
+			self.dirty.emit(username)
 			self.session.commit()
-
-	def get_user(self, username):
-		return self.session.query(User).filter_by(username=username).first()
-
-	def get_all_users(self):
-		return self.session.query(User).all()
 
 	def remove_user(self, username):
 		user = self.session.query(User).filter_by(username=username).first()
 		if user:
 			self.session.delete(user)
+			self.deleted.emit(username)
 			self.session.commit()
 
 	def close(self):

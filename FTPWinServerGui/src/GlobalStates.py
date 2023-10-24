@@ -11,20 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-import sys
+from ui.UserDb import UserDb
 
-from PyQt6.QtWidgets import QApplication
-
-from ui.ServerWindow import ServerWindow
-
-from src.GlobalStates import GlobalStates
-
-def on_about_to_quit():
-	GlobalStates.user_db.close()
-
-if __name__ == '__main__':
-	app = QApplication(sys.argv)
-	app.aboutToQuit.connect(on_about_to_quit)
-	ui = ServerWindow()
-	ui.show()
-	sys.exit(app.exec())
+class GlobalStates:
+	user_db = UserDb()

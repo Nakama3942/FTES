@@ -13,7 +13,7 @@
 
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QCheckBox, QGroupBox, QPushButton
 
-from src.UserDb import UserDb
+from src.GlobalStates import GlobalStates
 
 class UpdateUserFormDialog(QDialog):
 	def __init__(self):
@@ -72,8 +72,7 @@ class UpdateUserFormDialog(QDialog):
 		self.setMinimumSize(600, 480)
 
 	def update_butt_clicked(self):
-		user_db = UserDb()
-		user_db.update_user(
+		GlobalStates.user_db.update_user(
 			self.username.text(),
 			{
 				"password": self.password.text(),
@@ -90,12 +89,10 @@ class UpdateUserFormDialog(QDialog):
 				"permission_MFMT": self.permission_T.isChecked()
 			}
 		)
-		user_db.close()
 
 	def set_username(self, username):
 		self.username.setText(username)
-		user_db = UserDb()
-		user = user_db.get_user(username)
+		user = GlobalStates.user_db.get_user(username)
 		self.password.setText(user.password)
 		self.home_dir.setText(user.home_dir)
 		self.permission_e.setChecked(user.permission_CWD)
