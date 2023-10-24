@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-# todo Реализовать поиск и сортировку QTableView
 # todo Переработать подключение к серверу
 # todo Сверстать красивый интерфейс
 

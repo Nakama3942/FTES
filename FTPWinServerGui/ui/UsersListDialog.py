@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QTableView, QAbstractItemView, QSpacerItem, QToolButton, QHeaderView, QCheckBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QTableView, QSpacerItem, QToolButton, QHeaderView, QLineEdit
+from PyQt6.QtCore import Qt, QSortFilterProxyModel
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
 from src.GlobalStates import GlobalStates
@@ -30,6 +30,19 @@ class UsersListDialog(QDialog):
 		# Adding layouts
 		self.main_layout = QVBoxLayout()
 
+		# Adding a search
+		self.search_layout = QHBoxLayout()
+
+		self.search_line = QLineEdit(self)
+		self.search_line.setPlaceholderText("Enter the username who needs to be search")
+		self.search_line.textChanged.connect(self.search_line_textChanged)
+		self.search_layout.addWidget(self.search_line)
+
+		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+		self.search_layout.addSpacerItem(self.spacer)
+
+		self.main_layout.addLayout(self.search_layout)
+
 		# Читаю всю базу данных
 		user_list = GlobalStates.user_db.get_all_users()
 
@@ -39,16 +52,16 @@ class UsersListDialog(QDialog):
 			'Username',
 			'Password',
 			'Home Dir',
-			'permission_CWD',
-			'Permission_LIST',
-			'Permission_RETR',
-			'Permission_APPE',
-			'Permission_DELE',
-			'Permission_RNFR',
-			'Permission_MKD',
-			'Permission_STOR',
-			'Permission_CHMOD',
-			'Permission_MFMT'
+			'Permission CWD',
+			'Permission LIST',
+			'Permission RETR',
+			'Permission APPE',
+			'Permission DELE',
+			'Permission RNFR',
+			'Permission MKD',
+			'Permission STOR',
+			'Permission CHMOD',
+			'Permission MFMT'
 		])
 
 		# Заполняю модель данными из списка пользователей
@@ -56,8 +69,11 @@ class UsersListDialog(QDialog):
 			self.process_table_row(row, user)
 
 		# Создаю представление для отображения данных
+		self.proxy_model = QSortFilterProxyModel()
+		self.proxy_model.setSourceModel(self.user_model)  # Подставьте сюда свою модель данных
+
 		self.user_list = QTableView(self)
-		self.user_list.setModel(self.user_model)
+		self.user_list.setModel(self.proxy_model)
 		self.user_list.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 		GlobalStates.user_db.new.connect(self.user_db_new)
 		GlobalStates.user_db.dirty.connect(self.user_db_dirty)
@@ -66,6 +82,18 @@ class UsersListDialog(QDialog):
 
 		# Adding a tool button
 		self.tool_layout = QHBoxLayout()
+
+		self.straight_sort_tool = QToolButton(self)
+		self.straight_sort_tool.clicked.connect(self.straight_sort_tool_clicked)
+		self.tool_layout.addWidget(self.straight_sort_tool)
+
+		self.reverse_sort_tool = QToolButton(self)
+		self.reverse_sort_tool.clicked.connect(self.reverse_sort_tool_clicked)
+		self.tool_layout.addWidget(self.reverse_sort_tool)
+
+		self.reset_sort_tool = QToolButton(self)
+		self.reset_sort_tool.clicked.connect(self.reset_sort_tool_clicked)
+		self.tool_layout.addWidget(self.reset_sort_tool)
 
 		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 		self.tool_layout.addSpacerItem(self.spacer)
@@ -88,6 +116,9 @@ class UsersListDialog(QDialog):
 		self.setLayout(self.main_layout)
 		self.setWindowTitle("Server users")
 		self.setMinimumSize(600, 480)
+
+	def search_line_textChanged(self):
+		self.proxy_model.setFilterRegularExpression(self.search_line.text())
 
 	def user_db_new(self, username):
 		new_row = self.user_list.model().rowCount()
@@ -116,6 +147,19 @@ class UsersListDialog(QDialog):
 			self.user_model.removeRow(row)
 
 		self.user_list.update()
+
+	def straight_sort_tool_clicked(self):
+		column = 0  # Номер столбца, по которому вы хотите сортировать
+		order = Qt.SortOrder.AscendingOrder  # Используйте Qt.AscendingOrder или Qt.DescendingOrder
+		self.user_list.model().sort(column, order)
+
+	def reverse_sort_tool_clicked(self):
+		column = 0  # Номер столбца, по которому вы хотите сортировать
+		order = Qt.SortOrder.DescendingOrder  # Используйте Qt.AscendingOrder или Qt.DescendingOrder
+		self.user_list.model().sort(column, order)
+
+	def reset_sort_tool_clicked(self):
+		self.user_list.model().sort(-1)  # Установить столбец сортировки на -1, чтобы вернуть исходный порядок
 
 	def add_user_clicked(self):
 		self.create_user_form_dialog.show()
