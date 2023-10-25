@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QCheckBox, QGroupBox, QPushButton
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel
 
 from src.GlobalStates import GlobalStates
 
@@ -21,6 +21,11 @@ class CreateUserFormDialog(QDialog):
 
 		# Adding layouts
 		self.main_layout = QVBoxLayout()
+
+		self.attention_line = QLabel(self)
+		self.attention_line.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+		self.attention_line.setText("Once the user is created, the name cannot be changed!")
+		self.main_layout.addWidget(self.attention_line)
 
 		self.username = QLineEdit(self)
 		self.username.setPlaceholderText("Enter the username")
@@ -58,12 +63,21 @@ class CreateUserFormDialog(QDialog):
 		self.permission_layout.addWidget(self.permission_T)
 
 		self.permission_group = QGroupBox(self)
+		self.permission_group.setTitle("Permission")
 		self.permission_group.setLayout(self.permission_layout)
 		self.main_layout.addWidget(self.permission_group)
 
+		self.add_layout = QHBoxLayout()
+
 		self.add_butt = QPushButton("Add new user", self)
 		self.add_butt.clicked.connect(self.add_butt_clicked)
-		self.main_layout.addWidget(self.add_butt)
+		self.add_layout.addWidget(self.add_butt)
+
+		self.apply_butt = QPushButton("Add and apply", self)
+		self.apply_butt.clicked.connect(self.apply_butt_clicked)
+		self.add_layout.addWidget(self.apply_butt)
+
+		self.main_layout.addLayout(self.add_layout)
 
 		# Dialog window customization
 		self.setLayout(self.main_layout)
@@ -73,9 +87,9 @@ class CreateUserFormDialog(QDialog):
 	def add_butt_clicked(self):
 		GlobalStates.user_db.create_user(
 			self.username.text(),
-			self.password.text(),
-			self.home_dir.text(),
 			{
+				"password": self.password.text(),
+				"home_dir": self.home_dir.text(),
 				"permission_CWD": self.permission_e.isChecked(),
 				"permission_LIST": self.permission_l.isChecked(),
 				"permission_RETR": self.permission_r.isChecked(),
@@ -88,3 +102,7 @@ class CreateUserFormDialog(QDialog):
 				"permission_MFMT": self.permission_T.isChecked()
 			}
 		)
+
+	def apply_butt_clicked(self):
+		self.add_butt_clicked()
+		self.close()

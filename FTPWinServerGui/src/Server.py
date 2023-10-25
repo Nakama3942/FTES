@@ -40,15 +40,17 @@ class Server:
 		self.__starter = None
 		self.__stopper = None
 
-		self.__start()
+		# self.__start()
 
-	def __start(self):
-		self.__build()
-		self.__log()
+	# def __start(self):
+	# 	self.__build()
+	# 	if GlobalStates.isFirstRun:
+	# 		self.__log()
+	# 		GlobalStates.isFirstRun = False
 		# self.__run()
 		# self.__expectant()
 
-	def __build(self):
+	def build(self):
 		# self.add_user(
 		# 	self.__username,
 		# 	self.__password,
@@ -65,7 +67,10 @@ class Server:
 		self.__server.max_cons = 256
 		self.__server.max_cons_per_ip = 5
 
-	def __log(self):
+	def set_ip(self, ip):
+		self.__ip = ip
+
+	def set_log(self):
 		# Настройка логгирования
 		logger = logging.getLogger()
 		logger.setLevel(logging.INFO)
@@ -121,6 +126,9 @@ class Server:
 
 	def add_user(self, username, password, homedir, perm):
 		self.__authorizer.add_user(username, password, homedir, perm)
+
+	def remove_all_users(self):
+		self.__authorizer.user_table.clear()
 
 	def stop(self):
 		logging.shutdown()

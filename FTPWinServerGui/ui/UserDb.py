@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-# todo Переработать подключение к серверу
 # todo Сверстать красивый интерфейс
 
 from sqlalchemy import create_engine, Column, Integer, String, Boolean
@@ -58,8 +57,8 @@ class UserDb(QObject):
 	def get_all_users(self):
 		return self.session.query(User).all()
 
-	def create_user(self, username, password, home_dir, permissions):
-		new_user = User(username=username, password=password, home_dir=home_dir, **permissions)
+	def create_user(self, username, user_data):
+		new_user = User(username=username, **user_data)
 		self.session.add(new_user)
 		self.new.emit(username)
 		self.session.commit()
