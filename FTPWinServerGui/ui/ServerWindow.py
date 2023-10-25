@@ -13,13 +13,14 @@
 
 import pickle
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog
 from PyQt6.QtCore import QRegularExpression
 from PyQt6.QtGui import QRegularExpressionValidator
 
+from src.GlobalStates import GlobalStates
+from src.Server import Server
 from ui.Interceptor import Interceptor
 from ui.UsersListDialog import UsersListDialog
-from src.Server import Server
 
 class ServerWindow(QMainWindow):
 	def __init__(self):
@@ -41,7 +42,10 @@ class ServerWindow(QMainWindow):
 		self.console.setReadOnly(True)
 		self.main_layout.addWidget(self.console)
 
+		self.serving_layout = QHBoxLayout()
+
 		self.ip_address = QLineEdit(self)
+		self.ip_address.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 		self.ip_address.setPlaceholderText("Enter the IP address")
 		self.ip_address.setValidator(
 			QRegularExpressionValidator(
@@ -50,11 +54,14 @@ class ServerWindow(QMainWindow):
 				)
 			)
 		)
-		self.main_layout.addWidget(self.ip_address)
+		self.serving_layout.addWidget(self.ip_address)
 
 		self.user_list_butt = QPushButton("Users list", self)
+		self.user_list_butt.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 		self.user_list_butt.clicked.connect(self.user_list_butt_clicked)
-		self.main_layout.addWidget(self.user_list_butt)
+		self.serving_layout.addWidget(self.user_list_butt)
+
+		self.main_layout.addLayout(self.serving_layout)
 
 		self.serving_butt = QPushButton("Start server", self)
 		self.serving_butt.setCheckable(True)
@@ -75,37 +82,38 @@ class ServerWindow(QMainWindow):
 		self.users_list_dialog.show()
 
 	def serving_butt_clicked(self) -> None:
-		if self.serving.isChecked():
-			self.serving.setText("Stop server")
+		if self.serving_butt.isChecked():
+			self.serving_butt.setText("Stop server")
 
-			args = {"perm": "elradfmwMT", "stdout": self.STDOUT, "stderr": self.STDERR}
-			if self.ip_address.text() == "":
-				args['ip'] = "192.168.0.102"
-			else:
-				args['ip'] = self.ip_address.text()
-			if self.username.text() == "":
-				args['username'] = "user"
-			else:
-				args['username'] = self.username.text()
-			if self.password.text() == "":
-				args['password'] = "12345"
-			else:
-				args['password'] = self.password.text()
-			if self.home_dir.text() == "":
-				args['homedir'] = "."
-			else:
-				args['homedir'] = self.home_dir.text()
-			if self.log_levels.text() == "":
-				args['log_levels'] = "info"
-			else:
-				args['log_levels'] = self.log_levels.text()
+			args = {}
+			if self.ip_address.text() != "":
+				args = {"ip": self.ip_address.text(), "stdout": self.STDOUT, "stderr": self.STDERR}
 
 			# Создаем объект Popen и перенаправляем вывод
 			self.serv = Server(**args)
 
+			users = GlobalStates.user_db.get_all_users()
+			for user in users:
+				permissions_dict = {
+					"e": user.permission_CWD,
+					"l": user.permission_LIST,
+					"r": user.permission_RETR,
+					"a": user.permission_APPE,
+					"d": user.permission_DELE,
+					"f": user.permission_RNFR,
+					"m": user.permission_MKD,
+					"w": user.permission_STOR,
+					"M": user.permission_CHMOD,
+					"T": user.permission_MFMT
+				}
+				permission = ''.join(key for key, value in permissions_dict.items() if value)
+				self.serv.add_user(user.username, user.password, user.home_dir, permission)
+
+			self.serv.run()
+
 		else:
-			self.serving.setText("Start server")
-			self.serv.exit()
+			self.serving_butt.setText("Start server")
+			self.serv.stop()
 
 	def intercept_writing(self, text):
 		self.console.appendPlainText(text.strip())

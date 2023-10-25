@@ -26,5 +26,6 @@ class Interceptor(QObject):
 		# self.io_stream.write(text)
 		self.writing.emit(text)
 
-	# def flush(self):
-	# 	self.io_stream.flush()
+	def flush(self):
+		pass
+		# self.io_stream.flush()

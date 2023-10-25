@@ -23,13 +23,13 @@ from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import ThreadedFTPServer
 
 class Server:
-	def __init__(self, ip, username, password, homedir, perm, log_levels, stdout, stderr):
+	def __init__(self, ip, stdout, stderr):
 		self.__ip = ip
-		self.__username = username
-		self.__password = password
-		self.__homedir = homedir
-		self.__perm = perm
-		self.__log_levels = log_levels
+		# self.__username = username
+		# self.__password = password
+		# self.__homedir = homedir
+		# self.__perm = perm
+		# self.__log_levels = log_levels
 		self.__stdout = stdout
 		self.__stderr = stderr
 
@@ -45,16 +45,16 @@ class Server:
 	def __start(self):
 		self.__build()
 		self.__log()
-		self.__run()
+		# self.__run()
 		# self.__expectant()
 
 	def __build(self):
-		self.add_user(
-			self.__username,
-			self.__password,
-			self.__homedir,
-			self.__perm
-		)
+		# self.add_user(
+		# 	self.__username,
+		# 	self.__password,
+		# 	self.__homedir,
+		# 	self.__perm
+		# )
 
 		self.__handler.authorizer = self.__authorizer
 
@@ -68,21 +68,22 @@ class Server:
 	def __log(self):
 		# Настройка логгирования
 		logger = logging.getLogger()
-		match self.__log_levels:
-			case "info":
-				logger.setLevel(logging.INFO)
-			case "debug":
-				logger.setLevel(logging.DEBUG)
-			case "warning":
-				logger.setLevel(logging.WARNING)
-			case "error":
-				logger.setLevel(logging.ERROR)
-			case "critical":
-				logger.setLevel(logging.CRITICAL)
-			case "fatal":
-				logger.setLevel(logging.FATAL)
-			case "notset":
-				logger.setLevel(logging.NOTSET)
+		logger.setLevel(logging.INFO)
+		# match self.__log_levels:
+		# 	case "info":
+		# 		logger.setLevel(logging.INFO)
+		# 	case "debug":
+		# 		logger.setLevel(logging.DEBUG)
+		# 	case "warning":
+		# 		logger.setLevel(logging.WARNING)
+		# 	case "error":
+		# 		logger.setLevel(logging.ERROR)
+		# 	case "critical":
+		# 		logger.setLevel(logging.CRITICAL)
+		# 	case "fatal":
+		# 		logger.setLevel(logging.FATAL)
+		# 	case "notset":
+		# 		logger.setLevel(logging.NOTSET)
 
 		formatter = logging.Formatter('[%(levelname)s %(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -98,30 +99,30 @@ class Server:
 		file_handler.setFormatter(formatter)
 		logger.addHandler(file_handler)
 
-	def __run(self):
+	def run(self):
 		self.__starter = threading.Thread(target=self.__server.serve_forever)
 		self.__starter.start()
 
-	def __expectant(self):
-		while True:
-			event = keyboard.read_event()
-			if event.event_type == keyboard.KEY_DOWN:
-				match event.name:
-					case "esc":
-						self.exit()
-						break
-					case "a":
-						self.add_user(
-							input("Enter the user name: "),
-							input("Enter the user password: "),
-							input("Enter the user home directory: "),
-							input("Enter the user permissions: "),
-						)
+	# def __expectant(self):
+	# 	while True:
+	# 		event = keyboard.read_event()
+	# 		if event.event_type == keyboard.KEY_DOWN:
+	# 			match event.name:
+	# 				case "esc":
+	# 					self.exit()
+	# 					break
+	# 				case "a":
+	# 					self.add_user(
+	# 						input("Enter the user name: "),
+	# 						input("Enter the user password: "),
+	# 						input("Enter the user home directory: "),
+	# 						input("Enter the user permissions: "),
+	# 					)
 
 	def add_user(self, username, password, homedir, perm):
 		self.__authorizer.add_user(username, password, homedir, perm)
 
-	def exit(self):
+	def stop(self):
 		logging.shutdown()
 		self.__server.close_all()
 
