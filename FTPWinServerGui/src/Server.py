@@ -25,11 +25,6 @@ from pyftpdlib.servers import ThreadedFTPServer
 class Server:
 	def __init__(self, ip, stdout, stderr):
 		self.__ip = ip
-		# self.__username = username
-		# self.__password = password
-		# self.__homedir = homedir
-		# self.__perm = perm
-		# self.__log_levels = log_levels
 		self.__stdout = stdout
 		self.__stderr = stderr
 
@@ -40,24 +35,7 @@ class Server:
 		self.__starter = None
 		self.__stopper = None
 
-		# self.__start()
-
-	# def __start(self):
-	# 	self.__build()
-	# 	if GlobalStates.isFirstRun:
-	# 		self.__log()
-	# 		GlobalStates.isFirstRun = False
-		# self.__run()
-		# self.__expectant()
-
 	def build(self):
-		# self.add_user(
-		# 	self.__username,
-		# 	self.__password,
-		# 	self.__homedir,
-		# 	self.__perm
-		# )
-
 		self.__handler.authorizer = self.__authorizer
 
 		self.__handler.banner = "pyftpdlib основанный на ftpd."
@@ -74,21 +52,6 @@ class Server:
 		# Настройка логгирования
 		logger = logging.getLogger()
 		logger.setLevel(logging.INFO)
-		# match self.__log_levels:
-		# 	case "info":
-		# 		logger.setLevel(logging.INFO)
-		# 	case "debug":
-		# 		logger.setLevel(logging.DEBUG)
-		# 	case "warning":
-		# 		logger.setLevel(logging.WARNING)
-		# 	case "error":
-		# 		logger.setLevel(logging.ERROR)
-		# 	case "critical":
-		# 		logger.setLevel(logging.CRITICAL)
-		# 	case "fatal":
-		# 		logger.setLevel(logging.FATAL)
-		# 	case "notset":
-		# 		logger.setLevel(logging.NOTSET)
 
 		formatter = logging.Formatter('[%(levelname)s %(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -107,22 +70,6 @@ class Server:
 	def run(self):
 		self.__starter = threading.Thread(target=self.__server.serve_forever)
 		self.__starter.start()
-
-	# def __expectant(self):
-	# 	while True:
-	# 		event = keyboard.read_event()
-	# 		if event.event_type == keyboard.KEY_DOWN:
-	# 			match event.name:
-	# 				case "esc":
-	# 					self.exit()
-	# 					break
-	# 				case "a":
-	# 					self.add_user(
-	# 						input("Enter the user name: "),
-	# 						input("Enter the user password: "),
-	# 						input("Enter the user home directory: "),
-	# 						input("Enter the user permissions: "),
-	# 					)
 
 	def add_user(self, username, password, homedir, perm):
 		self.__authorizer.add_user(username, password, homedir, perm)

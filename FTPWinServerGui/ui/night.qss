@@ -1,0 +1,176 @@
+QMainWindow {
+	background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(44, 103, 76, 255), stop:0.427447 rgba(58, 88, 54, 255), stop:1 rgba(119, 136, 61, 255));
+	/*background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(255, 152, 41, 255), stop:0.427447 rgba(56, 253, 39, 255), stop:1 rgba(254, 255, 58, 255));*/
+}
+
+QDialog {
+	background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(44, 103, 76, 255), stop:0.427447 rgba(58, 88, 54, 255), stop:1 rgba(119, 136, 61, 255));
+}
+
+QFrame {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	font-size: 11pt;
+	color: rgba(230, 230, 230, 255);
+}
+
+QLabel {
+
+}
+
+QGroupBox {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	margin-top: 16px;
+	font-size: 16pt;
+	color: rgba(230, 230, 230, 255);
+}
+
+QGroupBox::title {
+	subcontrol-origin : margin;
+	subcontrol-position : top center;
+}
+
+QCheckBox {
+	font-size: 11pt;
+	color: rgba(230, 230, 230, 255);
+}
+
+QCheckBox::indicator {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	width: 13px;
+	height: 13px;
+}
+
+QCheckBox::indicator:unchecked {
+    background: rgba(255, 255, 255, 150);
+}
+
+QCheckBox::indicator:unchecked:hover {
+    background: rgba(255, 255, 255, 130);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    background: rgba(255, 255, 255, 170);
+}
+
+QCheckBox::indicator:checked {
+    background: rgba(255, 255, 255, 90);
+    image: url(./icon/check_24.svg);
+}
+
+QCheckBox::indicator:checked:hover {
+    background: rgba(255, 255, 255, 70);
+}
+
+QCheckBox::indicator:checked:pressed {
+    background: rgba(255, 255, 255, 110);
+}
+
+QCheckBox::indicator:indeterminate:hover {
+    background: rgba(255, 255, 255, 110);
+}
+
+QCheckBox::indicator:indeterminate:pressed {
+    background: rgba(255, 255, 255, 150);
+}
+
+QLineEdit {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	font-size: 11pt;
+	color: rgba(230, 230, 230, 255);
+}
+
+QPushButton {
+	color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	height: 40;
+	width: 40;
+	font-size: 13pt;
+	color: rgba(230, 230, 230, 255);
+}
+QPushButton:hover {
+	background-color:rgba(0, 0, 0, 50);
+}
+QPushButton:pressed {
+	background-color:rgba(0, 0, 0, 70);
+}
+
+QToolButton {
+	color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	height: 40;
+	width: 40;
+	font-size: 11pt;
+	color: rgba(230, 230, 230, 255);
+}
+QToolButton:hover {
+	background-color:rgba(0, 0, 0, 50);
+}
+QToolButton:pressed {
+	background-color:rgba(0, 0, 0, 70);
+}
+
+QTableView {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	gridline-color: rgba(0, 0, 0, 100);
+	font-size: 11pt;
+	color: rgba(230, 230, 230, 255);
+}\n"
+QHeaderView::section {
+	background-color: rgba(53, 53, 53, 20);
+	border: none;
+	height: 40px;
+	# font-size: 16pt;
+}
+QTableView::item {
+	border-style: none;
+	border-bottom: 1px solid rgba(0, 0, 0, 50);
+}
+QTableView::item:selected{
+	border: none;
+	background-color: rgba(0, 0, 0, 50);
+}
+QTableCornerButton::section {
+	background: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+}
+QScrollBar {
+	background-color: rgba(0, 0, 0, 30);
+	width: 20px;
+	height: 20px;
+	margin: 0 0 0 0;
+}
+QScrollBar::handle {
+	background-color: rgba(0, 0, 0, 200);
+	margin: 0px 0px 0px 0px;
+	border-radius: 4px;
+	min-width: 0px;
+	min-height: 0px;
+}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+	width: 0px;
+	height: 0px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+	width: 0px;
+	height: 0px;
+}
+QScrollBar::add-page, QScrollBar::sub-page {
+	background: none;
+	border-radius: 4px;
+}

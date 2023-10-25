@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 from PyQt6.QtCore import Qt
 
 from src.GlobalStates import GlobalStates
@@ -21,26 +21,23 @@ class UpdateUserFormDialog(QDialog):
 		super(UpdateUserFormDialog, self).__init__()
 
 		# Adding layouts
-		self.main_layout = QVBoxLayout()
+		self.frame_layout = QVBoxLayout()
 
 		self.username = QLineEdit(self)
 		self.username.setText("")
 		self.username.setReadOnly(True)
+		self.username.setObjectName("not_editable_line")
 		self.username.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-		self.main_layout.addWidget(self.username)
-		# self.username = QLabel(self)
-		# self.username.setText("")
-		# self.username.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-		# self.main_layout.addWidget(self.username)
+		self.frame_layout.addWidget(self.username)
 
 		self.password = QLineEdit(self)
 		self.password.setPlaceholderText("Enter the password")
 		self.password.setEchoMode(QLineEdit.EchoMode.Password)
-		self.main_layout.addWidget(self.password)
+		self.frame_layout.addWidget(self.password)
 
 		self.home_dir = QLineEdit(self)
 		self.home_dir.setPlaceholderText("Enter the home directory")
-		self.main_layout.addWidget(self.home_dir)
+		self.frame_layout.addWidget(self.home_dir)
 
 		self.permission_layout = QVBoxLayout()
 		self.permission_e = QCheckBox("Change directory (CWD, CDUP commands)", self)
@@ -67,11 +64,18 @@ class UpdateUserFormDialog(QDialog):
 		self.permission_group = QGroupBox(self)
 		self.permission_group.setTitle("Permission")
 		self.permission_group.setLayout(self.permission_layout)
-		self.main_layout.addWidget(self.permission_group)
+		self.frame_layout.addWidget(self.permission_group)
 
 		self.update_butt = QPushButton("Update a selected user", self)
 		self.update_butt.clicked.connect(self.update_butt_clicked)
-		self.main_layout.addWidget(self.update_butt)
+		self.frame_layout.addWidget(self.update_butt)
+
+		self.frame = QFrame()
+		self.frame.setLayout(self.frame_layout)
+		self.frame.setContentsMargins(0, 0, 0, 0)
+
+		self.main_layout = QVBoxLayout()
+		self.main_layout.addWidget(self.frame)
 
 		# Dialog window customization
 		self.setLayout(self.main_layout)

@@ -25,6 +25,8 @@ def on_about_to_quit():
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	app.aboutToQuit.connect(on_about_to_quit)
+	with open("./ui/light.qss", "r") as style:
+		app.setStyleSheet(style.read())
 	ui = ServerWindow()
 	ui.show()
 	sys.exit(app.exec())
