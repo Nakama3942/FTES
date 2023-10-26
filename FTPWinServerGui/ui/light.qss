@@ -11,14 +11,17 @@ QFrame, QLabel {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
+	font-family: "Montserrat Medium";
 	font-size: 11pt;
 }
 QFrame#attention_line {
-	background-color: none;
+	background-color: rgba(100, 0, 0, 20);
 	border: none;
-	border-radius: 0px;
+	border-radius: 4px;
+	font-family: "Montserrat Medium";
 	font-size: 13pt;
-	font-style: italic;
+	/*font-style: italic;*/
+	text-align: center;
 	color: rgba(100, 0, 0, 255);
 }
 
@@ -26,6 +29,7 @@ QPlainTextEdit {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
+	font-family: "Montserrat Medium";
 	font-size: 11pt;
 }
 
@@ -33,16 +37,25 @@ QGroupBox {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
-	margin-top: 16px;
+	margin-top: 26px;
+	font-family: "Montserrat Medium";
 	font-size: 16pt;
 }
 
 QGroupBox::title {
-	subcontrol-origin : margin;
-	subcontrol-position : top center;
+	background-color: rgba(0, 0, 0, 15);
+	border-top: 1px solid rgba(0, 0, 0, 40);
+	border-right: 1px solid rgba(0, 0, 0, 40);
+	/*border-bottom:*/
+	border-left: 1px solid rgba(0, 0, 0, 40);
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	subcontrol-origin: margin;
+	subcontrol-position: top center;
 }
 
 QCheckBox {
+	font-family: "Montserrat Medium";
 	font-size: 11pt;
 }
 
@@ -92,14 +105,19 @@ QLineEdit {
 	selection-background-color: rgba(32, 57, 31, 150);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
-	font-size: 11pt;
+	height: 25;
+	width: 150;
+	font-family: "Montserrat Medium";
+	font-size: 12pt;
+	/*lineedit-password-character: 9733;*/
+    lineedit-password-mask-delay: 1500;
 }
-
 QLineEdit#not_editable_line:read-only {
 	background-color: rgba(0, 0, 0, 20);
 	border: none;
 	border-radius: 4px;
-	font-size: 13pt;
+	font-family: "Montserrat Medium";
+	font-size: 15pt;
 }
 
 QPushButton {
@@ -107,8 +125,9 @@ QPushButton {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
-	height: 40;
-	width: 40;
+	height: 25;
+	width: 25;
+	font-family: "Montserrat Medium";
 	font-size: 13pt;
 }
 QPushButton:hover {
@@ -123,9 +142,10 @@ QToolButton {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
-	height: 40;
-	width: 40;
-	font-size: 11pt;
+	height: 30;
+	width: 30;
+	icon-size: 40px;
+	/*font-size: 11pt;*/
 }
 QToolButton:hover {
 	background-color:rgba(0, 0, 0, 50);
@@ -134,19 +154,21 @@ QToolButton:pressed {
 	background-color:rgba(0, 0, 0, 70);
 }
 
+
 QTableView {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-bottom-right-radius: 2px;
 	border-bottom-left-radius: 2px;
 	gridline-color: rgba(0, 0, 0, 100);
+	font-family: "Montserrat Medium";
 	font-size: 11pt;
 }
 QHeaderView::section {
-	background-color: rgba(53, 53, 53, 20);
-	border: none;
-	height: 40px;
-	# font-size: 16pt;
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	font-size: 11pt;
 }
 QTableView::item {
 	border-style: none;
@@ -168,21 +190,19 @@ QScrollBar {
 	margin: 0 0 0 0;
 }
 QScrollBar::handle {
-	background-color: rgba(0, 0, 0, 200);
-	margin: 0px 0px 0px 0px;
+	background-color: rgba(0, 0, 0, 150);
+	margin: 2px 2px 2px 2px;
 	border-radius: 4px;
 	min-width: 0px;
 	min-height: 0px;
 }
-QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-	width: 0px;
-	height: 0px;
-}
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+QScrollBar::add-line, QScrollBar::sub-line {
 	width: 0px;
 	height: 0px;
 }
 QScrollBar::add-page, QScrollBar::sub-page {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
 	background: none;
 	border-radius: 4px;
 }

@@ -11,14 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-# todo Завершить вёрстку интерфейса
 # todo Реализовать закрытие сервера при закрытии программы
+# todo Реализовать проверки ввода
+# todo По возможности, добавить свой Логгер вместо стандартного
 
 import pickle
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog, QTableView, QSpacerItem, QHeaderView, QLabel, QFrame
 from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSize
-from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform
+from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QFont
 
 from src.GlobalStates import GlobalStates
 from src.Server import Server
@@ -33,6 +34,9 @@ class ServerWindow(QMainWindow):
 		###################
 		# Initialization
 		###################
+		# Initialization of program font
+		QFontDatabase.addApplicationFont("./font/Montserrat-Medium.ttf")
+
 		# Initialization of Logger
 		self.STDOUT = Interceptor()
 		self.STDERR = Interceptor()
@@ -55,6 +59,7 @@ class ServerWindow(QMainWindow):
 		self.server_layout = QVBoxLayout()
 
 		self.console = QPlainTextEdit(self)
+		self.console.setMinimumSize(750, 0)
 		self.console.setReadOnly(True)
 		self.server_layout.addWidget(self.console)
 
@@ -75,28 +80,10 @@ class ServerWindow(QMainWindow):
 		self.serving_butt = QPushButton("Start server", self)
 		self.serving_butt.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 		self.serving_butt.setCheckable(True)
-		# self.serving_butt.setStyleSheet("QPushButton{\n"
-		# 								"	color: rgb(0, 0, 0);\n"
-		# 								"	background-color: rgba(0, 0, 0, 30);\n"
-		# 								"	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 								"	border-radius: 4px;\n"
-		# 								"	height: 40;\n"
-		# 								"}\n"
-		# 								"QPushButton:hover{\n"
-		# 								"	background-color:rgba(0, 0, 0, 50);\n"
-		# 								"}\n"
-		# 								"QPushButton:pressed{\n"
-		# 								"	background-color:rgba(0, 0, 0, 70);\n"
-		# 								"}")
 		self.serving_butt.clicked.connect(self.serving_butt_clicked)
 		self.serving_layout.addWidget(self.serving_butt)
 
 		self.server_layout.addLayout(self.serving_layout)
-
-		self.server_frame = QFrame()
-		self.server_frame.setLayout(self.server_layout)
-		self.server_frame.setContentsMargins(0, 0, 0, 0)
-		# self.server_frame.setStyleSheet("border-radius: 4px;")
 
 		##############################
 		#
@@ -133,11 +120,11 @@ class ServerWindow(QMainWindow):
 		user_list = GlobalStates.user_db.get_all_users()
 
 		# Creating a data model
-		self.user_model = QStandardItemModel(len(user_list), 3)
+		self.user_model = QStandardItemModel(len(user_list), 6)
 		self.user_model.setHorizontalHeaderLabels([
-			'Username',
-			'Password',
-			'Home Dir',
+			# 'Username',
+			# 'Password',
+			# 'Home Dir',
 			# 'Permission CWD',
 			# 'Permission LIST',
 			# 'Permission RETR',
@@ -148,6 +135,12 @@ class ServerWindow(QMainWindow):
 			# 'Permission STOR',
 			# 'Permission CHMOD',
 			# 'Permission MFMT'
+			'Username',
+			'Password',
+			'Home Dir',
+			'RETR',
+			'DELE',
+			'STOR',
 		])
 
 		# Filling the model with data from the list of users
@@ -162,57 +155,6 @@ class ServerWindow(QMainWindow):
 		self.user_list = QTableView(self)
 		self.user_list.setModel(self.proxy_model)
 		self.user_list.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-		self.user_list.setStyleSheet("QTableView {\n"
-									 "	background-color: rgba(0, 0, 0, 30);\n"
-									 "	border: 1px solid rgba(0, 0, 0, 40);\n"
-									 "	border-bottom-right-radius: 2px;\n"
-									 "	border-bottom-left-radius: 2px;\n"
-									 "	gridline-color: rgba(0, 0, 0, 100);\n"
-									 "	font-size: 11pt;\n"
-									 "}"
-									 "QHeaderView::section {\n"
-									 "	background-color: rgba(0, 0, 0, 30);\n"
-									 "	border: 1px solid rgba(0, 0, 0, 40);\n"
-									 "	border-radius: 4px;\n"
-									 "	font-size: 11pt;\n"
-									 "}\n"
-									 "QTableView::item {\n"
-									 "	border-style: none;\n"
-									 "	border-bottom: 1px solid rgba(0, 0, 0, 50);\n"
-									 "}\n"
-									 "QTableView::item:selected{\n"
-									 "	border: none;\n"
-									 "	background-color: rgba(0, 0, 0, 50);\n"
-									 "}\n"
-									 "QTableCornerButton::section {\n"
-									 "	background: rgba(0, 0, 0, 30);\n"
-									 "	border: 1px solid rgba(0, 0, 0, 40);\n"
-									 "	border-radius: 4px;\n"
-									 "}"
-									 "QScrollBar {\n"
-									 "	background-color: rgba(0, 0, 0, 30);\n"
-									 "	width: 20px;\n"
-									 "	height: 20px;\n"
-									 "	margin: 0 0 0 0;\n"
-									 "}\n"
-									 "QScrollBar::handle {\n"
-									 "	background-color: rgba(0, 0, 0, 150);\n"
-									 "	margin: 2px 2px 2px 2px;\n"
-									 "	border-radius: 4px;\n"
-									 "	min-width: 0px;\n"
-									 "	min-height: 0px;\n"
-									 "}\n"
-									 "QScrollBar::add-line, QScrollBar::sub-line {\n"
-									 "	width: 0px;\n"
-									 "	height: 0px;\n"
-									 "}\n"
-									 "QScrollBar::add-page, QScrollBar::sub-page {\n"
-									 "	background-color: rgba(0, 0, 0, 30);\n"
-									 "	border: 1px solid rgba(0, 0, 0, 40);\n"
-									 "	background: none;\n"
-									 "	border-radius: 4px;\n"
-									 "}\n"
-									 )
 		GlobalStates.user_db.new.connect(self.user_db_new)
 		GlobalStates.user_db.dirty.connect(self.user_db_dirty)
 		GlobalStates.user_db.deleted.connect(self.user_db_deleted)
@@ -225,61 +167,16 @@ class ServerWindow(QMainWindow):
 
 		self.straight_sort_tool = QToolButton(self)
 		self.straight_sort_tool.setIcon(QIcon(QPixmap("./icon/sort_24.svg")))
-		self.straight_sort_tool.setIconSize(QSize(40, 40))
-		# self.straight_sort_tool.setStyleSheet("QToolButton{\n"
-		# 									  "	color: rgb(0, 0, 0);\n"
-		# 									  "	background-color: rgba(0, 0, 0, 30);\n"
-		# 									  "	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 									  "	border-radius: 4px;\n"
-		# 									  "	height: 40;\n"
-		# 									  "	width: 40;\n"
-		# 									  "}\n"
-		# 									  "QToolButton:hover{\n"
-		# 									  "	background-color:rgba(0, 0, 0, 50);\n"
-		# 									  "}\n"
-		# 									  "QToolButton:pressed{\n"
-		# 									  "	background-color:rgba(0, 0, 0, 70);\n"
-		# 									  "}")
 		self.straight_sort_tool.clicked.connect(self.straight_sort_tool_clicked)
 		self.tool_layout.addWidget(self.straight_sort_tool)
 
 		self.reverse_sort_tool = QToolButton(self)
-		self.reverse_sort_tool.setIcon(QIcon(QPixmap("./icon/sort_24.svg").transformed(QTransform().scale(-1, 1))))
-		self.reverse_sort_tool.setIconSize(QSize(40, 40))
-		# self.reverse_sort_tool.setStyleSheet("QToolButton{\n"
-		# 									 "	color: rgb(0, 0, 0);\n"
-		# 									 "	background-color: rgba(0, 0, 0, 30);\n"
-		# 									 "	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 									 "	border-radius: 4px;\n"
-		# 									 "	height: 40;\n"
-		# 									 "	width: 40;\n"
-		# 									 "}\n"
-		# 									 "QToolButton:hover{\n"
-		# 									 "	background-color:rgba(0, 0, 0, 50);\n"
-		# 									 "}\n"
-		# 									 "QToolButton:pressed{\n"
-		# 									 "	background-color:rgba(0, 0, 0, 70);\n"
-		# 									 "}")
+		self.reverse_sort_tool.setIcon(QIcon(QPixmap("./icon/sort_24.svg").transformed(QTransform().scale(1, -1))))
 		self.reverse_sort_tool.clicked.connect(self.reverse_sort_tool_clicked)
 		self.tool_layout.addWidget(self.reverse_sort_tool)
 
 		self.reset_sort_tool = QToolButton(self)
 		self.reset_sort_tool.setIcon(QIcon(QPixmap("./icon/reset_sort_24.svg")))
-		self.reset_sort_tool.setIconSize(QSize(40, 40))
-		# self.reset_sort_tool.setStyleSheet("QToolButton{\n"
-		# 								   "	color: rgb(0, 0, 0);\n"
-		# 								   "	background-color: rgba(0, 0, 0, 30);\n"
-		# 								   "	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 								   "	border-radius: 4px;\n"
-		# 								   "	height: 40;\n"
-		# 								   "	width: 40;\n"
-		# 								   "}\n"
-		# 								   "QToolButton:hover{\n"
-		# 								   "	background-color:rgba(0, 0, 0, 50);\n"
-		# 								   "}\n"
-		# 								   "QToolButton:pressed{\n"
-		# 								   "	background-color:rgba(0, 0, 0, 70);\n"
-		# 								   "}")
 		self.reset_sort_tool.clicked.connect(self.reset_sort_tool_clicked)
 		self.tool_layout.addWidget(self.reset_sort_tool)
 
@@ -288,72 +185,20 @@ class ServerWindow(QMainWindow):
 
 		self.add_user_tool = QToolButton(self)
 		self.add_user_tool.setIcon(QIcon(QPixmap("./icon/user_add_24.svg")))
-		self.add_user_tool.setIconSize(QSize(40, 40))
-		# self.add_user_tool.setStyleSheet("QToolButton{\n"
-		# 								 "	color: rgb(0, 0, 0);\n"
-		# 								 "	background-color: rgba(0, 0, 0, 30);\n"
-		# 								 "	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 								 "	border-radius: 4px;\n"
-		# 								 "	height: 40;\n"
-		# 								 "	width: 40;\n"
-		# 								 "}\n"
-		# 								 "QToolButton:hover{\n"
-		# 								 "	background-color:rgba(0, 0, 0, 50);\n"
-		# 								 "}\n"
-		# 								 "QToolButton:pressed{\n"
-		# 								 "	background-color:rgba(0, 0, 0, 70);\n"
-		# 								 "}")
 		self.add_user_tool.clicked.connect(self.add_user_tool_clicked)
 		self.tool_layout.addWidget(self.add_user_tool)
 
 		self.update_user_tool = QToolButton(self)
 		self.update_user_tool.setIcon(QIcon(QPixmap("./icon/user_update_24.svg")))
-		self.update_user_tool.setIconSize(QSize(40, 40))
-		# self.update_user_tool.setStyleSheet("QToolButton{\n"
-		# 									"	color: rgb(0, 0, 0);\n"
-		# 									"	background-color: rgba(0, 0, 0, 30);\n"
-		# 									"	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 									"	border-radius: 4px;\n"
-		# 									"	height: 40;\n"
-		# 									"	width: 40;\n"
-		# 									"}\n"
-		# 									"QToolButton:hover{\n"
-		# 									"	background-color:rgba(0, 0, 0, 50);\n"
-		# 									"}\n"
-		# 									"QToolButton:pressed{\n"
-		# 									"	background-color:rgba(0, 0, 0, 70);\n"
-		# 									"}")
 		self.update_user_tool.clicked.connect(self.update_user_tool_clicked)
 		self.tool_layout.addWidget(self.update_user_tool)
 
 		self.remove_user_tool = QToolButton(self)
 		self.remove_user_tool.setIcon(QIcon(QPixmap("./icon/user_remove_24.svg")))
-		self.remove_user_tool.setIconSize(QSize(40, 40))
-		# self.remove_user_tool.setStyleSheet("QToolButton{\n"
-		# 									"	color: rgb(0, 0, 0);\n"
-		# 									"	background-color: rgba(0, 0, 0, 30);\n"
-		# 									"	border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 									"	border-radius: 4px;\n"
-		# 									"	height: 40;\n"
-		# 									"	width: 40;\n"
-		# 									"}\n"
-		# 									"QToolButton:hover{\n"
-		# 									"	background-color:rgba(0, 0, 0, 50);\n"
-		# 									"}\n"
-		# 									"QToolButton:pressed{\n"
-		# 									"	background-color:rgba(0, 0, 0, 70);\n"
-		# 									"}")
 		self.remove_user_tool.clicked.connect(self.remove_user_tool_clicked)
 		self.tool_layout.addWidget(self.remove_user_tool)
 
 		self.users_layout.addLayout(self.tool_layout)
-
-		self.users_frame = QFrame()
-		self.users_frame.setLayout(self.users_layout)
-		self.users_frame.setContentsMargins(0, 0, 0, 0)
-		# self.users_frame.setStyleSheet("background-color: rgba(0, 0, 0, 30);\n"
-		# 							   "border: 1px solid rgba(0, 0, 0, 40);\n"
-		# 							   "border-radius: 4px;\n")
 
 		##############################
 		#
@@ -361,17 +206,17 @@ class ServerWindow(QMainWindow):
 		#
 		##############################
 		self.main_layout = QHBoxLayout()
-		# self.main_layout.addLayout(self.server_layout)
-		self.main_layout.addWidget(self.server_frame)
-		# self.main_layout.addLayout(self.users_layout)
-		self.main_layout.addWidget(self.users_frame)
+		# self.main_layout.setContentsMargins(20, 6, 6, 6)
+		self.main_layout.addLayout(self.server_layout)
+		self.main_layout.addLayout(self.users_layout)
 
 		self.central_widget = QWidget()
 		self.central_widget.setLayout(self.main_layout)
 		self.setCentralWidget(self.central_widget)
 		self.setWindowTitle("FTES WSG - File Transfer EcoSystem Windows Server Graphic")
-		self.setMinimumSize(1000, 480)
-		# self.setStyleSheet("background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(255, 152, 41, 255), stop:0.427447 rgba(56, 253, 39, 255), stop:1 rgba(254, 255, 58, 255));\n")
+		self.setMinimumSize(1280, 720)
+
+	# self.setStyleSheet("background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(255, 152, 41, 255), stop:0.427447 rgba(56, 253, 39, 255), stop:1 rgba(254, 255, 58, 255));\n")
 
 	##############################
 	#
@@ -505,9 +350,9 @@ class ServerWindow(QMainWindow):
 	def process_table_row(self, row, user):
 		"""Implementation of adding table item in user row"""
 		for col, data in enumerate([
-			user.username,
-			user.password,
-			user.home_dir,
+			# user.username,
+			# user.password,
+			# user.home_dir,
 			# user.permission_CWD,
 			# user.permission_LIST,
 			# user.permission_RETR,
@@ -518,6 +363,12 @@ class ServerWindow(QMainWindow):
 			# user.permission_STOR,
 			# user.permission_CHMOD,
 			# user.permission_MFMT
+			user.username,
+			user.password,
+			user.home_dir,
+			user.permission_RETR,
+			user.permission_DELE,
+			user.permission_STOR
 		]):
 			item = QStandardItem(str(data))
 			item.setEditable(False)

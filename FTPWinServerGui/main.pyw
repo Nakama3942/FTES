@@ -15,9 +15,8 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from ui.ServerWindow import ServerWindow
-
 from src.GlobalStates import GlobalStates
+from ui.ServerWindow import ServerWindow
 
 def on_about_to_quit():
 	GlobalStates.user_db.close()

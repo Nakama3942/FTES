@@ -80,15 +80,8 @@ class CreateUserFormDialog(QDialog):
 
 		self.frame_layout.addLayout(self.add_layout)
 
-		self.frame = QFrame()
-		self.frame.setLayout(self.frame_layout)
-		self.frame.setContentsMargins(0, 0, 0, 0)
-
-		self.main_layout = QVBoxLayout()
-		self.main_layout.addWidget(self.frame)
-
 		# Dialog window customization
-		self.setLayout(self.main_layout)
+		self.setLayout(self.frame_layout)
 		self.setWindowTitle("Add new user")
 		self.setMinimumSize(600, 480)
 
