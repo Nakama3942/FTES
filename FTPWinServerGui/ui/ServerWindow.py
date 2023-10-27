@@ -15,7 +15,9 @@
 # todo Реализовать проверки ввода
 # todo По возможности, добавить свой Логгер вместо стандартного
 
+from datetime import datetime
 import pickle
+import re
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog, QTableView, QSpacerItem, QHeaderView, QLabel, QFrame
 from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSize
@@ -26,6 +28,7 @@ from src.Server import Server
 from ui.Interceptor import Interceptor
 from ui.CreateUserFormDialog import CreateUserFormDialog
 from ui.UpdateUserFormDialog import UpdateUserFormDialog
+from ui.AboutUserFormDialog import AboutUserFormDialog
 
 class ServerWindow(QMainWindow):
 	def __init__(self):
@@ -36,6 +39,8 @@ class ServerWindow(QMainWindow):
 		###################
 		# Initialization of program font
 		QFontDatabase.addApplicationFont("./font/Montserrat-Medium.ttf")
+		QFontDatabase.addApplicationFont("./font/JetBrainsMono-Light.ttf")
+		# print(QFontDatabase.applicationFontFamilies(id)[0])
 
 		# Initialization of Logger
 		self.STDOUT = Interceptor()
@@ -46,6 +51,7 @@ class ServerWindow(QMainWindow):
 		# Initialization of dialog windows
 		self.create_user_form_dialog = CreateUserFormDialog()
 		self.update_user_form_dialog = UpdateUserFormDialog()
+		self.about_user_form_dialog = AboutUserFormDialog()
 
 		# Initialization of Server
 		self.serv = Server("", self.STDOUT, self.STDERR)
@@ -67,7 +73,7 @@ class ServerWindow(QMainWindow):
 
 		self.ip_address = QLineEdit(self)
 		self.ip_address.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-		self.ip_address.setPlaceholderText("Enter the IP address")
+		self.ip_address.setPlaceholderText("Enter the IP")
 		self.ip_address.setValidator(
 			QRegularExpressionValidator(
 				QRegularExpression(
@@ -104,7 +110,7 @@ class ServerWindow(QMainWindow):
 		self.search_layout = QHBoxLayout()
 
 		self.search_line = QLineEdit(self)
-		self.search_line.setPlaceholderText("Enter the username who needs to be search")
+		self.search_line.setPlaceholderText("Search username")
 		self.search_line.textChanged.connect(self.search_line_textChanged)
 		self.search_layout.addWidget(self.search_line)
 
@@ -120,27 +126,12 @@ class ServerWindow(QMainWindow):
 		user_list = GlobalStates.user_db.get_all_users()
 
 		# Creating a data model
-		self.user_model = QStandardItemModel(len(user_list), 6)
+		self.user_model = QStandardItemModel(len(user_list), 4)
 		self.user_model.setHorizontalHeaderLabels([
-			# 'Username',
-			# 'Password',
-			# 'Home Dir',
-			# 'Permission CWD',
-			# 'Permission LIST',
-			# 'Permission RETR',
-			# 'Permission APPE',
-			# 'Permission DELE',
-			# 'Permission RNFR',
-			# 'Permission MKD',
-			# 'Permission STOR',
-			# 'Permission CHMOD',
-			# 'Permission MFMT'
 			'Username',
-			'Password',
-			'Home Dir',
 			'RETR',
 			'DELE',
-			'STOR',
+			'STOR'
 		])
 
 		# Filling the model with data from the list of users
@@ -161,7 +152,7 @@ class ServerWindow(QMainWindow):
 		self.users_layout.addWidget(self.user_list)
 
 		###################
-		# Adding a tool button
+		# Adding a tool buttons
 		###################
 		self.tool_layout = QHBoxLayout()
 
@@ -193,6 +184,11 @@ class ServerWindow(QMainWindow):
 		self.update_user_tool.clicked.connect(self.update_user_tool_clicked)
 		self.tool_layout.addWidget(self.update_user_tool)
 
+		self.about_user_tool = QToolButton(self)
+		self.about_user_tool.setIcon(QIcon(QPixmap("./icon/about_user_24.svg")))
+		self.about_user_tool.clicked.connect(self.about_user_tool_clicked)
+		self.tool_layout.addWidget(self.about_user_tool)
+
 		self.remove_user_tool = QToolButton(self)
 		self.remove_user_tool.setIcon(QIcon(QPixmap("./icon/user_remove_24.svg")))
 		self.remove_user_tool.clicked.connect(self.remove_user_tool_clicked)
@@ -216,8 +212,6 @@ class ServerWindow(QMainWindow):
 		self.setWindowTitle("FTES WSG - File Transfer EcoSystem Windows Server Graphic")
 		self.setMinimumSize(1280, 720)
 
-	# self.setStyleSheet("background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(255, 152, 41, 255), stop:0.427447 rgba(56, 253, 39, 255), stop:1 rgba(254, 255, 58, 255));\n")
-
 	##############################
 	#
 	# Implementations
@@ -229,6 +223,21 @@ class ServerWindow(QMainWindow):
 	def intercept_writing(self, text):
 		"""Implementation of log writing"""
 		self.console.appendPlainText(text.strip())
+
+		text_re = re.search(r"\[.*\] .*-\[(.*?)\]", text)
+		if text_re:
+			username = text_re.group(1)
+			if username:
+				GlobalStates.user_db.silent_spy_update(username, {"user_logs": text})
+				if re.search(r"logged in", text):
+					GlobalStates.user_db.set_user_date(username, {"last_login_date": datetime.now().replace(microsecond=0)})
+			else:
+				# Если вторые квадратные скобки пусты, ищем имя пользователя после слова USER в одинарных кавычках
+				text_re = re.search(r"USER '(.*?)'", text)
+				if text_re:
+					username = text_re.group(1)
+					if username:
+						GlobalStates.user_db.silent_spy_update(username, {"user_logs": text})
 
 	def serving_butt_clicked(self) -> None:
 		"""Implementation of connect/disconnect button"""
@@ -333,6 +342,16 @@ class ServerWindow(QMainWindow):
 		self.update_user_form_dialog.set_username(username)
 		self.update_user_form_dialog.show()
 
+	def about_user_tool_clicked(self):
+		"""Implementation of showing a dialog window for view data about user"""
+		selected_indexes = self.user_list.selectionModel().selectedRows()
+		if len(selected_indexes) == 0:
+			return
+		username_index = self.user_model.index(selected_indexes[0].row(), 0)
+		username = self.user_model.data(username_index)
+		self.about_user_form_dialog.set_username(username)
+		self.about_user_form_dialog.show()
+
 	def remove_user_tool_clicked(self):
 		"""Implementation of showing a dialog window for deleting an old user"""
 		selected_indexes = self.user_list.selectionModel().selectedRows()
@@ -350,22 +369,7 @@ class ServerWindow(QMainWindow):
 	def process_table_row(self, row, user):
 		"""Implementation of adding table item in user row"""
 		for col, data in enumerate([
-			# user.username,
-			# user.password,
-			# user.home_dir,
-			# user.permission_CWD,
-			# user.permission_LIST,
-			# user.permission_RETR,
-			# user.permission_APPE,
-			# user.permission_DELE,
-			# user.permission_RNFR,
-			# user.permission_MKD,
-			# user.permission_STOR,
-			# user.permission_CHMOD,
-			# user.permission_MFMT
 			user.username,
-			user.password,
-			user.home_dir,
 			user.permission_RETR,
 			user.permission_DELE,
 			user.permission_STOR

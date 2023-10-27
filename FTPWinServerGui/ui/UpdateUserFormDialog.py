@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
+from datetime import datetime
+
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 from PyQt6.QtCore import Qt
 
@@ -93,6 +95,7 @@ class UpdateUserFormDialog(QDialog):
 				"permission_MFMT": self.permission_T.isChecked()
 			}
 		)
+		GlobalStates.user_db.set_user_date(self.username.text(), {"date_of_change": datetime.now().replace(microsecond=0)})
 		self.close()
 
 	def set_username(self, username):

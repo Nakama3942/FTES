@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
+from datetime import datetime
+
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizePolicy, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 
 from src.GlobalStates import GlobalStates
@@ -103,6 +105,7 @@ class CreateUserFormDialog(QDialog):
 				"permission_MFMT": self.permission_T.isChecked()
 			}
 		)
+		GlobalStates.user_db.set_user_date(self.username.text(), {"date_of_creation": datetime.now().replace(microsecond=0)})
 
 	def apply_butt_clicked(self):
 		self.add_butt_clicked()

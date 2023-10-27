@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, update, Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -25,6 +25,9 @@ class User(Base):
 	username = Column(String)
 	password = Column(String)
 	home_dir = Column(String)
+	date_of_creation = Column(DateTime)
+	date_of_change = Column(DateTime)
+	last_login_date = Column(DateTime)
 	permission_CWD = Column(Boolean)  # change directory (CWD, CDUP commands)
 	permission_LIST = Column(Boolean)  # list files (LIST, NLST, STAT, MLSD, MLST, SIZE commands)
 	permission_RETR = Column(Boolean)  # retrieve file from the server (RETR command)
@@ -35,6 +38,7 @@ class User(Base):
 	permission_STOR = Column(Boolean)  # store a file to the server (STOR, STOU commands)
 	permission_CHMOD = Column(Boolean)  # change file mode / permission (SITE CHMOD command)
 	permission_MFMT = Column(Boolean)  # change file modification time (SITE MFMT command)
+	user_logs = Column(String)
 
 class UserDb(QObject):
 	new = pyqtSignal(str)
@@ -70,6 +74,29 @@ class UserDb(QObject):
 
 			# Фиксируем изменения в базе данных
 			self.dirty.emit(username)
+			self.session.commit()
+
+	def silent_spy_update(self, username, new_data):
+		user = self.get_user(username)
+		if user:
+			for key, value in new_data.items():
+				# Создаем объект запроса для обновления поля
+				update_query = update(User).where(User.username == username)
+				# Обновляем поле, добавляя новое значение
+				update_query = update_query.values({key: User.__dict__[key] + value})
+				# Выполняем запрос
+				self.session.execute(update_query)
+
+			self.session.commit()
+
+	def set_user_date(self, username, new_data):
+		user = self.get_user(username)
+		if user:
+			# Обновляем поля пользователя
+			for key, value in new_data.items():
+				setattr(user, key, value)
+
+			# Фиксируем изменения в базе данных
 			self.session.commit()
 
 	def remove_user(self, username):
