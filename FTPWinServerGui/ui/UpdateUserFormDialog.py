@@ -64,7 +64,7 @@ class UpdateUserFormDialog(QDialog):
 		self.permission_layout.addWidget(self.permission_T)
 
 		self.permission_group = QGroupBox(self)
-		self.permission_group.setTitle("Permission")
+		self.permission_group.setTitle("Permissions")
 		self.permission_group.setLayout(self.permission_layout)
 		self.frame_layout.addWidget(self.permission_group)
 
@@ -74,7 +74,7 @@ class UpdateUserFormDialog(QDialog):
 
 		# Dialog window customization
 		self.setLayout(self.frame_layout)
-		self.setWindowTitle("Add new user")
+		self.setWindowTitle("Update user properties")
 		self.setMinimumSize(600, 480)
 
 	def update_butt_clicked(self):

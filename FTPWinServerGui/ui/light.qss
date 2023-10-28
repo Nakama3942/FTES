@@ -24,6 +24,13 @@ QFrame#attention_line {
 	text-align: center;
 	color: rgba(100, 0, 0, 255);
 }
+QFrame#frame_in_frame {
+	background-color: none;
+	border: none;
+	border-radius: 0px;
+	font-family: "Montserrat Medium";
+	font-size: 13pt;
+}
 
 QPlainTextEdit {
 	background-color: rgba(0, 0, 0, 30);
@@ -31,7 +38,7 @@ QPlainTextEdit {
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
 	font-family: "JetBrains Mono Light";
-	font-size: 11pt;
+	font-size: 9pt;
 }
 
 QGroupBox {
@@ -42,7 +49,6 @@ QGroupBox {
 	font-family: "Montserrat Medium";
 	font-size: 16pt;
 }
-
 QGroupBox::title {
 	background-color: rgba(0, 0, 0, 15);
 	border-top: 1px solid rgba(0, 0, 0, 40);
@@ -119,6 +125,13 @@ QLineEdit#not_editable_line:read-only {
 	border-radius: 4px;
 	font-family: "Montserrat Medium";
 	font-size: 15pt;
+}
+QLineEdit#frame_in_frame {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	border-radius: 0px;
+	font-family: "Montserrat Medium";
+	font-size: 12pt;
 }
 
 QPushButton {

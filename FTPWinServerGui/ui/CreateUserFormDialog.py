@@ -66,7 +66,7 @@ class CreateUserFormDialog(QDialog):
 		self.permission_layout.addWidget(self.permission_T)
 
 		self.permission_group = QGroupBox(self)
-		self.permission_group.setTitle("Permission")
+		self.permission_group.setTitle("Permissions")
 		self.permission_group.setLayout(self.permission_layout)
 		self.frame_layout.addWidget(self.permission_group)
 

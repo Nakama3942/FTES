@@ -14,6 +14,7 @@
 # todo Реализовать закрытие сервера при закрытии программы
 # todo Реализовать проверки ввода
 # todo По возможности, добавить свой Логгер вместо стандартного
+# todo Сделать сохранение IP адреса сервера
 
 from datetime import datetime
 import pickle
@@ -29,6 +30,7 @@ from ui.Interceptor import Interceptor
 from ui.CreateUserFormDialog import CreateUserFormDialog
 from ui.UpdateUserFormDialog import UpdateUserFormDialog
 from ui.AboutUserFormDialog import AboutUserFormDialog
+from ui.IconLineFrame import IconLineFrame
 
 class ServerWindow(QMainWindow):
 	def __init__(self):
@@ -108,15 +110,11 @@ class ServerWindow(QMainWindow):
 		self.users_layout.addWidget(self.attention_line)
 
 		self.search_layout = QHBoxLayout()
-
-		self.search_line = QLineEdit(self)
-		self.search_line.setPlaceholderText("Search username")
-		self.search_line.textChanged.connect(self.search_line_textChanged)
-		self.search_layout.addWidget(self.search_line)
-
+		self.icon_frame = IconLineFrame("./icon/search_user_24.svg", "Search username")
+		self.icon_frame.frame_line_edit.textChanged.connect(self.search_line_textChanged)
+		self.search_layout.addWidget(self.icon_frame)
 		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 		self.search_layout.addSpacerItem(self.spacer)
-
 		self.users_layout.addLayout(self.search_layout)
 
 		###################
@@ -185,7 +183,7 @@ class ServerWindow(QMainWindow):
 		self.tool_layout.addWidget(self.update_user_tool)
 
 		self.about_user_tool = QToolButton(self)
-		self.about_user_tool.setIcon(QIcon(QPixmap("./icon/about_user_24.svg")))
+		self.about_user_tool.setIcon(QIcon(QPixmap("./icon/user_about_24.svg")))
 		self.about_user_tool.clicked.connect(self.about_user_tool_clicked)
 		self.tool_layout.addWidget(self.about_user_tool)
 
@@ -280,7 +278,7 @@ class ServerWindow(QMainWindow):
 	###################
 	def search_line_textChanged(self):
 		"""Implementation of search in users table"""
-		self.proxy_model.setFilterRegularExpression(self.search_line.text())
+		self.proxy_model.setFilterRegularExpression(self.icon_frame.frame_line_edit.text())
 
 	def user_db_new(self, username):
 		"""Implementation of adding a new user"""
