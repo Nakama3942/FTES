@@ -102,7 +102,8 @@ class CreateUserFormDialog(QDialog):
 				"permission_MKD": self.permission_m.isChecked(),
 				"permission_STOR": self.permission_w.isChecked(),
 				"permission_CHMOD": self.permission_M.isChecked(),
-				"permission_MFMT": self.permission_T.isChecked()
+				"permission_MFMT": self.permission_T.isChecked(),
+				"user_logs": ""
 			}
 		)
 		GlobalStates.user_db.set_user_date(self.username.text(), {"date_of_creation": datetime.now().replace(microsecond=0)})

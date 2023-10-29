@@ -22,6 +22,27 @@ from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import ThreadedFTPServer
 
+from src.GlobalStates import GlobalStates
+
+class CustomFTPHandler(FTPHandler):
+	def ftp_LIST(self, path):
+		# Получите список файлов и директорий как обычно
+		file_list = super().ftp_LIST(path)
+
+		# Примените фильтрацию, исключив файлы и директории, которые вы хотите скрыть
+		filtered_list = []
+		for item in file_list:
+			filename = item[0]  # Имя файла или директории
+			if not self.should_be_hidden(filename):
+				filtered_list.append(item)
+
+		return filtered_list
+
+	def should_be_hidden(self, filename):
+		# Проверка, должен ли файл быть исключен
+		excluded_files = ["users_database.db-journal", "users_database.db", "pyftpd.log"]  # Список файлов для исключения
+		return filename in excluded_files
+
 class Server:
 	def __init__(self, ip, stdout, stderr):
 		self.__ip = ip
@@ -29,7 +50,7 @@ class Server:
 		self.__stderr = stderr
 
 		self.__authorizer = DummyAuthorizer()
-		self.__handler = FTPHandler
+		self.__handler = CustomFTPHandler
 		self.__server = None
 
 		self.__starter = None
@@ -63,7 +84,7 @@ class Server:
 		logger.addHandler(console_handler)
 
 		# Создание обработчика для записи в файл
-		file_handler = logging.FileHandler('pyftpd.log', encoding="utf-8")
+		file_handler = logging.FileHandler(f"{GlobalStates.program_dir}\pyftpd.log", encoding="utf-8")
 		file_handler.setFormatter(formatter)
 		logger.addHandler(file_handler)
 

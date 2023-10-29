@@ -28,6 +28,9 @@ class User(Base):
 	date_of_creation = Column(DateTime)
 	date_of_change = Column(DateTime)
 	last_login_date = Column(DateTime)
+	# todo Время длительности последнего сеанса
+	# todo Объём загруженных данных за всё время
+	# todo Объём выгруженных данных за всё время
 	permission_CWD = Column(Boolean)  # change directory (CWD, CDUP commands)
 	permission_LIST = Column(Boolean)  # list files (LIST, NLST, STAT, MLSD, MLST, SIZE commands)
 	permission_RETR = Column(Boolean)  # retrieve file from the server (RETR command)
@@ -45,10 +48,10 @@ class UserDb(QObject):
 	dirty = pyqtSignal(str)
 	deleted = pyqtSignal(str)
 
-	def __init__(self):
+	def __init__(self, program_dir):
 		super(UserDb, self).__init__()
 
-		self.engine = create_engine("sqlite:///users_database.db")
+		self.engine = create_engine(f"sqlite:///{program_dir}\\users_database.db")
 		Base.metadata.create_all(self.engine)
 		self.Session = sessionmaker(bind=self.engine)
 		self.session = self.Session()

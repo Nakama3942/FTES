@@ -149,4 +149,4 @@ class AboutUserFormDialog(QDialog):
 			item.setSelectable(False)
 			self.user_permission_model.setItem(0, col, item)
 
-		self.user_logs.appendPlainText(user.user_logs.strip())
+		self.user_logs.setPlainText(str(user.user_logs).strip())

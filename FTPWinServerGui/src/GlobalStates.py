@@ -14,4 +14,5 @@
 from ui.UserDb import UserDb
 
 class GlobalStates:
-	user_db = UserDb()
+	user_db = None
+	program_dir = ""

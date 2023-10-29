@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-# todo Реализовать закрытие сервера при закрытии программы
+# done 1 Реализовать закрытие сервера при закрытии программы
 # todo Реализовать проверки ввода
 # todo По возможности, добавить свой Логгер вместо стандартного
 # todo Сделать сохранение IP адреса сервера
@@ -22,7 +22,7 @@ import re
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog, QTableView, QSpacerItem, QHeaderView, QLabel, QFrame
 from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSize
-from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QFont
+from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QFont, QCloseEvent
 
 from src.GlobalStates import GlobalStates
 from src.Server import Server
@@ -363,6 +363,15 @@ class ServerWindow(QMainWindow):
 
 		for username in usernames:
 			GlobalStates.user_db.remove_user(username)
+
+	def closeEvent(self, a0: QCloseEvent) -> None:
+		if self.serving_butt.isChecked():
+			self.serv.stop()
+			self.serv.remove_all_users()
+
+		GlobalStates.user_db.close()
+
+		super().closeEvent(a0)
 
 	def process_table_row(self, row, user):
 		"""Implementation of adding table item in user row"""

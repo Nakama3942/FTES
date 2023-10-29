@@ -12,18 +12,24 @@
 # See the License for the specific language governing permissions and
 
 import sys
+import os
 
 from PyQt6.QtWidgets import QApplication
 
 from src.GlobalStates import GlobalStates
 from ui.ServerWindow import ServerWindow
-
-def on_about_to_quit():
-	GlobalStates.user_db.close()
+from ui.UserDb import UserDb
 
 if __name__ == '__main__':
+	GlobalStates.program_dir = os.path.expandvars("%APPDATA%\FTPWinServerGui")
+
+	# Теперь вы можете создать директорию в AppData\Roaming для вашего приложения
+	if not os.path.exists(GlobalStates.program_dir):
+		os.makedirs(GlobalStates.program_dir)
+
+	GlobalStates.user_db = UserDb(GlobalStates.program_dir)
+
 	app = QApplication(sys.argv)
-	app.aboutToQuit.connect(on_about_to_quit)
 	with open("./ui/light.qss", "r") as style:
 		app.setStyleSheet(style.read())
 	ui = ServerWindow()
