@@ -138,10 +138,19 @@ QPushButton {
 	font-size: 13pt;
 }
 QPushButton:hover {
-	background-color:rgba(0, 0, 0, 50);
+	background-color: rgba(0, 0, 0, 50);
 }
 QPushButton:pressed {
-	background-color:rgba(0, 0, 0, 70);
+	background-color: rgba(0, 0, 0, 70);
+}
+QPushButton:checked {
+	background-color: rgba(0, 0, 0, 60);
+}
+QPushButton:checked:hover {
+	background-color: rgba(0, 0, 0, 80);
+}
+QPushButton:checked:pressed {
+	background-color: rgba(0, 0, 0, 100);
 }
 
 QToolButton {
@@ -151,7 +160,7 @@ QToolButton {
 	border-radius: 4px;
 	height: 30;
 	width: 30;
-	icon-size: 40px;
+	icon-size: 24px;
 	/*font-size: 11pt;*/
 }
 QToolButton:hover {
@@ -161,6 +170,24 @@ QToolButton:pressed {
 	background-color:rgba(0, 0, 0, 70);
 }
 
+QToolButton#frame_in_frame {
+	color: rgb(0, 0, 0);
+	background-color: None;
+	border: None;
+	border-radius: 0px;
+	height: 25;
+	width: 25;
+	icon-size: 24px;
+}
+QToolButton#frame_in_frame:pressed {
+	padding-top: 0px;
+}
+QToolButton#frame_in_frame:checked {
+	padding-top: 0px;
+}
+QToolButton#frame_in_frame:checked:pressed {
+	padding-top: 0px;
+}
 
 QTableView {
 	background-color: rgba(0, 0, 0, 30);

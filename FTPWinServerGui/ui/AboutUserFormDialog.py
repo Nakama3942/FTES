@@ -114,6 +114,7 @@ class AboutUserFormDialog(QDialog):
 
 		self.user_logs_line = QLabel("User logs:", self)
 		self.user_logs_line.setObjectName("frame_in_frame")
+		# todo Добавить отбор логов по командам (CWD, LIST и т.д.)
 		self.data_grid_layout.addWidget(self.user_logs_line, 6, 0)
 		self.data_grid_layout.addWidget(self.user_logs, 6, 1)
 

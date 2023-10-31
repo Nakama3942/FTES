@@ -17,9 +17,10 @@ import os
 
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QSpacerItem, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap, QIcon
 
 from src.GlobalStates import GlobalStates
-from ui.frames.ApprovingLineFrame import ApprovingLineFrame
+from ui.frames.MessageLineFrame import MessageLineFrame
 
 class UpdateUserFormDialog(QDialog):
 	def __init__(self):
@@ -37,13 +38,16 @@ class UpdateUserFormDialog(QDialog):
 		self.username.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 		self.frame_layout.addWidget(self.username)
 
-		self.password = ApprovingLineFrame("./icon/password_24.svg", "Enter the password")
-		self.password.frame_line_edit.setEchoMode(QLineEdit.EchoMode.Password)
-		self.password.frame_line_edit.textChanged.connect(self.password_frame_line_edit_textChanged)
+		self.password = MessageLineFrame(QPixmap("./icon/password_24.svg"), "Enter the password")
+		self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
+		self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
+		self.password.line_frame_tool.clicked.connect(self.password_line_frame_tool_clicked)
+		self.password.line_frame_field.textChanged.connect(self.password_frame_line_edit_textChanged)
 		self.frame_layout.addWidget(self.password)
 
-		self.home_dir = ApprovingLineFrame("./icon/user_directory_24.svg", "Enter the home directory")
-		self.home_dir.frame_line_edit.textChanged.connect(self.home_dir_frame_line_edit_textChanged)
+		self.home_dir = MessageLineFrame(QPixmap("./icon/user_directory_24.svg"), "Enter the home directory")
+		self.home_dir.line_frame_tool.setVisible(False)
+		self.home_dir.line_frame_field.textChanged.connect(self.home_dir_frame_line_edit_textChanged)
 		self.frame_layout.addWidget(self.home_dir)
 
 		self.permission_layout = QVBoxLayout()
@@ -82,65 +86,90 @@ class UpdateUserFormDialog(QDialog):
 		self.setWindowTitle("Update user properties")
 		# self.setMinimumSize(600, 480)
 
+	def password_line_frame_tool_clicked(self):
+		if self.password.line_frame_tool.isChecked():
+			self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Normal)
+			self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_on_24.svg")))
+		else:
+			self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
+			self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
+
 	def password_frame_line_edit_textChanged(self, text):
 		if text == "":
-			self.password.setAttention("", "")
+			self.password.line_frame_message.setVisible(False)
+			self.password.line_frame_message.setText("")
+			self.password.line_frame_mark.setPixmap(QPixmap(""))
 			self.password.logic_mark = False
 		else:
 			# Проверка пароля
 			if len(text) < 8:
-				self.password.setAttention("The password is too short!", "./icon/false_24.svg")
+				self.password.line_frame_message.setVisible(True)
+				self.password.line_frame_message.setText("The password is too short!")
+				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
 				self.password.logic_mark = False
 			elif re.match(r'^[a-zA-Z0-9]+$', text):
 				has_digit = any(char.isdigit() for char in text)
 				has_alpha = any(char.isalpha() for char in text)
 				if has_digit and has_alpha:
-					self.password.setAttention("", "./icon/check_24.svg")
+					self.password.line_frame_message.setVisible(False)
+					self.password.line_frame_message.setText("")
+					self.password.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
 				else:
-					self.password.setAttention("The password is not secure!", "./icon/check_24.svg")
+					self.password.line_frame_message.setVisible(True)
+					self.password.line_frame_message.setText("The password is not secure!")
+					self.password.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
 				self.password.logic_mark = True
 			else:
-				self.password.setAttention("Wrong password!", "./icon/false_24.svg")
+				self.password.line_frame_message.setVisible(True)
+				self.password.line_frame_message.setText("Wrong password!")
+				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
 				self.password.logic_mark = False
 
 	def home_dir_frame_line_edit_textChanged(self, text):
 		if text == "":
-			self.home_dir.setAttention("", "")
+			self.home_dir.line_frame_message.setVisible(False)
+			self.home_dir.line_frame_message.setText("")
+			self.home_dir.line_frame_mark.setPixmap(QPixmap(""))
 			self.home_dir.logic_mark = False
 		else:
 			if os.path.exists(text) and os.path.isdir(text):
-				self.home_dir.setAttention("", "./icon/check_24.svg")
+				self.home_dir.line_frame_message.setVisible(False)
+				self.home_dir.line_frame_message.setText("")
+				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
 				self.home_dir.logic_mark = True
 			else:
-				self.home_dir.setAttention("Wrong directory!", "./icon/false_24.svg")
+				self.home_dir.line_frame_message.setVisible(True)
+				self.home_dir.line_frame_message.setText("Wrong directory!")
+				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
 				self.home_dir.logic_mark = False
 
 	def update_butt_clicked(self):
-		GlobalStates.user_db.update_user(
-			self.username.text(),
-			{
-				"password": self.password.text(),
-				"home_dir": self.home_dir.text(),
-				"permission_CWD": self.permission_e.isChecked(),
-				"permission_LIST": self.permission_l.isChecked(),
-				"permission_RETR": self.permission_r.isChecked(),
-				"permission_APPE": self.permission_a.isChecked(),
-				"permission_DELE": self.permission_d.isChecked(),
-				"permission_RNFR": self.permission_f.isChecked(),
-				"permission_MKD": self.permission_m.isChecked(),
-				"permission_STOR": self.permission_w.isChecked(),
-				"permission_CHMOD": self.permission_M.isChecked(),
-				"permission_MFMT": self.permission_T.isChecked()
-			}
-		)
-		GlobalStates.user_db.set_user_date(self.username.text(), {"date_of_change": datetime.now().replace(microsecond=0)})
-		self.close()
+		if self.password.logic_mark and self.home_dir.logic_mark:
+			GlobalStates.user_db.update_user(
+				self.username.text(),
+				{
+					"password": self.password.line_frame_field.text(),
+					"home_dir": self.home_dir.line_frame_field.text(),
+					"permission_CWD": self.permission_e.isChecked(),
+					"permission_LIST": self.permission_l.isChecked(),
+					"permission_RETR": self.permission_r.isChecked(),
+					"permission_APPE": self.permission_a.isChecked(),
+					"permission_DELE": self.permission_d.isChecked(),
+					"permission_RNFR": self.permission_f.isChecked(),
+					"permission_MKD": self.permission_m.isChecked(),
+					"permission_STOR": self.permission_w.isChecked(),
+					"permission_CHMOD": self.permission_M.isChecked(),
+					"permission_MFMT": self.permission_T.isChecked()
+				}
+			)
+			GlobalStates.user_db.set_user_date(self.username.text(), {"date_of_change": datetime.now().replace(microsecond=0)})
+			self.close()
 
 	def set_username(self, username):
 		user = GlobalStates.user_db.get_user(username)
 		self.username.setText(user.username)
-		self.password.frame_line_edit.setText(user.password)
-		self.home_dir.frame_line_edit.setText(user.home_dir)
+		self.password.line_frame_field.setText(user.password)
+		self.home_dir.line_frame_field.setText(user.home_dir)
 		self.permission_e.setChecked(user.permission_CWD)
 		self.permission_l.setChecked(user.permission_LIST)
 		self.permission_r.setChecked(user.permission_RETR)

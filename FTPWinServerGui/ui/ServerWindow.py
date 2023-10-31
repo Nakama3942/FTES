@@ -11,11 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-# done 1 Реализовать закрытие сервера при закрытии программы
-# done 4 Реализовать проверки ввода
-# abandoned 3 По возможности, добавить свой Логгер вместо стандартного
-# done 2 Сделать сохранение IP адреса сервера
-# done 5 Сделать кнопку, открывающую окно инструкции
+# todo сделать рефакторинг во всём проекте
 
 from datetime import datetime
 import re
@@ -31,7 +27,7 @@ from ui.Interceptor import Interceptor
 from ui.CreateUserFormDialog import CreateUserFormDialog
 from ui.UpdateUserFormDialog import UpdateUserFormDialog
 from ui.AboutUserFormDialog import AboutUserFormDialog
-from ui.frames.LineWithIconFrame import LineWithIconFrame
+from ui.frames.BaseLineFrame import BaseLineFrame
 
 class ServerWindow(QMainWindow):
 	def __init__(self):
@@ -123,8 +119,8 @@ class ServerWindow(QMainWindow):
 
 		self.search_layout = QHBoxLayout()
 
-		self.icon_frame = LineWithIconFrame("./icon/search_user_24.svg", "Search username")
-		self.icon_frame.frame_line_edit.textChanged.connect(self.search_line_textChanged)
+		self.icon_frame = BaseLineFrame(QPixmap("./icon/search_user_24.svg"), "Search username")
+		self.icon_frame.line_frame_field.textChanged.connect(self.search_line_textChanged)
 		self.search_layout.addWidget(self.icon_frame)
 
 		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -303,7 +299,7 @@ class ServerWindow(QMainWindow):
 	###################
 	def search_line_textChanged(self):
 		"""Implementation of search in users table"""
-		self.proxy_model.setFilterRegularExpression(self.icon_frame.frame_line_edit.text())
+		self.proxy_model.setFilterRegularExpression(self.icon_frame.line_frame_field.text())
 
 	def help_tool_clicked(self):
 		# todo Реализовать дизайн и содержимое
