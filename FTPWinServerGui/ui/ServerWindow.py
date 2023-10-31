@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 
 # done 1 Реализовать закрытие сервера при закрытии программы
-# todo Реализовать проверки ввода
-# todo По возможности, добавить свой Логгер вместо стандартного
-# todo Сделать сохранение IP адреса сервера
+# done 4 Реализовать проверки ввода
+# abandoned 3 По возможности, добавить свой Логгер вместо стандартного
+# done 2 Сделать сохранение IP адреса сервера
+# done 5 Сделать кнопку, открывающую окно инструкции
 
 from datetime import datetime
-import pickle
 import re
+from markdown_it import MarkdownIt
 
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog, QTableView, QSpacerItem, QHeaderView, QLabel, QFrame
-from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSize
-from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QFont, QCloseEvent
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QTableView, QSpacerItem, QHeaderView, QLabel, QMessageBox
+from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSettings
+from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QCloseEvent
 
 from src.GlobalStates import GlobalStates
 from src.Server import Server
@@ -30,7 +31,7 @@ from ui.Interceptor import Interceptor
 from ui.CreateUserFormDialog import CreateUserFormDialog
 from ui.UpdateUserFormDialog import UpdateUserFormDialog
 from ui.AboutUserFormDialog import AboutUserFormDialog
-from ui.IconLineFrame import IconLineFrame
+from ui.frames.LineWithIconFrame import LineWithIconFrame
 
 class ServerWindow(QMainWindow):
 	def __init__(self):
@@ -55,6 +56,9 @@ class ServerWindow(QMainWindow):
 		self.update_user_form_dialog = UpdateUserFormDialog()
 		self.about_user_form_dialog = AboutUserFormDialog()
 
+		# Initialization of program_settings
+		self.settings = QSettings("Kalynovsky Valentin", "FTES WSG")
+
 		# Initialization of Server
 		self.serv = Server("", self.STDOUT, self.STDERR)
 		self.serv.set_log()
@@ -67,9 +71,16 @@ class ServerWindow(QMainWindow):
 		self.server_layout = QVBoxLayout()
 
 		self.console = QPlainTextEdit(self)
-		self.console.setMinimumSize(750, 0)
+		self.console.setMinimumWidth(750)
 		self.console.setReadOnly(True)
 		self.server_layout.addWidget(self.console)
+
+		self.god_terminal = QPlainTextEdit(self)
+		self.god_terminal.setMaximumHeight(50)
+		self.god_terminal.setReadOnly(True)
+		self.god_terminal.setPlainText("fteswsg@God:~$\n> ")
+		# todo реализовать консоль, в которую можно вводить команды
+		self.server_layout.addWidget(self.god_terminal)
 
 		self.serving_layout = QHBoxLayout()
 
@@ -83,6 +94,7 @@ class ServerWindow(QMainWindow):
 				)
 			)
 		)
+		self.ip_address.setText(self.settings.value("ip_address", "192.168."))
 		self.serving_layout.addWidget(self.ip_address)
 
 		self.serving_butt = QPushButton("Start server", self)
@@ -110,11 +122,24 @@ class ServerWindow(QMainWindow):
 		self.users_layout.addWidget(self.attention_line)
 
 		self.search_layout = QHBoxLayout()
-		self.icon_frame = IconLineFrame("./icon/search_user_24.svg", "Search username")
+
+		self.icon_frame = LineWithIconFrame("./icon/search_user_24.svg", "Search username")
 		self.icon_frame.frame_line_edit.textChanged.connect(self.search_line_textChanged)
 		self.search_layout.addWidget(self.icon_frame)
+
 		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 		self.search_layout.addSpacerItem(self.spacer)
+
+		self.help_tool = QToolButton(self)
+		self.help_tool.setIcon(QIcon(QPixmap("./icon/help_24.svg")))
+		self.help_tool.clicked.connect(self.help_tool_clicked)
+		self.search_layout.addWidget(self.help_tool)
+
+		self.info_tool = QToolButton(self)
+		self.info_tool.setIcon(QIcon(QPixmap("./icon/info_24.svg")))
+		self.info_tool.clicked.connect(self.info_tool_clicked)
+		self.search_layout.addWidget(self.info_tool)
+
 		self.users_layout.addLayout(self.search_layout)
 
 		###################
@@ -280,6 +305,30 @@ class ServerWindow(QMainWindow):
 		"""Implementation of search in users table"""
 		self.proxy_model.setFilterRegularExpression(self.icon_frame.frame_line_edit.text())
 
+	def help_tool_clicked(self):
+		# todo Реализовать дизайн и содержимое
+		with open('help.md', 'r') as f:
+			text = f.read()
+			md = MarkdownIt()
+			html = md.render(text)
+
+		about_program_container = QMessageBox()
+		about_program_container.setWindowIcon(QIcon("./icon/about.png"))
+		about_program = QMessageBox()
+		about_program.about(about_program_container, "About program", html)
+
+	def info_tool_clicked(self):
+		# todo Реализовать дизайн и содержимое
+		with open('readme.md', 'r') as f:
+			text = f.read()
+			md = MarkdownIt()
+			html = md.render(text)
+
+		about_program_container = QMessageBox()
+		about_program_container.setWindowIcon(QIcon("./icon/about.png"))
+		about_program = QMessageBox()
+		about_program.about(about_program_container, "About program", html)
+
 	def user_db_new(self, username):
 		"""Implementation of adding a new user"""
 		new_row = self.user_list.model().rowCount()
@@ -370,6 +419,8 @@ class ServerWindow(QMainWindow):
 			self.serv.remove_all_users()
 
 		GlobalStates.user_db.close()
+
+		self.settings.setValue("ip_address", self.ip_address.text())
 
 		super().closeEvent(a0)
 

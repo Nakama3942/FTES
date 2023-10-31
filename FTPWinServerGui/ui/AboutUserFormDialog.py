@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QSpacerItem, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 from PyQt6.QtCore import Qt
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog, QTableView, QSpacerItem, QHeaderView, QLabel, QFrame
@@ -26,6 +26,9 @@ class AboutUserFormDialog(QDialog):
 
 		# Adding layouts
 		self.frame_layout = QVBoxLayout()
+		self.frame_layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetFixedSize)
+		# self.spacer = QSpacerItem(540, 0)
+		# self.frame_layout.addSpacerItem(self.spacer)
 
 		self.username = QLineEdit(self)
 		self.username.setReadOnly(True)
@@ -117,11 +120,11 @@ class AboutUserFormDialog(QDialog):
 		# Dialog window customization
 		self.setLayout(self.frame_layout)
 		self.setWindowTitle("Inspect user data")
-		self.setMinimumSize(920, 480)
+		# self.setMinimumSize(920, 480)
 
 	def set_username(self, username):
-		self.username.setText(username)
 		user = GlobalStates.user_db.get_user(username)
+		self.username.setText(user.username)
 		self.password.setText(user.password)
 		self.home_dir.setText(user.home_dir)
 

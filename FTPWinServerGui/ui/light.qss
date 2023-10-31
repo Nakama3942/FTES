@@ -65,7 +65,6 @@ QCheckBox {
 	font-family: "Montserrat Medium";
 	font-size: 11pt;
 }
-
 QCheckBox::indicator {
 	background-color: rgba(0, 0, 0, 30);
 	border: 1px solid rgba(0, 0, 0, 40);
@@ -73,36 +72,28 @@ QCheckBox::indicator {
 	width: 20px;
 	height: 20px;
 }
-
 QCheckBox::indicator:unchecked {
     background: rgba(255, 255, 255, 150);
 }
-
 QCheckBox::indicator:unchecked:hover {
     background: rgba(255, 255, 255, 130);
 }
-
 QCheckBox::indicator:unchecked:pressed {
     background: rgba(255, 255, 255, 170);
 }
-
 QCheckBox::indicator:checked {
     background: rgba(255, 255, 255, 90);
     image: url(./icon/check_24.svg);
 }
-
 QCheckBox::indicator:checked:hover {
     background: rgba(255, 255, 255, 70);
 }
-
 QCheckBox::indicator:checked:pressed {
     background: rgba(255, 255, 255, 110);
 }
-
 QCheckBox::indicator:indeterminate:hover {
     background: rgba(255, 255, 255, 110);
 }
-
 QCheckBox::indicator:indeterminate:pressed {
     background: rgba(255, 255, 255, 150);
 }
@@ -123,6 +114,7 @@ QLineEdit#not_editable_line:read-only {
 	background-color: rgba(0, 0, 0, 20);
 	border: none;
 	border-radius: 4px;
+	padding: 4px 4px 4px 4px;
 	font-family: "Montserrat Medium";
 	font-size: 15pt;
 }
@@ -130,6 +122,7 @@ QLineEdit#frame_in_frame {
 	background-color: rgba(0, 0, 0, 0);
 	border: none;
 	border-radius: 0px;
+	/*border-bottom: 1px solid rgba(0, 0, 0, 40);*/
 	font-family: "Montserrat Medium";
 	font-size: 12pt;
 }

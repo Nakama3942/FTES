@@ -62,6 +62,10 @@ class UserDb(QObject):
 	def get_all_users(self):
 		return self.session.query(User).all()
 
+	def check_username(self, username):
+		existing_user = self.session.query(User.username).filter_by(username=username).scalar()
+		return existing_user is None
+
 	def create_user(self, username, user_data):
 		new_user = User(username=username, **user_data)
 		self.session.add(new_user)
