@@ -14,11 +14,12 @@
 from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QLineEdit
 from PyQt6.QtGui import QPixmap
 
-class IconLineFrame(QFrame):
+class LineWithIconFrame(QFrame):
 	def __init__(self, frame_icon, frame_placeholder):
-		super(IconLineFrame, self).__init__()
+		super(LineWithIconFrame, self).__init__()
 
 		self.search_layout = QHBoxLayout()
+		self.search_layout.setContentsMargins(4, 4, 4, 4)
 
 		self.icon_label = QLabel(self)
 		self.icon_label.setObjectName("frame_in_frame")
