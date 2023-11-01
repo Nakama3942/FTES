@@ -132,7 +132,7 @@ class CreateUserFormDialog(QDialog):
 			self.password.logic_mark = False
 		else:
 			# Проверка пароля
-			if len(text) < 8:
+			if len(text) < 4:
 				self.password.line_frame_message.setVisible(True)
 				self.password.line_frame_message.setText("The password is too short!")
 				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
@@ -190,6 +190,12 @@ class CreateUserFormDialog(QDialog):
 				{
 					"password": self.password.line_frame_field.text(),
 					"home_dir": user_directory,
+					"upload_count_successful": 0,
+					"upload_size": 0,
+					"upload_time": 0.0,
+					"download_count_successful": 0,
+					"download_size": 0,
+					"download_time": 0.0,
 					"permission_CWD": self.permission_e.isChecked(),
 					"permission_LIST": self.permission_l.isChecked(),
 					"permission_RETR": self.permission_r.isChecked(),

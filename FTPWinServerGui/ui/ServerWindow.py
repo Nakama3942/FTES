@@ -250,6 +250,28 @@ class ServerWindow(QMainWindow):
 				GlobalStates.user_db.silent_spy_update(username, {"user_logs": text})
 				if re.search(r"logged in", text):
 					GlobalStates.user_db.set_user_date(username, {"last_login_date": datetime.now().replace(microsecond=0)})
+				if re.search(r"session closed", text):
+					GlobalStates.user_db.set_user_time(username, {"login_time": datetime.now().replace(microsecond=0)})
+
+				if command_match := re.search(r"\[.*?\] (STOR|RETR) .*?completed=(\d+) bytes=(\d+) seconds=([\d.]+)", text):
+					operation_type, completed, bytes_transferred, seconds_transferred = command_match.groups()
+					match operation_type:
+						case "STOR":
+							GlobalStates.user_db.number_recalculate(
+								username, {
+									"upload_count_successful": int(completed),
+									"upload_size": int(bytes_transferred),
+									"upload_time": float(seconds_transferred)
+								}
+							)
+						case "RETR":
+							GlobalStates.user_db.number_recalculate(
+								username, {
+									"download_count_successful": int(completed),
+									"download_size": int(bytes_transferred),
+									"download_time": float(seconds_transferred)
+								}
+							)
 			else:
 				# Если вторые квадратные скобки пусты, ищем имя пользователя после слова USER в одинарных кавычках
 				text_re = re.search(r"USER '(.*?)'", text)

@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
+from humanize import naturalsize, precisedelta
+
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QSpacerItem, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 from PyQt6.QtCore import Qt
 
@@ -19,6 +21,9 @@ from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSize
 from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QFont
 
 from src.GlobalStates import GlobalStates
+
+# todo Заменить все поля на собственные фреймы
+# todo Добавить статус online/offline
 
 class AboutUserFormDialog(QDialog):
 	def __init__(self):
@@ -80,6 +85,32 @@ class AboutUserFormDialog(QDialog):
 		self.last_login_date.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.last_login_date, 4, 1)
 
+		self.login_time_line = QLabel("Last login time:", self)
+		self.login_time_line.setObjectName("frame_in_frame")
+		self.data_grid_layout.addWidget(self.login_time_line, 5, 0)
+		self.login_time = QLineEdit(self)
+		self.login_time.setReadOnly(True)
+		self.login_time.setObjectName("not_editable_line")
+		self.data_grid_layout.addWidget(self.login_time, 5, 1)
+
+		self.upload_statistics_line = QLabel("Statistics on uploaded data:", self)
+		self.upload_statistics_line.setObjectName("frame_in_frame")
+		self.data_grid_layout.addWidget(self.upload_statistics_line, 6, 0)
+		self.upload_statistics = QPlainTextEdit(self)
+		self.upload_statistics.setMaximumHeight(90)
+		self.upload_statistics.setReadOnly(True)
+		self.upload_statistics.setObjectName("not_editable_line")
+		self.data_grid_layout.addWidget(self.upload_statistics, 6, 1)
+
+		self.download_statistics_line = QLabel("Statistics on downloaded data:", self)
+		self.download_statistics_line.setObjectName("frame_in_frame")
+		self.data_grid_layout.addWidget(self.download_statistics_line, 7, 0)
+		self.download_statistics = QPlainTextEdit(self)
+		self.download_statistics.setMaximumHeight(90)
+		self.download_statistics.setReadOnly(True)
+		self.download_statistics.setObjectName("not_editable_line")
+		self.data_grid_layout.addWidget(self.download_statistics, 7, 1)
+
 		# Creating a data model
 		self.user_permission_model = QStandardItemModel(1, 10)
 		self.user_permission_model.setHorizontalHeaderLabels([
@@ -106,17 +137,15 @@ class AboutUserFormDialog(QDialog):
 
 		self.permission_line = QLabel("Permissions:", self)
 		self.permission_line.setObjectName("frame_in_frame")
-		self.data_grid_layout.addWidget(self.permission_line, 5, 0)
-		self.data_grid_layout.addWidget(self.user_permission_list, 5, 1)
-
-		self.user_logs = QPlainTextEdit(self)
-		self.user_logs.setReadOnly(True)
+		self.data_grid_layout.addWidget(self.permission_line, 8, 0)
+		self.data_grid_layout.addWidget(self.user_permission_list, 8, 1)
 
 		self.user_logs_line = QLabel("User logs:", self)
 		self.user_logs_line.setObjectName("frame_in_frame")
-		# todo Добавить отбор логов по командам (CWD, LIST и т.д.)
-		self.data_grid_layout.addWidget(self.user_logs_line, 6, 0)
-		self.data_grid_layout.addWidget(self.user_logs, 6, 1)
+		self.data_grid_layout.addWidget(self.user_logs_line, 9, 0)
+		self.user_logs = QPlainTextEdit(self)
+		self.user_logs.setReadOnly(True)
+		self.data_grid_layout.addWidget(self.user_logs, 9, 1)
 
 		# Dialog window customization
 		self.setLayout(self.frame_layout)
@@ -132,6 +161,10 @@ class AboutUserFormDialog(QDialog):
 		self.date_of_creation.setText(str(user.date_of_creation))
 		self.date_of_change.setText(str(user.date_of_change))
 		self.last_login_date.setText(str(user.last_login_date))
+		self.login_time.setText(str(user.login_time))
+
+		self.upload_statistics.setPlainText(f"Number of successfully uploaded: {user.upload_count_successful} files\nTotal upload traffic: {naturalsize(user.upload_size, binary=True, format='%.3f')}\nTotal uploading time: {precisedelta(user.upload_time, format='%.3f')}")
+		self.download_statistics.setPlainText(f"Number of successfully downloaded: {user.download_count_successful} files\nTotal download traffic: {naturalsize(user.download_size, binary=True, format='%.3f')}\nTotal downloading time: {precisedelta(user.download_time, format='%.3f')}")
 
 		for col, data in enumerate([
 			user.permission_CWD,

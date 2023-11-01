@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from sqlalchemy import create_engine, update, Column, Integer, String, Boolean, DateTime
+from sqlalchemy import create_engine, update, Column, Integer, Float, String, Text, Boolean, DateTime, Interval
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -28,9 +28,13 @@ class User(Base):
 	date_of_creation = Column(DateTime)
 	date_of_change = Column(DateTime)
 	last_login_date = Column(DateTime)
-	# todo Время длительности последнего сеанса
-	# todo Объём загруженных данных за всё время
-	# todo Объём выгруженных данных за всё время
+	login_time = Column(Interval)
+	upload_count_successful = Column(Integer)  # STOR
+	upload_size = Column(Integer)  # STOR
+	upload_time = Column(Float)  # STOR
+	download_count_successful = Column(Integer)  # RETR
+	download_size = Column(Integer)  # RETR
+	download_time = Column(Float)  # RETR
 	permission_CWD = Column(Boolean)  # change directory (CWD, CDUP commands)
 	permission_LIST = Column(Boolean)  # list files (LIST, NLST, STAT, MLSD, MLST, SIZE commands)
 	permission_RETR = Column(Boolean)  # retrieve file from the server (RETR command)
@@ -41,7 +45,7 @@ class User(Base):
 	permission_STOR = Column(Boolean)  # store a file to the server (STOR, STOU commands)
 	permission_CHMOD = Column(Boolean)  # change file mode / permission (SITE CHMOD command)
 	permission_MFMT = Column(Boolean)  # change file modification time (SITE MFMT command)
-	user_logs = Column(String)
+	user_logs = Column(Text)
 
 class UserDb(QObject):
 	new = pyqtSignal(str)
@@ -96,12 +100,33 @@ class UserDb(QObject):
 
 			self.session.commit()
 
+	def number_recalculate(self, username, new_data):
+		user = self.get_user(username)
+		if user:
+			# Обновляем поля пользователя
+			for key, value in new_data.items():
+				setattr(user, key, getattr(user, key) + value)
+
+			# Фиксируем изменения в базе данных
+			self.session.commit()
+
 	def set_user_date(self, username, new_data):
 		user = self.get_user(username)
 		if user:
 			# Обновляем поля пользователя
 			for key, value in new_data.items():
 				setattr(user, key, value)
+
+			# Фиксируем изменения в базе данных
+			self.session.commit()
+
+	def set_user_time(self, username, new_data):
+		user = self.get_user(username)
+		if user:
+			# Обновляем поля пользователя
+			for key, value in new_data.items():
+				tim = value - getattr(user, "last_login_date")
+				setattr(user, key, tim)
 
 			# Фиксируем изменения в базе данных
 			self.session.commit()
