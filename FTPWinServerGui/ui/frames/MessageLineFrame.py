@@ -17,8 +17,8 @@ from PyQt6.QtGui import QPixmap
 from ui.frames.MarkedLineFrame import MarkedLineFrame
 
 class MessageLineFrame(MarkedLineFrame):
-	def __init__(self, frame_icon: QPixmap, frame_placeholder: str):
-		super(MessageLineFrame, self).__init__(frame_icon, frame_placeholder)
+	def __init__(self):
+		super(MessageLineFrame, self).__init__()
 
 		self.line_frame_message = QLabel(self)
 		self.line_frame_message.setVisible(False)

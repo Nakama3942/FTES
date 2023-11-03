@@ -22,6 +22,7 @@ Base = declarative_base()
 class User(Base):
 	__tablename__ = "users"
 	id = Column(Integer, primary_key=True)
+	online = Column(Boolean)
 	username = Column(String)
 	password = Column(String)
 	home_dir = Column(String)
@@ -48,8 +49,8 @@ class User(Base):
 	user_logs = Column(Text)
 
 class UserDb(QObject):
-	new = pyqtSignal(str)
-	dirty = pyqtSignal(str)
+	new = pyqtSignal(User)
+	dirty = pyqtSignal(User)
 	deleted = pyqtSignal(str)
 
 	def __init__(self, program_dir):
@@ -73,8 +74,18 @@ class UserDb(QObject):
 	def create_user(self, username, user_data):
 		new_user = User(username=username, **user_data)
 		self.session.add(new_user)
-		self.new.emit(username)
 		self.session.commit()
+		self.new.emit(new_user)
+
+	def set_user_status(self, username, online: bool):
+		user = self.get_user(username)
+		if user:
+			# Обновляем статус пользователя
+			setattr(user, "online", online)
+
+			# Фиксируем изменения в базе данных
+			self.session.commit()
+			self.dirty.emit(user)
 
 	def update_user(self, username, new_data):
 		user = self.get_user(username)
@@ -84,8 +95,8 @@ class UserDb(QObject):
 				setattr(user, key, value)
 
 			# Фиксируем изменения в базе данных
-			self.dirty.emit(username)
 			self.session.commit()
+			self.dirty.emit(user)
 
 	def silent_spy_update(self, username, new_data):
 		user = self.get_user(username)

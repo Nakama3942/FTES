@@ -15,19 +15,25 @@ from humanize import naturalsize, precisedelta
 
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QSpacerItem, QLineEdit, QCheckBox, QGroupBox, QPushButton, QLabel, QFrame
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPainter, QColor
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QPlainTextEdit, QLineEdit, QToolButton, QPushButton, QFileDialog, QTableView, QSpacerItem, QHeaderView, QLabel, QFrame
 from PyQt6.QtCore import QRegularExpression, Qt, QSortFilterProxyModel, QSize
 from PyQt6.QtGui import QRegularExpressionValidator, QStandardItemModel, QStandardItem, QIcon, QPixmap, QTransform, QFontDatabase, QFont
 
 from src.GlobalStates import GlobalStates
+from ui.frames.BaseLineFrame import BaseLineFrame
+from ui.frames.PushLineFrame import PushLineFrame
+from ui.frames.MarkedLineFrame import MarkedLineFrame
 
-# todo Заменить все поля на собственные фреймы
-# todo Добавить статус online/offline
+# todo Дозаменить все поля на собственные фреймы
 
 class AboutUserFormDialog(QDialog):
 	def __init__(self):
 		super(AboutUserFormDialog, self).__init__()
+
+		GlobalStates.user_db.dirty.connect(self.user_db_updated)
+		GlobalStates.user_db.deleted.connect(self.user_db_deleted)
 
 		# Adding layouts
 		self.frame_layout = QVBoxLayout()
@@ -35,66 +41,76 @@ class AboutUserFormDialog(QDialog):
 		# self.spacer = QSpacerItem(540, 0)
 		# self.frame_layout.addSpacerItem(self.spacer)
 
-		self.username = QLineEdit(self)
-		self.username.setReadOnly(True)
-		self.username.setObjectName("not_editable_line")
-		self.username.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+		# self.username = QLineEdit(self)
+		self.username = MarkedLineFrame()
+		self.username.line_frame_field.setReadOnly(True)
+		self.username.line_frame_field.setObjectName("not_editable_line")
+		self.username.line_frame_field.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 		self.frame_layout.addWidget(self.username)
 
 		self.data_grid_layout = QGridLayout()
 		self.frame_layout.addLayout(self.data_grid_layout)
 
 		self.password_line = QLabel("Password:", self)
-		self.password_line.setObjectName("frame_in_frame")
+		self.password_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.password_line, 0, 0)
-		self.password = QLineEdit(self)
-		self.password.setReadOnly(True)
-		self.password.setObjectName("not_editable_line")
+		self.password = PushLineFrame()
+		self.password.line_frame_icon.setPixmap(QPixmap("./icon/password_24.svg"))
+		self.password.line_frame_field.setReadOnly(True)
+		self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
+		self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
+		self.password.line_frame_tool.clicked.connect(self.password_line_frame_tool_clicked)
+		self.password.line_frame_field.setObjectName("not_editable_line")
 		# self.password.setEchoMode(QLineEdit.EchoMode.Password)
 		self.data_grid_layout.addWidget(self.password, 0, 1)
 
 		self.home_dir_line = QLabel("User home directory:", self)
-		self.home_dir_line.setObjectName("frame_in_frame")
+		self.home_dir_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.home_dir_line, 1, 0)
-		self.home_dir = QLineEdit(self)
-		self.home_dir.setReadOnly(True)
-		self.home_dir.setObjectName("not_editable_line")
+		self.home_dir = BaseLineFrame()
+		self.home_dir.line_frame_icon.setPixmap(QPixmap("./icon/user_directory_24.svg"))
+		self.home_dir.line_frame_field.setReadOnly(True)
+		self.home_dir.line_frame_field.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.home_dir, 1, 1)
 
 		self.date_of_creation_line = QLabel("Date of the creation of user:", self)
-		self.date_of_creation_line.setObjectName("frame_in_frame")
+		self.date_of_creation_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.date_of_creation_line, 2, 0)
-		self.date_of_creation = QLineEdit(self)
-		self.date_of_creation.setReadOnly(True)
-		self.date_of_creation.setObjectName("not_editable_line")
+		self.date_of_creation = BaseLineFrame()
+		self.date_of_creation.line_frame_icon.setPixmap(QPixmap("./icon/calendar_today_24.svg"))
+		self.date_of_creation.line_frame_field.setReadOnly(True)
+		self.date_of_creation.line_frame_field.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.date_of_creation, 2, 1)
 
 		self.date_of_change_line = QLabel("Date of the change user properties:", self)
-		self.date_of_change_line.setObjectName("frame_in_frame")
+		self.date_of_change_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.date_of_change_line, 3, 0)
-		self.date_of_change = QLineEdit(self)
-		self.date_of_change.setReadOnly(True)
-		self.date_of_change.setObjectName("not_editable_line")
+		self.date_of_change = BaseLineFrame()
+		self.date_of_change.line_frame_icon.setPixmap(QPixmap("./icon/calendar_today_24.svg"))
+		self.date_of_change.line_frame_field.setReadOnly(True)
+		self.date_of_change.line_frame_field.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.date_of_change, 3, 1)
 
 		self.last_login_date_line = QLabel("Date of the user last login:", self)
-		self.last_login_date_line.setObjectName("frame_in_frame")
+		self.last_login_date_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.last_login_date_line, 4, 0)
-		self.last_login_date = QLineEdit(self)
-		self.last_login_date.setReadOnly(True)
-		self.last_login_date.setObjectName("not_editable_line")
+		self.last_login_date = BaseLineFrame()
+		self.last_login_date.line_frame_icon.setPixmap(QPixmap("./icon/calendar_event_24.svg"))
+		self.last_login_date.line_frame_field.setReadOnly(True)
+		self.last_login_date.line_frame_field.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.last_login_date, 4, 1)
 
 		self.login_time_line = QLabel("Last login time:", self)
-		self.login_time_line.setObjectName("frame_in_frame")
+		self.login_time_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.login_time_line, 5, 0)
-		self.login_time = QLineEdit(self)
-		self.login_time.setReadOnly(True)
-		self.login_time.setObjectName("not_editable_line")
+		self.login_time = BaseLineFrame()
+		self.login_time.line_frame_icon.setPixmap(QPixmap("./icon/time_24.svg"))
+		self.login_time.line_frame_field.setReadOnly(True)
+		self.login_time.line_frame_field.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.login_time, 5, 1)
 
 		self.upload_statistics_line = QLabel("Statistics on uploaded data:", self)
-		self.upload_statistics_line.setObjectName("frame_in_frame")
+		self.upload_statistics_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.upload_statistics_line, 6, 0)
 		self.upload_statistics = QPlainTextEdit(self)
 		self.upload_statistics.setMaximumHeight(90)
@@ -103,7 +119,7 @@ class AboutUserFormDialog(QDialog):
 		self.data_grid_layout.addWidget(self.upload_statistics, 6, 1)
 
 		self.download_statistics_line = QLabel("Statistics on downloaded data:", self)
-		self.download_statistics_line.setObjectName("frame_in_frame")
+		self.download_statistics_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.download_statistics_line, 7, 0)
 		self.download_statistics = QPlainTextEdit(self)
 		self.download_statistics.setMaximumHeight(90)
@@ -136,12 +152,12 @@ class AboutUserFormDialog(QDialog):
 		self.user_permission_list.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
 		self.permission_line = QLabel("Permissions:", self)
-		self.permission_line.setObjectName("frame_in_frame")
+		self.permission_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.permission_line, 8, 0)
 		self.data_grid_layout.addWidget(self.user_permission_list, 8, 1)
 
 		self.user_logs_line = QLabel("User logs:", self)
-		self.user_logs_line.setObjectName("frame_in_frame")
+		self.user_logs_line.setObjectName("empty_background")
 		self.data_grid_layout.addWidget(self.user_logs_line, 9, 0)
 		self.user_logs = QPlainTextEdit(self)
 		self.user_logs.setReadOnly(True)
@@ -152,31 +168,50 @@ class AboutUserFormDialog(QDialog):
 		self.setWindowTitle("Inspect user data")
 		# self.setMinimumSize(920, 480)
 
-	def set_username(self, username):
-		user = GlobalStates.user_db.get_user(username)
-		self.username.setText(user.username)
-		self.password.setText(user.password)
-		self.home_dir.setText(user.home_dir)
+	def user_db_updated(self, user_obj):
+		self.set_username(user_obj)
 
-		self.date_of_creation.setText(str(user.date_of_creation))
-		self.date_of_change.setText(str(user.date_of_change))
-		self.last_login_date.setText(str(user.last_login_date))
-		self.login_time.setText(str(user.login_time))
+	def user_db_deleted(self, username):
+		if username == self.username.line_frame_field.text():
+			self.close()
 
-		self.upload_statistics.setPlainText(f"Number of successfully uploaded: {user.upload_count_successful} files\nTotal upload traffic: {naturalsize(user.upload_size, binary=True, format='%.3f')}\nTotal uploading time: {precisedelta(user.upload_time, format='%.3f')}")
-		self.download_statistics.setPlainText(f"Number of successfully downloaded: {user.download_count_successful} files\nTotal download traffic: {naturalsize(user.download_size, binary=True, format='%.3f')}\nTotal downloading time: {precisedelta(user.download_time, format='%.3f')}")
+	def password_line_frame_tool_clicked(self):
+		if self.password.line_frame_tool.isChecked():
+			self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Normal)
+			self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_on_24.svg")))
+		else:
+			self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
+			self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
+
+	def set_username(self, user_obj):
+		self.username.line_frame_field.setText(user_obj.username)
+		self.password.line_frame_field.setText(user_obj.password)
+		self.home_dir.line_frame_field.setText(user_obj.home_dir)
+
+		if user_obj.online:
+			self.username.line_frame_mark.setPixmap(QPixmap("./icon/online_24.svg"))
+		else:
+			self.username.line_frame_mark.setPixmap(QPixmap("./icon/offline_24.svg"))
+
+		self.date_of_creation.line_frame_field.setText(str(user_obj.date_of_creation))
+		self.date_of_change.line_frame_field.setText(str(user_obj.date_of_change))
+		self.last_login_date.line_frame_field.setText(str(user_obj.last_login_date))
+		self.login_time.line_frame_field.setText(str(user_obj.login_time))
+
+		self.upload_statistics.setPlainText(f"Number of successfully uploaded: {user_obj.upload_count_successful} files\nTotal upload traffic: {naturalsize(user_obj.upload_size, binary=True, format='%.3f')}\nTotal uploading time: {precisedelta(user_obj.upload_time, format='%.3f')}")
+		self.download_statistics.setPlainText(f"Number of successfully downloaded: {user_obj.download_count_successful} files\nTotal download traffic: {naturalsize(user_obj.download_size, binary=True, format='%.3f')}\nTotal downloading time: {precisedelta(user_obj.download_time, format='%.3f')}")
 
 		for col, data in enumerate([
-			user.permission_CWD,
-			user.permission_LIST,
-			user.permission_RETR,
-			user.permission_APPE,
-			user.permission_DELE,
-			user.permission_RNFR,
-			user.permission_MKD,
-			user.permission_STOR,
-			user.permission_CHMOD,
-			user.permission_MFMT
+			user_obj.permission_CWD,
+			user_obj.permission_LIST,
+			user_obj.permission_RETR,
+			user_obj.permission_APPE,
+			user_obj.permission_DELE,
+			user_obj.permission_RNFR,
+			user_obj.permission_MKD,
+			user_obj.permission_STOR,
+			user_obj.permission_CHMOD,
+			user_obj.permission_MFMT
 		]):
 			if data:
 				item = QStandardItem(QIcon("./icon/check_24.svg"), "")
@@ -186,4 +221,4 @@ class AboutUserFormDialog(QDialog):
 			item.setSelectable(False)
 			self.user_permission_model.setItem(0, col, item)
 
-		self.user_logs.setPlainText(str(user.user_logs).strip())
+		self.user_logs.setPlainText(str(user_obj.user_logs).strip())

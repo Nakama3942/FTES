@@ -17,11 +17,11 @@ from PyQt6.QtGui import QPixmap
 from ui.frames.PushLineFrame import PushLineFrame
 
 class MarkedLineFrame(PushLineFrame):
-	def __init__(self, frame_icon: QPixmap, frame_placeholder: str):
-		super(MarkedLineFrame, self).__init__(frame_icon, frame_placeholder)
+	def __init__(self):
+		super(MarkedLineFrame, self).__init__()
 
 		self.logic_mark = False
 
 		self.line_frame_mark = QLabel(self)
-		self.line_frame_mark.setObjectName("frame_in_frame")
+		self.line_frame_mark.setObjectName("empty_background")
 		self.line_layout.addWidget(self.line_frame_mark)

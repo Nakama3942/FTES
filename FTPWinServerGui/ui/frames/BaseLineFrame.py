@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
 from PyQt6.QtGui import QPixmap
 
 class BaseLineFrame(QFrame):
-	def __init__(self, frame_icon: QPixmap, frame_placeholder: str):
+	def __init__(self):
 		super(BaseLineFrame, self).__init__()
 
 		self.main_layout = QVBoxLayout()
@@ -25,13 +25,14 @@ class BaseLineFrame(QFrame):
 		self.main_layout.addLayout(self.line_layout)
 
 		self.line_frame_icon = QLabel(self)
-		self.line_frame_icon.setObjectName("frame_in_frame")
-		self.line_frame_icon.setPixmap(frame_icon)
+		self.line_frame_icon.setObjectName("empty_background")
+		# self.line_frame_icon.setPixmap(frame_icon)
 		self.line_layout.addWidget(self.line_frame_icon)
 
 		self.line_frame_field = QLineEdit(self)
 		self.line_frame_field.setObjectName("frame_in_frame")
-		self.line_frame_field.setPlaceholderText(frame_placeholder)
+		# self.line_frame_field.setPlaceholderText(frame_placeholder)
 		self.line_layout.addWidget(self.line_frame_field)
 
 		self.setLayout(self.main_layout)
+		self.setObjectName("frame_in_frame")

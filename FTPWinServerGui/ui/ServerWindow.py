@@ -119,7 +119,9 @@ class ServerWindow(QMainWindow):
 
 		self.search_layout = QHBoxLayout()
 
-		self.icon_frame = BaseLineFrame(QPixmap("./icon/search_user_24.svg"), "Search username")
+		self.icon_frame = BaseLineFrame()
+		self.icon_frame.line_frame_icon.setPixmap(QPixmap("./icon/search_user_24.svg"))
+		self.icon_frame.line_frame_field.setPlaceholderText("Search username")
 		self.icon_frame.line_frame_field.textChanged.connect(self.search_line_textChanged)
 		self.search_layout.addWidget(self.icon_frame)
 
@@ -147,10 +149,11 @@ class ServerWindow(QMainWindow):
 		# Creating a data model
 		self.user_model = QStandardItemModel(len(user_list), 4)
 		self.user_model.setHorizontalHeaderLabels([
-			'Username',
-			'RETR',
-			'DELE',
-			'STOR'
+			"Username",
+			"Status",
+			"RETR",
+			"DELE",
+			"STOR"
 		])
 
 		# Filling the model with data from the list of users
@@ -249,8 +252,10 @@ class ServerWindow(QMainWindow):
 			if username:
 				GlobalStates.user_db.silent_spy_update(username, {"user_logs": text})
 				if re.search(r"logged in", text):
+					GlobalStates.user_db.set_user_status(username, True)
 					GlobalStates.user_db.set_user_date(username, {"last_login_date": datetime.now().replace(microsecond=0)})
 				if re.search(r"session closed", text):
+					GlobalStates.user_db.set_user_status(username, False)
 					GlobalStates.user_db.set_user_time(username, {"login_time": datetime.now().replace(microsecond=0)})
 
 				if command_match := re.search(r"\[.*?\] (STOR|RETR) .*?completed=(\d+) bytes=(\d+) seconds=([\d.]+)", text):
@@ -347,47 +352,31 @@ class ServerWindow(QMainWindow):
 		about_program = QMessageBox()
 		about_program.about(about_program_container, "About program", html)
 
-	def user_db_new(self, username):
+	def user_db_new(self, user_obj):
 		"""Implementation of adding a new user"""
-		new_row = self.user_list.model().rowCount()
-		updated_user = GlobalStates.user_db.get_user(username)
-
-		self.process_table_row(new_row, updated_user)
+		self.process_table_row(self.user_list.model().rowCount(), user_obj)
 
 		self.user_list.update()
 
-	def user_db_dirty(self, username):
+	def user_db_dirty(self, user_obj):
 		"""Implementation of updating a user"""
-		selected_row = self.user_list.selectionModel().selectedIndexes()[0].row()
-		updated_user = GlobalStates.user_db.get_user(username)
-
-		self.process_table_row(selected_row, updated_user)
+		self.process_table_row(self.user_model.findItems(user_obj.username, column=0)[0].row(), user_obj)
 
 		self.user_list.update()
 
 	def user_db_deleted(self, username):
 		"""Implementation of deleting an old user"""
-		deleted_rows = self.user_list.selectionModel().selectedRows()
-
-		# Переберите индексы в обратном порядке, чтобы не нарушить порядок при удалении строк
-		for index in sorted(deleted_rows, reverse=True):
-			row = index.row()
-			# Удалите строку из модели
-			self.user_model.removeRow(row)
+		self.user_model.removeRow(self.user_model.findItems(username, column=0)[0].row())
 
 		self.user_list.update()
 
 	def straight_sort_tool_clicked(self):
 		"""Implementation of sort a user table"""
-		column = 0  # Номер столбца, по которому вы хотите сортировать
-		order = Qt.SortOrder.AscendingOrder  # Используйте Qt.AscendingOrder или Qt.DescendingOrder
-		self.user_list.model().sort(column, order)
+		self.user_list.model().sort(0, Qt.SortOrder.AscendingOrder)
 
 	def reverse_sort_tool_clicked(self):
 		"""Implementation of sort in reverse order a user table"""
-		column = 0  # Номер столбца, по которому вы хотите сортировать
-		order = Qt.SortOrder.DescendingOrder  # Используйте Qt.AscendingOrder или Qt.DescendingOrder
-		self.user_list.model().sort(column, order)
+		self.user_list.model().sort(0, Qt.SortOrder.DescendingOrder)
 
 	def reset_sort_tool_clicked(self):
 		"""Implementation of reset a sorting"""
@@ -414,7 +403,8 @@ class ServerWindow(QMainWindow):
 			return
 		username_index = self.user_model.index(selected_indexes[0].row(), 0)
 		username = self.user_model.data(username_index)
-		self.about_user_form_dialog.set_username(username)
+		user = GlobalStates.user_db.get_user(username)
+		self.about_user_form_dialog.set_username(user)
 		self.about_user_form_dialog.show()
 
 	def remove_user_tool_clicked(self):
@@ -446,11 +436,23 @@ class ServerWindow(QMainWindow):
 		"""Implementation of adding table item in user row"""
 		for col, data in enumerate([
 			user.username,
+			user.online,
 			user.permission_RETR,
 			user.permission_DELE,
 			user.permission_STOR
 		]):
-			item = QStandardItem(str(data))
+			if col == 0:
+				item = QStandardItem(str(data))
+			elif col == 1:
+				if data:
+					item = QStandardItem(QIcon(QPixmap("./icon/online_24.svg")), "")
+				else:
+					item = QStandardItem(QIcon(QPixmap("./icon/offline_24.svg")), "")
+			else:
+				if data:
+					item = QStandardItem(QIcon(QPixmap("./icon/check_24.svg")), "")
+				else:
+					item = QStandardItem(QIcon(QPixmap("./icon/false_24.svg")), "")
 			item.setEditable(False)
 			if col != 0:
 				item.setSelectable(False)

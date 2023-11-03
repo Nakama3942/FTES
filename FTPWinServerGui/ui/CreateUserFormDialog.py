@@ -31,19 +31,25 @@ class CreateUserFormDialog(QDialog):
 		self.spacer = QSpacerItem(540, 0)
 		self.frame_layout.addSpacerItem(self.spacer)
 
-		self.username = MessageLineFrame(QPixmap("./icon/user_badge_24.svg"), "Enter the username")
+		self.username = MessageLineFrame()
+		self.username.line_frame_icon.setPixmap(QPixmap("./icon/user_badge_24.svg"))
+		self.username.line_frame_field.setPlaceholderText("Enter the username")
 		self.username.line_frame_tool.setVisible(False)
 		self.username.line_frame_field.textChanged.connect(self.username_frame_line_edit_textChanged)
 		self.frame_layout.addWidget(self.username)
 
-		self.password = MessageLineFrame(QPixmap("./icon/password_24.svg"), "Enter the password")
+		self.password = MessageLineFrame()
+		self.password.line_frame_icon.setPixmap(QPixmap("./icon/password_24.svg"))
 		self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
+		self.password.line_frame_field.setPlaceholderText("Enter the password")
 		self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
 		self.password.line_frame_tool.clicked.connect(self.password_line_frame_tool_clicked)
 		self.password.line_frame_field.textChanged.connect(self.password_frame_line_edit_textChanged)
 		self.frame_layout.addWidget(self.password)
 
-		self.home_dir = MessageLineFrame(QPixmap("./icon/user_directory_24.svg"), "Enter the home directory")
+		self.home_dir = MessageLineFrame()
+		self.home_dir.line_frame_icon.setPixmap(QPixmap("./icon/user_directory_24.svg"))
+		self.home_dir.line_frame_field.setPlaceholderText("Enter the home directory")
 		self.home_dir.line_frame_tool.setVisible(False)
 		self.user_home_dir = QCheckBox("Create a personal user directory in the specified directory", self)
 		self.home_dir.main_layout.addWidget(self.user_home_dir)
@@ -209,6 +215,7 @@ class CreateUserFormDialog(QDialog):
 					"user_logs": ""
 				}
 			)
+			GlobalStates.user_db.set_user_status(self.username.line_frame_field.text(), False)
 			GlobalStates.user_db.set_user_date(self.username.line_frame_field.text(), {"date_of_creation": datetime.now().replace(microsecond=0)})
 
 	def apply_butt_clicked(self):

@@ -17,8 +17,8 @@ from PyQt6.QtGui import QPixmap, QIcon
 from ui.frames.BaseLineFrame import BaseLineFrame
 
 class PushLineFrame(BaseLineFrame):
-	def __init__(self, frame_icon: QPixmap, frame_placeholder: str):
-		super(PushLineFrame, self).__init__(frame_icon, frame_placeholder)
+	def __init__(self):
+		super(PushLineFrame, self).__init__()
 
 		self.line_frame_tool = QToolButton(self)
 		self.line_frame_tool.setFixedSize(25, 25)
