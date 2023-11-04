@@ -12,24 +12,25 @@ QFrame, QLabel {
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
 	font-family: "Montserrat Medium";
-	font-size: 11pt;
+	font-size: 12pt;
 }
 QFrame#attention_line {
 	background-color: rgba(100, 0, 0, 20);
 	border: none;
 	border-radius: 4px;
+	padding: 4px;
 	font-family: "Montserrat Medium";
 	font-size: 13pt;
 	/*font-style: italic;*/
 	text-align: center;
 	color: rgba(100, 0, 0, 255);
 }
-QFrame#frame_in_frame {
+QFrame#empty_background {
 	background-color: none;
 	border: none;
 	border-radius: 0px;
 	font-family: "Montserrat Medium";
-	font-size: 13pt;
+	font-size: 12pt;
 }
 
 QGroupBox {
@@ -94,16 +95,32 @@ QPlainTextEdit {
 	selection-background-color: rgba(32, 57, 31, 150);
 	border: 1px solid rgba(0, 0, 0, 40);
 	border-radius: 4px;
-	font-family: "JetBrains Mono Light";
-	font-size: 9pt;
+	font-family: "Montserrat Medium";
+	font-size: 15pt;
 }
-QPlainTextEdit#not_editable_line:read-only {
+QPlainTextEdit:read-only {
 	background-color: rgba(0, 0, 0, 20);
 	border: none;
 	border-radius: 4px;
 	padding: 4px 4px 4px 4px;
 	font-family: "Montserrat Medium";
 	font-size: 15pt;
+}
+QPlainTextEdit#console_font {
+	background-color: rgba(0, 0, 0, 30);
+	selection-background-color: rgba(32, 57, 31, 150);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
+}
+QPlainTextEdit#console_font:read-only {
+	background-color: rgba(0, 0, 0, 20);
+	border: none;
+	border-radius: 4px;
+	padding: 4px 4px 4px 4px;
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
 }
 
 QLineEdit {
@@ -118,21 +135,13 @@ QLineEdit {
 	/*lineedit-password-character: 9733;*/
     lineedit-password-mask-delay: 1500;
 }
-QLineEdit#not_editable_line:read-only {
+QLineEdit:read-only {
 	background-color: rgba(0, 0, 0, 20);
 	border: none;
-	border-radius: 4px;
-	padding: 4px 4px 4px 4px;
+	border-radius: 0px;
+	padding: 2px;
 	font-family: "Montserrat Medium";
 	font-size: 15pt;
-}
-QLineEdit#frame_in_frame {
-	background-color: rgba(0, 0, 0, 0);
-	border: none;
-	border-radius: 0px;
-	/*border-bottom: 1px solid rgba(0, 0, 0, 40);*/
-	font-family: "Montserrat Medium";
-	font-size: 12pt;
 }
 
 QPushButton {
@@ -176,25 +185,6 @@ QToolButton:hover {
 }
 QToolButton:pressed {
 	background-color:rgba(0, 0, 0, 70);
-}
-
-QToolButton#frame_in_frame {
-	color: rgb(0, 0, 0);
-	background-color: None;
-	border: None;
-	border-radius: 0px;
-	height: 25;
-	width: 25;
-	icon-size: 24px;
-}
-QToolButton#frame_in_frame:pressed {
-	padding-top: 0px;
-}
-QToolButton#frame_in_frame:checked {
-	padding-top: 0px;
-}
-QToolButton#frame_in_frame:checked:pressed {
-	padding-top: 0px;
 }
 
 QTableView {
@@ -247,4 +237,68 @@ QScrollBar::add-page, QScrollBar::sub-page {
 	border: 1px solid rgba(0, 0, 0, 40);
 	background: none;
 	border-radius: 4px;
+}
+
+/* **********************
+ *	Custom frame style
+ * ********************** */
+
+QFrame#main_frame {
+	background-color: rgba(0, 0, 0, 30);
+	border: 1px solid rgba(0, 0, 0, 40);
+	border-radius: 4px;
+	font-family: "Montserrat Medium";
+	font-size: 13pt;
+}
+QFrame#main_frame_read_only {
+	background-color: rgba(0, 0, 0, 20);
+	border: none;
+	border-radius: 4px;
+	font-family: "Montserrat Medium";
+	font-size: 13pt;
+}
+
+QFrame#frame_in_frame {
+	background-color: none;
+	border: none;
+	border-radius: 0px;
+	font-family: "Montserrat Medium";
+	font-size: 13pt;
+}
+
+QLineEdit#line_in_frame {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	border-radius: 0px;
+	/*border-bottom: 1px solid rgba(0, 0, 0, 40);*/
+	font-family: "Montserrat Medium";
+	font-size: 12pt;
+}
+QLineEdit#line_in_frame:read-only {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	border-radius: 0px;
+	/*border-bottom: 1px solid rgba(0, 0, 0, 40);*/
+	padding: 2px;
+	font-family: "Montserrat Medium";
+	font-size: 15pt;
+}
+
+QToolButton#tool_in_frame {
+	color: rgb(0, 0, 0);
+	background-color: None;
+	border: None;
+	border-radius: 0px;
+	height: 25;
+	width: 25;
+	icon-size: 24px;
+}
+QToolButton#tool_in_frame:pressed {
+	padding-top: 0px;
+}
+QToolButton#tool_in_frame:checked {
+	padding-top: 0px;
+}
+QToolButton#tool_in_frame:checked:pressed {
+	padding-top: 0px;
 }

@@ -34,26 +34,29 @@ class CreateUserFormDialog(QDialog):
 		self.username = MessageLineFrame()
 		self.username.line_frame_icon.setPixmap(QPixmap("./icon/user_badge_24.svg"))
 		self.username.line_frame_field.setPlaceholderText("Enter the username")
-		self.username.line_frame_tool.setVisible(False)
 		self.username.line_frame_field.textChanged.connect(self.username_frame_line_edit_textChanged)
+		self.username.line_frame_tool.setVisible(False)
+		self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 		self.frame_layout.addWidget(self.username)
 
 		self.password = MessageLineFrame()
 		self.password.line_frame_icon.setPixmap(QPixmap("./icon/password_24.svg"))
 		self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
 		self.password.line_frame_field.setPlaceholderText("Enter the password")
+		self.password.line_frame_field.textChanged.connect(self.password_frame_line_edit_textChanged)
 		self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
 		self.password.line_frame_tool.clicked.connect(self.password_line_frame_tool_clicked)
-		self.password.line_frame_field.textChanged.connect(self.password_frame_line_edit_textChanged)
+		self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 		self.frame_layout.addWidget(self.password)
 
 		self.home_dir = MessageLineFrame()
 		self.home_dir.line_frame_icon.setPixmap(QPixmap("./icon/user_directory_24.svg"))
 		self.home_dir.line_frame_field.setPlaceholderText("Enter the home directory")
+		self.home_dir.line_frame_field.textChanged.connect(self.home_dir_frame_line_edit_textChanged)
 		self.home_dir.line_frame_tool.setVisible(False)
+		self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 		self.user_home_dir = QCheckBox("Create a personal user directory in the specified directory", self)
 		self.home_dir.main_layout.addWidget(self.user_home_dir)
-		self.home_dir.line_frame_field.textChanged.connect(self.home_dir_frame_line_edit_textChanged)
 		self.frame_layout.addWidget(self.home_dir)
 
 		self.permission_layout = QVBoxLayout()
@@ -83,17 +86,9 @@ class CreateUserFormDialog(QDialog):
 		self.permission_group.setLayout(self.permission_layout)
 		self.frame_layout.addWidget(self.permission_group)
 
-		self.add_layout = QHBoxLayout()
-
 		self.add_butt = QPushButton("Add new user", self)
 		self.add_butt.clicked.connect(self.add_butt_clicked)
-		self.add_layout.addWidget(self.add_butt)
-
-		self.apply_butt = QPushButton("Add and apply", self)
-		self.apply_butt.clicked.connect(self.apply_butt_clicked)
-		self.add_layout.addWidget(self.apply_butt)
-
-		self.frame_layout.addLayout(self.add_layout)
+		self.frame_layout.addWidget(self.add_butt)
 
 		# Dialog window customization
 		self.setLayout(self.frame_layout)
@@ -104,22 +99,22 @@ class CreateUserFormDialog(QDialog):
 		if text == "":
 			self.username.line_frame_message.setVisible(False)
 			self.username.line_frame_message.setText("")
-			self.username.line_frame_mark.setPixmap(QPixmap(""))
+			self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 			self.username.logic_mark = False
 		else:
 			self.username.line_frame_message.setVisible(True)
 			if re.match(r'^[a-zA-Z_]+$', text):
 				if GlobalStates.user_db.check_username(text):
 					self.username.line_frame_message.setText("Once the user is created, the name cannot be changed!")
-					self.username.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+					self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 					self.username.logic_mark = True
 				else:
 					self.username.line_frame_message.setText("A user with this name already exists!")
-					self.username.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+					self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 					self.username.logic_mark = False
 			else:
 				self.username.line_frame_message.setText("Wrong user name!")
-				self.username.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.username.logic_mark = False
 
 	def password_line_frame_tool_clicked(self):
@@ -134,14 +129,14 @@ class CreateUserFormDialog(QDialog):
 		if text == "":
 			self.password.line_frame_message.setVisible(False)
 			self.password.line_frame_message.setText("")
-			self.password.line_frame_mark.setPixmap(QPixmap(""))
+			self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 			self.password.logic_mark = False
 		else:
 			# Проверка пароля
 			if len(text) < 4:
 				self.password.line_frame_message.setVisible(True)
 				self.password.line_frame_message.setText("The password is too short!")
-				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.password.logic_mark = False
 			elif re.match(r'^[a-zA-Z0-9]+$', text):
 				has_digit = any(char.isdigit() for char in text)
@@ -149,34 +144,34 @@ class CreateUserFormDialog(QDialog):
 				if has_digit and has_alpha:
 					self.password.line_frame_message.setVisible(False)
 					self.password.line_frame_message.setText("")
-					self.password.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+					self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 				else:
 					self.password.line_frame_message.setVisible(True)
 					self.password.line_frame_message.setText("The password is not secure!")
-					self.password.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+					self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 				self.password.logic_mark = True
 			else:
 				self.password.line_frame_message.setVisible(True)
 				self.password.line_frame_message.setText("Wrong password!")
-				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.password.logic_mark = False
 
 	def home_dir_frame_line_edit_textChanged(self, text):
 		if text == "":
 			self.home_dir.line_frame_message.setVisible(False)
 			self.home_dir.line_frame_message.setText("")
-			self.home_dir.line_frame_mark.setPixmap(QPixmap(""))
+			self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 			self.home_dir.logic_mark = False
 		else:
 			if os.path.exists(text) and os.path.isdir(text):
 				self.home_dir.line_frame_message.setVisible(False)
 				self.home_dir.line_frame_message.setText("")
-				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 				self.home_dir.logic_mark = True
 			else:
 				self.home_dir.line_frame_message.setVisible(True)
 				self.home_dir.line_frame_message.setText("Wrong directory!")
-				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.home_dir.logic_mark = False
 
 	def add_butt_clicked(self):
@@ -217,7 +212,4 @@ class CreateUserFormDialog(QDialog):
 			)
 			GlobalStates.user_db.set_user_status(self.username.line_frame_field.text(), False)
 			GlobalStates.user_db.set_user_date(self.username.line_frame_field.text(), {"date_of_creation": datetime.now().replace(microsecond=0)})
-
-	def apply_butt_clicked(self):
-		self.add_butt_clicked()
-		self.close()
+			self.close()

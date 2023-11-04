@@ -23,5 +23,5 @@ class PushLineFrame(BaseLineFrame):
 		self.line_frame_tool = QToolButton(self)
 		self.line_frame_tool.setFixedSize(25, 25)
 		self.line_frame_tool.setCheckable(True)
-		self.line_frame_tool.setObjectName("frame_in_frame")
+		self.line_frame_tool.setObjectName("tool_in_frame")
 		self.line_layout.addWidget(self.line_frame_tool)

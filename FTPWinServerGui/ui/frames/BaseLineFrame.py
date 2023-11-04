@@ -25,14 +25,12 @@ class BaseLineFrame(QFrame):
 		self.main_layout.addLayout(self.line_layout)
 
 		self.line_frame_icon = QLabel(self)
-		self.line_frame_icon.setObjectName("empty_background")
-		# self.line_frame_icon.setPixmap(frame_icon)
+		self.line_frame_icon.setObjectName("frame_in_frame")
 		self.line_layout.addWidget(self.line_frame_icon)
 
 		self.line_frame_field = QLineEdit(self)
-		self.line_frame_field.setObjectName("frame_in_frame")
-		# self.line_frame_field.setPlaceholderText(frame_placeholder)
+		self.line_frame_field.setObjectName("line_in_frame")
 		self.line_layout.addWidget(self.line_frame_field)
 
 		self.setLayout(self.main_layout)
-		self.setObjectName("frame_in_frame")
+		self.setObjectName("main_frame")

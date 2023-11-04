@@ -69,13 +69,16 @@ class ServerWindow(QMainWindow):
 		self.console = QPlainTextEdit(self)
 		self.console.setMinimumWidth(750)
 		self.console.setReadOnly(True)
+		self.console.setObjectName("console_font")
 		self.server_layout.addWidget(self.console)
 
 		self.god_terminal = QPlainTextEdit(self)
 		self.god_terminal.setMaximumHeight(50)
 		self.god_terminal.setReadOnly(True)
+		self.god_terminal.setObjectName("console_font")
 		self.god_terminal.setPlainText("fteswsg@God:~$\n> ")
-		# todo реализовать консоль, в которую можно вводить команды
+		# todo Реализовать новій фрейм, где вывод логов и ввод команд будут объеденины
+		# todo Реализовать консоль, в которую можно вводить команды
 		self.server_layout.addWidget(self.god_terminal)
 
 		self.serving_layout = QHBoxLayout()
@@ -452,7 +455,7 @@ class ServerWindow(QMainWindow):
 				if data:
 					item = QStandardItem(QIcon(QPixmap("./icon/check_24.svg")), "")
 				else:
-					item = QStandardItem(QIcon(QPixmap("./icon/false_24.svg")), "")
+					item = QStandardItem(QIcon(QPixmap("./icon/cancel_24.svg")), "")
 			item.setEditable(False)
 			if col != 0:
 				item.setSelectable(False)

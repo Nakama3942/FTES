@@ -26,8 +26,6 @@ from ui.frames.BaseLineFrame import BaseLineFrame
 from ui.frames.PushLineFrame import PushLineFrame
 from ui.frames.MarkedLineFrame import MarkedLineFrame
 
-# todo Дозаменить все поля на собственные фреймы
-
 class AboutUserFormDialog(QDialog):
 	def __init__(self):
 		super(AboutUserFormDialog, self).__init__()
@@ -41,11 +39,12 @@ class AboutUserFormDialog(QDialog):
 		# self.spacer = QSpacerItem(540, 0)
 		# self.frame_layout.addSpacerItem(self.spacer)
 
-		# self.username = QLineEdit(self)
 		self.username = MarkedLineFrame()
+		self.username.setObjectName("main_frame_read_only")
+		self.username.line_frame_icon.setPixmap(QPixmap("./icon/user_badge_24.svg"))
 		self.username.line_frame_field.setReadOnly(True)
-		self.username.line_frame_field.setObjectName("not_editable_line")
 		self.username.line_frame_field.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+		self.username.line_frame_tool.setVisible(False)
 		self.frame_layout.addWidget(self.username)
 
 		self.data_grid_layout = QGridLayout()
@@ -60,8 +59,7 @@ class AboutUserFormDialog(QDialog):
 		self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
 		self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
 		self.password.line_frame_tool.clicked.connect(self.password_line_frame_tool_clicked)
-		self.password.line_frame_field.setObjectName("not_editable_line")
-		# self.password.setEchoMode(QLineEdit.EchoMode.Password)
+		self.password.setObjectName("main_frame_read_only")
 		self.data_grid_layout.addWidget(self.password, 0, 1)
 
 		self.home_dir_line = QLabel("User home directory:", self)
@@ -70,7 +68,7 @@ class AboutUserFormDialog(QDialog):
 		self.home_dir = BaseLineFrame()
 		self.home_dir.line_frame_icon.setPixmap(QPixmap("./icon/user_directory_24.svg"))
 		self.home_dir.line_frame_field.setReadOnly(True)
-		self.home_dir.line_frame_field.setObjectName("not_editable_line")
+		self.home_dir.setObjectName("main_frame_read_only")
 		self.data_grid_layout.addWidget(self.home_dir, 1, 1)
 
 		self.date_of_creation_line = QLabel("Date of the creation of user:", self)
@@ -79,7 +77,7 @@ class AboutUserFormDialog(QDialog):
 		self.date_of_creation = BaseLineFrame()
 		self.date_of_creation.line_frame_icon.setPixmap(QPixmap("./icon/calendar_today_24.svg"))
 		self.date_of_creation.line_frame_field.setReadOnly(True)
-		self.date_of_creation.line_frame_field.setObjectName("not_editable_line")
+		self.date_of_creation.setObjectName("main_frame_read_only")
 		self.data_grid_layout.addWidget(self.date_of_creation, 2, 1)
 
 		self.date_of_change_line = QLabel("Date of the change user properties:", self)
@@ -88,7 +86,7 @@ class AboutUserFormDialog(QDialog):
 		self.date_of_change = BaseLineFrame()
 		self.date_of_change.line_frame_icon.setPixmap(QPixmap("./icon/calendar_today_24.svg"))
 		self.date_of_change.line_frame_field.setReadOnly(True)
-		self.date_of_change.line_frame_field.setObjectName("not_editable_line")
+		self.date_of_change.setObjectName("main_frame_read_only")
 		self.data_grid_layout.addWidget(self.date_of_change, 3, 1)
 
 		self.last_login_date_line = QLabel("Date of the user last login:", self)
@@ -97,7 +95,7 @@ class AboutUserFormDialog(QDialog):
 		self.last_login_date = BaseLineFrame()
 		self.last_login_date.line_frame_icon.setPixmap(QPixmap("./icon/calendar_event_24.svg"))
 		self.last_login_date.line_frame_field.setReadOnly(True)
-		self.last_login_date.line_frame_field.setObjectName("not_editable_line")
+		self.last_login_date.setObjectName("main_frame_read_only")
 		self.data_grid_layout.addWidget(self.last_login_date, 4, 1)
 
 		self.login_time_line = QLabel("Last login time:", self)
@@ -106,7 +104,7 @@ class AboutUserFormDialog(QDialog):
 		self.login_time = BaseLineFrame()
 		self.login_time.line_frame_icon.setPixmap(QPixmap("./icon/time_24.svg"))
 		self.login_time.line_frame_field.setReadOnly(True)
-		self.login_time.line_frame_field.setObjectName("not_editable_line")
+		self.login_time.setObjectName("main_frame_read_only")
 		self.data_grid_layout.addWidget(self.login_time, 5, 1)
 
 		self.upload_statistics_line = QLabel("Statistics on uploaded data:", self)
@@ -115,7 +113,6 @@ class AboutUserFormDialog(QDialog):
 		self.upload_statistics = QPlainTextEdit(self)
 		self.upload_statistics.setMaximumHeight(90)
 		self.upload_statistics.setReadOnly(True)
-		self.upload_statistics.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.upload_statistics, 6, 1)
 
 		self.download_statistics_line = QLabel("Statistics on downloaded data:", self)
@@ -124,7 +121,6 @@ class AboutUserFormDialog(QDialog):
 		self.download_statistics = QPlainTextEdit(self)
 		self.download_statistics.setMaximumHeight(90)
 		self.download_statistics.setReadOnly(True)
-		self.download_statistics.setObjectName("not_editable_line")
 		self.data_grid_layout.addWidget(self.download_statistics, 7, 1)
 
 		# Creating a data model
@@ -144,8 +140,7 @@ class AboutUserFormDialog(QDialog):
 
 		# Displaying the data shell in a table
 		self.user_permission_list = QTableView(self)
-		self.user_permission_list.setMinimumSize(570, 70)
-		self.user_permission_list.setMaximumSize(570, 70)
+		self.user_permission_list.setFixedSize(600, 70)
 		self.user_permission_list.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 		self.user_permission_list.setModel(self.user_permission_model)
 		self.user_permission_list.verticalHeader().setVisible(False)
@@ -161,6 +156,7 @@ class AboutUserFormDialog(QDialog):
 		self.data_grid_layout.addWidget(self.user_logs_line, 9, 0)
 		self.user_logs = QPlainTextEdit(self)
 		self.user_logs.setReadOnly(True)
+		self.user_logs.setObjectName("console_font")
 		self.data_grid_layout.addWidget(self.user_logs, 9, 1)
 
 		# Dialog window customization
@@ -216,7 +212,7 @@ class AboutUserFormDialog(QDialog):
 			if data:
 				item = QStandardItem(QIcon("./icon/check_24.svg"), "")
 			else:
-				item = QStandardItem(QIcon("./icon/false_24.svg"), "")
+				item = QStandardItem(QIcon("./icon/cancel_24.svg"), "")
 			item.setEditable(False)
 			item.setSelectable(False)
 			self.user_permission_model.setItem(0, col, item)

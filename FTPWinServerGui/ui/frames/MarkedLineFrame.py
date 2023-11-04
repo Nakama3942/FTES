@@ -23,5 +23,5 @@ class MarkedLineFrame(PushLineFrame):
 		self.logic_mark = False
 
 		self.line_frame_mark = QLabel(self)
-		self.line_frame_mark.setObjectName("empty_background")
+		self.line_frame_mark.setObjectName("frame_in_frame")
 		self.line_layout.addWidget(self.line_frame_mark)

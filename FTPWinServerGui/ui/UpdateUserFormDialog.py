@@ -20,6 +20,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap, QIcon
 
 from src.GlobalStates import GlobalStates
+from ui.frames.BaseLineFrame import BaseLineFrame
 from ui.frames.MessageLineFrame import MessageLineFrame
 
 class UpdateUserFormDialog(QDialog):
@@ -32,26 +33,29 @@ class UpdateUserFormDialog(QDialog):
 		self.spacer = QSpacerItem(540, 0)
 		self.frame_layout.addSpacerItem(self.spacer)
 
-		self.username = QLineEdit(self)
-		self.username.setReadOnly(True)
-		self.username.setObjectName("not_editable_line")
-		self.username.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+		self.username = BaseLineFrame()
+		self.username.line_frame_icon.setPixmap(QPixmap("./icon/user_badge_24.svg"))
+		self.username.line_frame_field.setReadOnly(True)
+		self.username.setObjectName("main_frame_read_only")
+		self.username.line_frame_field.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 		self.frame_layout.addWidget(self.username)
 
 		self.password = MessageLineFrame()
 		self.password.line_frame_icon.setPixmap(QPixmap("./icon/password_24.svg"))
 		self.password.line_frame_field.setEchoMode(QLineEdit.EchoMode.Password)
 		self.password.line_frame_field.setPlaceholderText("Enter the password")
+		self.password.line_frame_field.textChanged.connect(self.password_frame_line_edit_textChanged)
 		self.password.line_frame_tool.setIcon(QIcon(QPixmap("./icon/visibility_off_24.svg")))
 		self.password.line_frame_tool.clicked.connect(self.password_line_frame_tool_clicked)
-		self.password.line_frame_field.textChanged.connect(self.password_frame_line_edit_textChanged)
+		self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 		self.frame_layout.addWidget(self.password)
 
 		self.home_dir = MessageLineFrame()
 		self.home_dir.line_frame_icon.setPixmap(QPixmap("./icon/user_directory_24.svg"))
 		self.home_dir.line_frame_field.setPlaceholderText("Enter the home directory")
-		self.home_dir.line_frame_tool.setVisible(False)
 		self.home_dir.line_frame_field.textChanged.connect(self.home_dir_frame_line_edit_textChanged)
+		self.home_dir.line_frame_tool.setVisible(False)
+		self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_24.svg"))
 		self.frame_layout.addWidget(self.home_dir)
 
 		self.permission_layout = QVBoxLayout()
@@ -100,16 +104,16 @@ class UpdateUserFormDialog(QDialog):
 
 	def password_frame_line_edit_textChanged(self, text):
 		if text == "":
-			self.password.line_frame_message.setVisible(False)
-			self.password.line_frame_message.setText("")
-			self.password.line_frame_mark.setPixmap(QPixmap(""))
+			self.password.line_frame_message.setVisible(True)
+			self.password.line_frame_message.setText("The field must not be empty!")
+			self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 			self.password.logic_mark = False
 		else:
 			# Проверка пароля
-			if len(text) < 8:
+			if len(text) < 4:
 				self.password.line_frame_message.setVisible(True)
 				self.password.line_frame_message.setText("The password is too short!")
-				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.password.logic_mark = False
 			elif re.match(r'^[a-zA-Z0-9]+$', text):
 				has_digit = any(char.isdigit() for char in text)
@@ -117,40 +121,40 @@ class UpdateUserFormDialog(QDialog):
 				if has_digit and has_alpha:
 					self.password.line_frame_message.setVisible(False)
 					self.password.line_frame_message.setText("")
-					self.password.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+					self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 				else:
 					self.password.line_frame_message.setVisible(True)
 					self.password.line_frame_message.setText("The password is not secure!")
-					self.password.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+					self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 				self.password.logic_mark = True
 			else:
 				self.password.line_frame_message.setVisible(True)
 				self.password.line_frame_message.setText("Wrong password!")
-				self.password.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.password.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.password.logic_mark = False
 
 	def home_dir_frame_line_edit_textChanged(self, text):
 		if text == "":
-			self.home_dir.line_frame_message.setVisible(False)
-			self.home_dir.line_frame_message.setText("")
-			self.home_dir.line_frame_mark.setPixmap(QPixmap(""))
+			self.home_dir.line_frame_message.setVisible(True)
+			self.home_dir.line_frame_message.setText("The field must not be empty!")
+			self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 			self.home_dir.logic_mark = False
 		else:
 			if os.path.exists(text) and os.path.isdir(text):
 				self.home_dir.line_frame_message.setVisible(False)
 				self.home_dir.line_frame_message.setText("")
-				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/check_24.svg"))
+				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
 				self.home_dir.logic_mark = True
 			else:
 				self.home_dir.line_frame_message.setVisible(True)
 				self.home_dir.line_frame_message.setText("Wrong directory!")
-				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/false_24.svg"))
+				self.home_dir.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
 				self.home_dir.logic_mark = False
 
 	def update_butt_clicked(self):
 		if self.password.logic_mark and self.home_dir.logic_mark:
 			GlobalStates.user_db.update_user(
-				self.username.text(),
+				self.username.line_frame_field.text(),
 				{
 					"password": self.password.line_frame_field.text(),
 					"home_dir": self.home_dir.line_frame_field.text(),
@@ -166,12 +170,12 @@ class UpdateUserFormDialog(QDialog):
 					"permission_MFMT": self.permission_T.isChecked()
 				}
 			)
-			GlobalStates.user_db.set_user_date(self.username.text(), {"date_of_change": datetime.now().replace(microsecond=0)})
+			GlobalStates.user_db.set_user_date(self.username.line_frame_field.text(), {"date_of_change": datetime.now().replace(microsecond=0)})
 			self.close()
 
 	def set_username(self, username):
 		user = GlobalStates.user_db.get_user(username)
-		self.username.setText(user.username)
+		self.username.line_frame_field.setText(user.username)
 		self.password.line_frame_field.setText(user.password)
 		self.home_dir.line_frame_field.setText(user.home_dir)
 		self.permission_e.setChecked(user.permission_CWD)
