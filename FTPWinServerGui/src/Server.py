@@ -101,16 +101,3 @@ class Server:
 	def stop(self):
 		logging.shutdown()
 		self.__server.close_all()
-
-
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='FTP Server')
-	parser.add_argument('-a', '--address', default='192.168.0.102', required=False, help='IP address')
-	parser.add_argument('-u', '--username', default='user', required=False, help='Username')
-	parser.add_argument('-p', '--password', default='12345', required=False, help='Password')
-	parser.add_argument('-d', '--homedir', default='.', required=False, help='Home directory')
-	parser.add_argument('-l', '--log', default='info', required=False, help='Logger levels')
-
-	args = parser.parse_args()
-
-	serv = Server(args.address, args.username, args.password, args.homedir, 'elradfmwMT', args.log, sys.stdout, sys.stderr)

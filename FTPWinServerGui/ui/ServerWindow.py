@@ -77,7 +77,7 @@ class ServerWindow(QMainWindow):
 		self.god_terminal.setReadOnly(True)
 		self.god_terminal.setObjectName("console_font")
 		self.god_terminal.setPlainText("fteswsg@God:~$\n> ")
-		# todo Реализовать новій фрейм, где вывод логов и ввод команд будут объеденины
+		# todo Реализовать новый фрейм, где вывод логов и ввод команд будут объеденины
 		# todo Реализовать консоль, в которую можно вводить команды
 		self.server_layout.addWidget(self.god_terminal)
 
@@ -192,7 +192,7 @@ class ServerWindow(QMainWindow):
 		self.tool_layout.addWidget(self.reverse_sort_tool)
 
 		self.reset_sort_tool = QToolButton(self)
-		self.reset_sort_tool.setIcon(QIcon(QPixmap("./icon/reset_sort_24.svg")))
+		self.reset_sort_tool.setIcon(QIcon(QPixmap("./icon/reset_24.svg")))
 		self.reset_sort_tool.clicked.connect(self.reset_sort_tool_clicked)
 		self.tool_layout.addWidget(self.reset_sort_tool)
 
@@ -339,7 +339,7 @@ class ServerWindow(QMainWindow):
 			html = md.render(text)
 
 		about_program_container = QMessageBox()
-		about_program_container.setWindowIcon(QIcon("./icon/about.png"))
+		# about_program_container.setWindowIcon(QIcon("./icon/about.png"))
 		about_program = QMessageBox()
 		about_program.about(about_program_container, "About program", html)
 
@@ -351,7 +351,7 @@ class ServerWindow(QMainWindow):
 			html = md.render(text)
 
 		about_program_container = QMessageBox()
-		about_program_container.setWindowIcon(QIcon("./icon/about.png"))
+		# about_program_container.setWindowIcon(QIcon("./icon/about.png"))
 		about_program = QMessageBox()
 		about_program.about(about_program_container, "About program", html)
 

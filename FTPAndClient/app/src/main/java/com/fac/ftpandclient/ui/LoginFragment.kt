@@ -156,8 +156,8 @@ class LoginFragment : Fragment() {
                 // If there is no connection - connecting it, else - disconnecting it
                 if (!connectionModel.isConnected().value!!) {
                     try {
-                        ImportantData.server = ClientLogic(login.text.toString(), password.text.toString(), serverIp.text.toString())
-//                        ImportantData.server = ClientLogic()
+//                        ImportantData.server = ClientLogic(login.text.toString(), password.text.toString(), serverIp.text.toString())
+                        ImportantData.server = ClientLogic()
                         serv = ImportantData.server!!
                         serv.connect()
                         activity?.runOnUiThread {
