@@ -266,6 +266,46 @@ QFrame#frame_in_frame {
 	font-size: 13pt;
 }
 
+QPlainTextEdit#console_field_in_frame {
+	background-color: rgba(0, 0, 0, 0);
+	selection-background-color: rgba(32, 57, 31, 150);
+	border: none;
+	border-radius: 0px;
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
+}
+QPlainTextEdit#console_field_in_frame:read-only {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	border-radius: 0px;
+	/*padding: 2px;*/
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
+}
+QFrame#console_query_in_frame {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	border-radius: 0px;
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
+}
+QLineEdit#console_line_in_frame {
+	background-color: rgba(0, 0, 0, 0);
+	selection-background-color: rgba(32, 57, 31, 150);
+	border: none;
+	border-radius: 0px;
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
+}
+QLineEdit#console_line_in_frame:read-only {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	border-radius: 0px;
+	/*padding: 2px;*/
+	font-family: "JetBrains Mono Light";
+	font-size: 9pt;
+}
+
 QLineEdit#line_in_frame {
 	background-color: rgba(0, 0, 0, 0);
 	border: none;

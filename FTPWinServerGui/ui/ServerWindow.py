@@ -27,6 +27,7 @@ from ui.Interceptor import Interceptor
 from ui.CreateUserFormDialog import CreateUserFormDialog
 from ui.UpdateUserFormDialog import UpdateUserFormDialog
 from ui.AboutUserFormDialog import AboutUserFormDialog
+from ui.frames.ConsoleFrame import ConsoleFrame
 from ui.frames.BaseLineFrame import BaseLineFrame
 
 class ServerWindow(QMainWindow):
@@ -66,20 +67,9 @@ class ServerWindow(QMainWindow):
 		##############################
 		self.server_layout = QVBoxLayout()
 
-		self.console = QPlainTextEdit(self)
-		self.console.setMinimumWidth(750)
-		self.console.setReadOnly(True)
-		self.console.setObjectName("console_font")
-		self.server_layout.addWidget(self.console)
-
-		self.god_terminal = QPlainTextEdit(self)
-		self.god_terminal.setMaximumHeight(50)
-		self.god_terminal.setReadOnly(True)
-		self.god_terminal.setObjectName("console_font")
-		self.god_terminal.setPlainText("fteswsg@God:~$\n> ")
-		# todo Реализовать новый фрейм, где вывод логов и ввод команд будут объеденины
-		# todo Реализовать консоль, в которую можно вводить команды
-		self.server_layout.addWidget(self.god_terminal)
+		self.console_frame = ConsoleFrame()
+		self.console_frame.query_string.setText("fteswsg@God:~$")
+		self.server_layout.addWidget(self.console_frame)
 
 		self.serving_layout = QHBoxLayout()
 
@@ -125,10 +115,12 @@ class ServerWindow(QMainWindow):
 		self.icon_frame = BaseLineFrame()
 		self.icon_frame.line_frame_icon.setPixmap(QPixmap("./icon/search_user_24.svg"))
 		self.icon_frame.line_frame_field.setPlaceholderText("Search username")
+		self.icon_frame.line_frame_field.setFixedWidth(160)
+		self.icon_frame.line_frame_field.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 		self.icon_frame.line_frame_field.textChanged.connect(self.search_line_textChanged)
 		self.search_layout.addWidget(self.icon_frame)
 
-		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+		self.spacer = QSpacerItem(250, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
 		self.search_layout.addSpacerItem(self.spacer)
 
 		self.help_tool = QToolButton(self)
@@ -169,6 +161,7 @@ class ServerWindow(QMainWindow):
 
 		# Displaying the data shell in a table
 		self.user_list = QTableView(self)
+		self.user_list.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 		self.user_list.setModel(self.proxy_model)
 		self.user_list.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 		GlobalStates.user_db.new.connect(self.user_db_new)
@@ -196,7 +189,7 @@ class ServerWindow(QMainWindow):
 		self.reset_sort_tool.clicked.connect(self.reset_sort_tool_clicked)
 		self.tool_layout.addWidget(self.reset_sort_tool)
 
-		self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+		self.spacer = QSpacerItem(250, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
 		self.tool_layout.addSpacerItem(self.spacer)
 
 		self.add_user_tool = QToolButton(self)
@@ -236,6 +229,7 @@ class ServerWindow(QMainWindow):
 		self.setCentralWidget(self.central_widget)
 		self.setWindowTitle("FTES WSG - File Transfer EcoSystem Windows Server Graphic")
 		self.setMinimumSize(1280, 720)
+		self.setFocus()
 
 	##############################
 	#
@@ -247,7 +241,7 @@ class ServerWindow(QMainWindow):
 	###################
 	def intercept_writing(self, text):
 		"""Implementation of log writing"""
-		self.console.appendPlainText(text.strip())
+		self.console_frame.console_output.appendPlainText(text.strip())
 
 		text_re = re.search(r"\[.*\] .*-\[(.*?)\]", text)
 		if text_re:

@@ -103,7 +103,12 @@ class CreateUserFormDialog(QDialog):
 			self.username.logic_mark = False
 		else:
 			self.username.line_frame_message.setVisible(True)
-			if re.match(r'^[a-zA-Z_]+$', text):
+			if len(text) > 14:
+				self.username.line_frame_message.setVisible(True)
+				self.username.line_frame_message.setText("The name must not exceed 14 letters!")
+				self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_cancel_24.svg"))
+				self.username.logic_mark = False
+			elif re.match(r'^[a-zA-Z_]+$', text):
 				if GlobalStates.user_db.check_username(text):
 					self.username.line_frame_message.setText("Once the user is created, the name cannot be changed!")
 					self.username.line_frame_mark.setPixmap(QPixmap("./icon/circle_check_24.svg"))
