@@ -11,12 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-import os
 import logging
-import keyboard
 import threading
-import argparse
-import sys
 
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
@@ -24,24 +20,13 @@ from pyftpdlib.servers import ThreadedFTPServer
 
 from src.GlobalStates import GlobalStates
 
-class CustomFTPHandler(FTPHandler):
-	def ftp_LIST(self, path):
-		# Получите список файлов и директорий как обычно
-		file_list = super().ftp_LIST(path)
-
-		# Примените фильтрацию, исключив файлы и директории, которые вы хотите скрыть
-		filtered_list = []
-		for item in file_list:
-			filename = item[0]  # Имя файла или директории
-			if not self.should_be_hidden(filename):
-				filtered_list.append(item)
-
-		return filtered_list
-
-	def should_be_hidden(self, filename):
-		# Проверка, должен ли файл быть исключен
-		excluded_files = ["users_database.db-journal", "users_database.db", "pyftpd.log"]  # Список файлов для исключения
-		return filename in excluded_files
+# class CustomFTPHandler(FTPHandler):
+# 	def ftp_CUST(self, command):
+# 		try:
+# 			print(f"Custom FTP command is working: message received '{command}'")
+# 			self.respond("200 Custom command executed.")  # Отправка ответа клиенту
+# 		except:
+# 			self.respond("500 Custom command not executed.")
 
 class Server:
 	def __init__(self, ip, stdout, stderr):
@@ -50,15 +35,20 @@ class Server:
 		self.__stderr = stderr
 
 		self.__authorizer = DummyAuthorizer()
-		self.__handler = CustomFTPHandler
+		self.__handler = FTPHandler
 		self.__server = None
 
 		self.__starter = None
 		self.__stopper = None
 
 	def build(self):
-		self.__handler.authorizer = self.__authorizer
+		# Зарегистрируйте команду "CUSTOM"
+		# CustomFTPHandler.proto_cmds['CUST'] = dict(
+		# 	perm=None, auth=True, arg=False,
+		# 	help='This is my test command'
+		# )
 
+		self.__handler.authorizer = self.__authorizer
 		self.__handler.banner = "pyftpdlib основанный на ftpd."
 
 		self.__server = ThreadedFTPServer((self.__ip, 21), self.__handler)
