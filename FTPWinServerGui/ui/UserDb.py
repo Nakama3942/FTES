@@ -80,21 +80,21 @@ class UserDb(QObject):
 	def set_user_status(self, username, online: bool):
 		user = self.get_user(username)
 		if user:
-			# Обновляем статус пользователя
+			# Оновлюємо статус користувача
 			setattr(user, "online", online)
 
-			# Фиксируем изменения в базе данных
+			# Фіксуємо значення в БД
 			self.session.commit()
 			self.dirty.emit(user)
 
 	def update_user(self, username, new_data):
 		user = self.get_user(username)
 		if user:
-			# Обновляем поля пользователя
+			# Оновлюємо поля користувача
 			for key, value in new_data.items():
 				setattr(user, key, value)
 
-			# Фиксируем изменения в базе данных
+			# Фіксуємо значення в БД
 			self.session.commit()
 			self.dirty.emit(user)
 
@@ -102,44 +102,45 @@ class UserDb(QObject):
 		user = self.get_user(username)
 		if user:
 			for key, value in new_data.items():
-				# Создаем объект запроса для обновления поля
+				# Створюємо об'єкт запиту для оновлення поля
 				update_query = update(User).where(User.username == username)
-				# Обновляем поле, добавляя новое значение
+				# Оновлюємо поле, додаючи нове значення
 				update_query = update_query.values({key: User.__dict__[key] + value})
-				# Выполняем запрос
+				# Виконуємо запит
 				self.session.execute(update_query)
 
+			# Фіксуємо значення в БД
 			self.session.commit()
 
 	def number_recalculate(self, username, new_data):
 		user = self.get_user(username)
 		if user:
-			# Обновляем поля пользователя
+			# Оновлюємо поля користувача
 			for key, value in new_data.items():
 				setattr(user, key, getattr(user, key) + value)
 
-			# Фиксируем изменения в базе данных
+			# Фіксуємо значення в БД
 			self.session.commit()
 
 	def set_user_date(self, username, new_data):
 		user = self.get_user(username)
 		if user:
-			# Обновляем поля пользователя
+			# Оновлюємо поля користувача
 			for key, value in new_data.items():
 				setattr(user, key, value)
 
-			# Фиксируем изменения в базе данных
+			# Фіксуємо значення в БД
 			self.session.commit()
 
 	def set_user_time(self, username, new_data):
 		user = self.get_user(username)
 		if user:
-			# Обновляем поля пользователя
+			# Оновлюємо поля користувача
 			for key, value in new_data.items():
 				tim = value - getattr(user, "last_login_date")
 				setattr(user, key, tim)
 
-			# Фиксируем изменения в базе данных
+			# Фіксуємо значення в БД
 			self.session.commit()
 
 	def remove_user(self, username):

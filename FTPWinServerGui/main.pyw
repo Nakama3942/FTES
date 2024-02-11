@@ -30,7 +30,7 @@ if __name__ == '__main__':
 	GlobalStates.user_db = UserDb(GlobalStates.program_dir)
 
 	app = QApplication(sys.argv)
-	with open("./ui/light.qss", "r") as style:
+	with open("./style/light.qss", "r") as style:
 		app.setStyleSheet(style.read())
 	ui = ServerWindow()
 	ui.show()
